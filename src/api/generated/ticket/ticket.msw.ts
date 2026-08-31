@@ -11,7 +11,6 @@ import type {
     RegisterTicketsShow200,
     RegisterTicketsStore201,
 } from '../../model'
-
 import {
     getRegisterTicketsShowResponseMock,
     getRegisterTicketsStoreResponseMock,

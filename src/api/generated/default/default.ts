@@ -13,7 +13,6 @@ import type {
     UseQueryOptions,
     UseQueryReturnType,
 } from '@tanstack/vue-query'
-
 import { unref } from 'vue'
 
 import type { GetHealth200 } from '../../model'

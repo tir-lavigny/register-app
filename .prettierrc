@@ -3,5 +3,17 @@
     "tabWidth": 4,
     "semi": false,
     "singleQuote": true,
-    "plugins": ["prettier-plugin-tailwindcss"]
+    "importOrderSeparation": true,
+    "importOrderSortSpecifiers": true,
+    "importOrder": [
+        "<BUILTIN_MODULES>",
+        "<THIRD_PARTY_MODULES>",
+        "^@ui/(.*)$",
+        "^[./]"
+    ],
+
+    "plugins": [
+        "prettier-plugin-tailwindcss",
+        "@trivago/prettier-plugin-sort-imports"
+    ]
 }

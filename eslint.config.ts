@@ -1,9 +1,9 @@
 // @ts-nocheck — ESLint's defineConfig generics don't align perfectly with
 // plugin types; the config is correct at runtime.
-import { defineConfig } from 'eslint/config'
-import vue from 'eslint-plugin-vue'
-import tseslint from 'typescript-eslint'
 import prettierConfig from 'eslint-config-prettier'
+import vue from 'eslint-plugin-vue'
+import { defineConfig } from 'eslint/config'
+import tseslint from 'typescript-eslint'
 import vueParser from 'vue-eslint-parser'
 
 export default defineConfig([

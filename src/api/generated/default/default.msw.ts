@@ -8,7 +8,6 @@ import { HttpResponse, http } from 'msw'
 import type { RequestHandlerOptions } from 'msw'
 
 import type { GetHealth200 } from '../../model'
-
 import { getGetHealthResponseMock } from './default.faker'
 
 export { getGetHealthResponseMock } from './default.faker'

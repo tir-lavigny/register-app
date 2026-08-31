@@ -8,7 +8,6 @@ import { HttpResponse, http } from 'msw'
 import type { RequestHandlerOptions } from 'msw'
 
 import type { TokenResource } from '../../model'
-
 import { getLoginResponseMock, getRefreshResponseMock } from './auth.faker'
 
 export { getLoginResponseMock, getRefreshResponseMock } from './auth.faker'

@@ -16,7 +16,6 @@ import type {
     UseQueryOptions,
     UseQueryReturnType,
 } from '@tanstack/vue-query'
-
 import { computed, toValue, unref } from 'vue'
 import type { MaybeRefOrGetter } from 'vue'
 

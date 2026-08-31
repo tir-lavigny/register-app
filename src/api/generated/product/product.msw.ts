@@ -11,7 +11,6 @@ import type {
     RegisterProductsIndex200,
     RegisterProductsShow200,
 } from '../../model'
-
 import {
     getRegisterProductsIndexResponseMock,
     getRegisterProductsShowResponseMock,

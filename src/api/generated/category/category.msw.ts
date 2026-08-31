@@ -8,7 +8,6 @@ import { HttpResponse, http } from 'msw'
 import type { RequestHandlerOptions } from 'msw'
 
 import type { RegisterCategoriesIndex200 } from '../../model'
-
 import { getRegisterCategoriesIndexResponseMock } from './category.faker'
 
 export { getRegisterCategoriesIndexResponseMock } from './category.faker'

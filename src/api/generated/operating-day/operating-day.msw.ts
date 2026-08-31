@@ -13,7 +13,6 @@ import type {
     RegisterOperatingDaysStore201,
     RegisterOperatingDaysUpdate200,
 } from '../../model'
-
 import {
     getRegisterOperatingDaysCurrentResponseMock,
     getRegisterOperatingDaysShowResponseMock,

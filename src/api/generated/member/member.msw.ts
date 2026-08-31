@@ -8,7 +8,6 @@ import { HttpResponse, http } from 'msw'
 import type { RequestHandlerOptions } from 'msw'
 
 import type { RegisterMembersVouchers200 } from '../../model'
-
 import { getRegisterMembersVouchersResponseMock } from './member.faker'
 
 export { getRegisterMembersVouchersResponseMock } from './member.faker'
