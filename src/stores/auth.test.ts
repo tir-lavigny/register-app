@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { loginResponse } from '@/api/generated/auth/auth'
 import type { TokenResource } from '@/api/model'
 
-import { useAuthStore } from './auth'
+import { AUTH_STORAGE_KEY, useAuthStore } from './auth'
 
 const mockLogin = vi.fn()
 const mockRefresh = vi.fn()
@@ -55,7 +55,7 @@ describe('auth store', () => {
             expect(result).toEqual({ success: true })
             expect(store.accessToken).toBe(fakeToken.accessToken)
             expect(store.user).toEqual(fakeToken.user)
-            expect(localStorage.getItem('access_token')).toBe(
+            expect(localStorage.getItem(AUTH_STORAGE_KEY)).toBe(
                 fakeToken.accessToken
             )
         })
@@ -116,7 +116,7 @@ describe('auth store', () => {
         it('clears state and calls API', async () => {
             store.accessToken = 'some-token'
             store.user = { id: 1, email: 'test@example.com' }
-            localStorage.setItem('access_token', 'some-token')
+            localStorage.setItem(AUTH_STORAGE_KEY, 'some-token')
 
             mockLogout.mockResolvedValue({
                 data: undefined,
@@ -129,7 +129,7 @@ describe('auth store', () => {
             expect(mockLogout).toHaveBeenCalled()
             expect(store.accessToken).toBeNull()
             expect(store.user).toBeNull()
-            expect(localStorage.getItem('access_token')).toBeNull()
+            expect(localStorage.getItem(AUTH_STORAGE_KEY)).toBeNull()
         })
 
         it('clears state even if API call fails', async () => {
@@ -165,7 +165,7 @@ describe('auth store', () => {
 
             expect(store.accessToken).toBe(newToken.accessToken)
             expect(store.user).toEqual(newToken.user)
-            expect(localStorage.getItem('access_token')).toBe(
+            expect(localStorage.getItem(AUTH_STORAGE_KEY)).toBe(
                 newToken.accessToken
             )
         })
@@ -173,7 +173,7 @@ describe('auth store', () => {
         it('clears state on 401 (refresh token expired)', async () => {
             store.accessToken = 'old-token'
             store.user = { id: 1, email: 'test@example.com' }
-            localStorage.setItem('access_token', 'old-token')
+            localStorage.setItem(AUTH_STORAGE_KEY, 'old-token')
 
             mockRefresh.mockResolvedValue({
                 data: { message: 'Token expired' },
@@ -185,7 +185,7 @@ describe('auth store', () => {
 
             expect(store.accessToken).toBeNull()
             expect(store.user).toBeNull()
-            expect(localStorage.getItem('access_token')).toBeNull()
+            expect(localStorage.getItem(AUTH_STORAGE_KEY)).toBeNull()
         })
 
         it('clears state on network error', async () => {
@@ -202,7 +202,7 @@ describe('auth store', () => {
 
     describe('loadFromStorage', () => {
         it('restores token from localStorage', () => {
-            localStorage.setItem('access_token', 'stored-token')
+            localStorage.setItem(AUTH_STORAGE_KEY, 'stored-token')
 
             store.loadFromStorage()
 

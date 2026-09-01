@@ -8,7 +8,7 @@ import {
 } from '@/api/generated/auth/auth'
 import type { UserResource } from '@/api/model'
 
-const STORAGE_KEY = 'access_token'
+export const AUTH_STORAGE_KEY = 'access_token'
 
 export const useAuthStore = defineStore('auth', () => {
     const accessToken = ref<string | null>(null)
@@ -21,9 +21,9 @@ export const useAuthStore = defineStore('auth', () => {
     function setToken(token: string | null) {
         accessToken.value = token
         if (token) {
-            localStorage.setItem(STORAGE_KEY, token)
+            localStorage.setItem(AUTH_STORAGE_KEY, token)
         } else {
-            localStorage.removeItem(STORAGE_KEY)
+            localStorage.removeItem(AUTH_STORAGE_KEY)
         }
     }
 
@@ -86,7 +86,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     function loadFromStorage() {
-        const stored = localStorage.getItem(STORAGE_KEY)
+        const stored = localStorage.getItem(AUTH_STORAGE_KEY)
         if (stored) {
             accessToken.value = stored
         }
