@@ -1,8 +1,9 @@
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { TokenResource } from '@/api/model'
 import type { loginResponse } from '@/api/generated/auth/auth'
+import type { TokenResource } from '@/api/model'
+
 import { useAuthStore } from './auth'
 
 const mockLogin = vi.fn()

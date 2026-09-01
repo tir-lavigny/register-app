@@ -33,7 +33,11 @@ export default defineConfig([
 
     // Relax rules for shadcn-vue generated UI components (third-party code)
     {
-        files: ['src/components/ui/**/*.vue', 'src/components/ui/**/*.ts'],
+        files: [
+            'src/components/ui/**/*.vue',
+            'src/components/ui/**/*.ts',
+            'src/components/typography/**/*.vue',
+        ],
         rules: {
             'vue/multi-word-component-names': 'off',
             'vue/require-default-prop': 'off',

@@ -51,10 +51,10 @@ describe('useAppearance.ts', () => {
 
     describe('System theme changes', () => {
         it('should react to system theme changes', () => {
-            let changeHandler: any
+            let changeHandler: () => void = () => {}
             window.matchMedia = vi.fn().mockImplementation(() => ({
                 matches: false,
-                addEventListener: (event: string, handler: any) => {
+                addEventListener: (event: string, handler: () => void) => {
                     if (event === 'change') changeHandler = handler
                 },
             }))

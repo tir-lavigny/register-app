@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ChevronUp, User2 } from '@lucide/vue'
+
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -18,7 +20,6 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar'
-import { ChevronUp, User2 } from '@lucide/vue'
 
 import AppLogoIcon from './AppLogoIcon.vue'
 

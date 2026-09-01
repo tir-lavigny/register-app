@@ -1,7 +1,11 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-import { login as apiLogin, logout as apiLogout, refresh as apiRefresh } from '@/api/generated/auth/auth'
+import {
+    login as apiLogin,
+    logout as apiLogout,
+    refresh as apiRefresh,
+} from '@/api/generated/auth/auth'
 import type { UserResource } from '@/api/model'
 
 const STORAGE_KEY = 'access_token'

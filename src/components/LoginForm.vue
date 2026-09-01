@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import type { HTMLAttributes } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -14,7 +15,6 @@ import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/stores/auth'
-import type { HTMLAttributes } from 'vue'
 
 const authStore = useAuthStore()
 const router = useRouter()
@@ -81,17 +81,11 @@ const handleSubmit = async () => {
                                 required
                             />
                         </Field>
-                        <p
-                            v-if="error"
-                            class="text-sm text-destructive"
-                        >
+                        <p v-if="error" class="text-sm text-destructive">
                             {{ error }}
                         </p>
                         <Field>
-                            <Button
-                                type="submit"
-                                :disabled="loading"
-                            >
+                            <Button type="submit" :disabled="loading">
                                 {{ loading ? 'Connexion...' : 'Se connecter' }}
                             </Button>
                         </Field>
