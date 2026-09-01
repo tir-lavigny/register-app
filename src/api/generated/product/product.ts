@@ -46,7 +46,7 @@ export type registerProductsIndexResponse =
     registerProductsIndexResponseSuccess | registerProductsIndexResponseError
 
 export const getRegisterProductsIndexUrl = () => {
-    return `/register/products`
+    return `${import.meta.env.VITE_API_BASE_URL}/register/products`
 }
 
 export const registerProductsIndex = async (
@@ -70,7 +70,7 @@ export const registerProductsIndex = async (
 }
 
 export const getRegisterProductsIndexQueryKey = () => {
-    return ['register', 'products'] as const
+    return [import.meta.env.VITE_API_BASE_URL, 'register', 'products'] as const
 }
 
 export const getRegisterProductsIndexQueryOptions = <
@@ -169,7 +169,7 @@ export type registerProductsShowResponse =
     registerProductsShowResponseSuccess | registerProductsShowResponseError
 
 export const getRegisterProductsShowUrl = (product: number) => {
-    return `/register/products/${product}`
+    return `${import.meta.env.VITE_API_BASE_URL}/register/products/${product}`
 }
 
 export const registerProductsShow = async (
@@ -196,7 +196,12 @@ export const registerProductsShow = async (
 export const getRegisterProductsShowQueryKey = (
     product: MaybeRefOrGetter<number>
 ) => {
-    return ['register', 'products', product] as const
+    return [
+        import.meta.env.VITE_API_BASE_URL,
+        'register',
+        'products',
+        product,
+    ] as const
 }
 
 export const getRegisterProductsShowQueryOptions = <

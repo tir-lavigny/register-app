@@ -44,7 +44,7 @@ export type registerCategoriesIndexResponse =
     | registerCategoriesIndexResponseError
 
 export const getRegisterCategoriesIndexUrl = () => {
-    return `/register/categories`
+    return `${import.meta.env.VITE_API_BASE_URL}/register/categories`
 }
 
 export const registerCategoriesIndex = async (
@@ -68,7 +68,11 @@ export const registerCategoriesIndex = async (
 }
 
 export const getRegisterCategoriesIndexQueryKey = () => {
-    return ['register', 'categories'] as const
+    return [
+        import.meta.env.VITE_API_BASE_URL,
+        'register',
+        'categories',
+    ] as const
 }
 
 export const getRegisterCategoriesIndexQueryOptions = <

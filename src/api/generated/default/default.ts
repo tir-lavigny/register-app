@@ -28,7 +28,7 @@ export type getHealthResponseSuccess = getHealthResponse200 & {
 export type getHealthResponse = getHealthResponseSuccess
 
 export const getGetHealthUrl = () => {
-    return `/health`
+    return `${import.meta.env.VITE_API_BASE_URL}/health`
 }
 
 export const getHealth = async (
@@ -50,7 +50,7 @@ export const getHealth = async (
 }
 
 export const getGetHealthQueryKey = () => {
-    return ['health'] as const
+    return [import.meta.env.VITE_API_BASE_URL, 'health'] as const
 }
 
 export const getGetHealthQueryOptions = <

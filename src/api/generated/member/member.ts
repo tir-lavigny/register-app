@@ -52,7 +52,7 @@ export type registerMembersVouchersResponse =
     | registerMembersVouchersResponseError
 
 export const getRegisterMembersVouchersUrl = (member: number) => {
-    return `/register/members/${member}/vouchers`
+    return `${import.meta.env.VITE_API_BASE_URL}/register/members/${member}/vouchers`
 }
 
 export const registerMembersVouchers = async (
@@ -79,7 +79,13 @@ export const registerMembersVouchers = async (
 export const getRegisterMembersVouchersQueryKey = (
     member: MaybeRefOrGetter<number>
 ) => {
-    return ['register', 'members', member, 'vouchers'] as const
+    return [
+        import.meta.env.VITE_API_BASE_URL,
+        'register',
+        'members',
+        member,
+        'vouchers',
+    ] as const
 }
 
 export const getRegisterMembersVouchersQueryOptions = <

@@ -45,7 +45,7 @@ export type loginResponseError = (loginResponse401 | loginResponse422) & {
 export type loginResponse = loginResponseSuccess | loginResponseError
 
 export const getLoginUrl = () => {
-    return `/auth/login`
+    return `${import.meta.env.VITE_API_BASE_URL}/auth/login`
 }
 
 export const login = async (
@@ -163,7 +163,7 @@ export type refreshResponseError = refreshResponse401 & {
 export type refreshResponse = refreshResponseSuccess | refreshResponseError
 
 export const getRefreshUrl = () => {
-    return `/auth/refresh-token`
+    return `${import.meta.env.VITE_API_BASE_URL}/auth/refresh-token`
 }
 
 export const refresh = async (
@@ -266,7 +266,7 @@ export type logoutResponseError = logoutResponse401 & {
 export type logoutResponse = logoutResponseSuccess | logoutResponseError
 
 export const getLogoutUrl = () => {
-    return `/auth/logout`
+    return `${import.meta.env.VITE_API_BASE_URL}/auth/logout`
 }
 
 export const logout = async (

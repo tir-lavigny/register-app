@@ -65,7 +65,7 @@ export type registerTicketsStoreResponse =
     registerTicketsStoreResponseSuccess | registerTicketsStoreResponseError
 
 export const getRegisterTicketsStoreUrl = () => {
-    return `/register/tickets`
+    return `${import.meta.env.VITE_API_BASE_URL}/register/tickets`
 }
 
 export const registerTicketsStore = async (
@@ -213,7 +213,7 @@ export type registerTicketsShowResponse =
     registerTicketsShowResponseSuccess | registerTicketsShowResponseError
 
 export const getRegisterTicketsShowUrl = (ticket: number) => {
-    return `/register/tickets/${ticket}`
+    return `${import.meta.env.VITE_API_BASE_URL}/register/tickets/${ticket}`
 }
 
 export const registerTicketsShow = async (
@@ -240,7 +240,12 @@ export const registerTicketsShow = async (
 export const getRegisterTicketsShowQueryKey = (
     ticket: MaybeRefOrGetter<number>
 ) => {
-    return ['register', 'tickets', ticket] as const
+    return [
+        import.meta.env.VITE_API_BASE_URL,
+        'register',
+        'tickets',
+        ticket,
+    ] as const
 }
 
 export const getRegisterTicketsShowQueryOptions = <

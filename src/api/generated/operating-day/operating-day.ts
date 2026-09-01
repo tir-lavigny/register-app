@@ -70,7 +70,7 @@ export type registerOperatingDaysStoreResponse =
     | registerOperatingDaysStoreResponseError
 
 export const getRegisterOperatingDaysStoreUrl = () => {
-    return `/register/days`
+    return `${import.meta.env.VITE_API_BASE_URL}/register/days`
 }
 
 export const registerOperatingDaysStore = async (
@@ -234,7 +234,7 @@ export type registerOperatingDaysUpdateResponse =
     | registerOperatingDaysUpdateResponseError
 
 export const getRegisterOperatingDaysUpdateUrl = (operatingDay: number) => {
-    return `/register/days/${operatingDay}`
+    return `${import.meta.env.VITE_API_BASE_URL}/register/days/${operatingDay}`
 }
 
 export const registerOperatingDaysUpdate = async (
@@ -391,7 +391,7 @@ export type registerOperatingDaysShowResponse =
     | registerOperatingDaysShowResponseError
 
 export const getRegisterOperatingDaysShowUrl = (operatingDay: number) => {
-    return `/register/days/${operatingDay}`
+    return `${import.meta.env.VITE_API_BASE_URL}/register/days/${operatingDay}`
 }
 
 export const registerOperatingDaysShow = async (
@@ -418,7 +418,12 @@ export const registerOperatingDaysShow = async (
 export const getRegisterOperatingDaysShowQueryKey = (
     operatingDay: MaybeRefOrGetter<number>
 ) => {
-    return ['register', 'days', operatingDay] as const
+    return [
+        import.meta.env.VITE_API_BASE_URL,
+        'register',
+        'days',
+        operatingDay,
+    ] as const
 }
 
 export const getRegisterOperatingDaysShowQueryOptions = <
@@ -540,7 +545,7 @@ export type registerOperatingDaysCurrentResponse =
     | registerOperatingDaysCurrentResponseError
 
 export const getRegisterOperatingDaysCurrentUrl = () => {
-    return `/register/days/current`
+    return `${import.meta.env.VITE_API_BASE_URL}/register/days/current`
 }
 
 export const registerOperatingDaysCurrent = async (
@@ -564,7 +569,12 @@ export const registerOperatingDaysCurrent = async (
 }
 
 export const getRegisterOperatingDaysCurrentQueryKey = () => {
-    return ['register', 'days', 'current'] as const
+    return [
+        import.meta.env.VITE_API_BASE_URL,
+        'register',
+        'days',
+        'current',
+    ] as const
 }
 
 export const getRegisterOperatingDaysCurrentQueryOptions = <

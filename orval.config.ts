@@ -9,6 +9,9 @@ export default defineConfig({
             schemas: 'src/api/model',
             client: 'vue-query',
             mock: true,
+            baseUrl: {
+                runtime: 'import.meta.env.VITE_API_BASE_URL',
+            },
         },
         hooks: {
             afterAllFilesWrite: 'prettier --write',
