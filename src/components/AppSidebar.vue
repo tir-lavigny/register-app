@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { H4 } from '@/components/typography/headings'
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -25,7 +24,13 @@ import AppLogoIcon from './AppLogoIcon.vue'
 
 const props = defineProps<SidebarProps>()
 
-const navMain = [
+interface NavItem {
+    title: string
+    url: string
+    isActive?: boolean
+    items?: NavItem[]
+}
+const navMain: NavItem[] = [
     {
         title: 'Getting Started',
         url: '#',
