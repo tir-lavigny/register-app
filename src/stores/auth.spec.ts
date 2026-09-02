@@ -2,7 +2,7 @@ import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { loginResponse } from '@/api/generated/auth/auth'
-import type { TokenResource } from '@/api/model'
+import type { TokenResource, UserResource } from '@/api/model'
 
 import { AUTH_STORAGE_KEY, useAuthStore } from './auth'
 
@@ -16,9 +16,25 @@ vi.mock('@/api/generated/auth/auth', () => ({
     logout: (...args: unknown[]) => mockLogout(...args),
 }))
 
+const fakeUser: UserResource = {
+    id: 1,
+    name: 'Test User',
+    email: 'test@example.com',
+    roles: [
+        {
+            name: 'admin',
+            permissions: [{ name: 'manage_users' }, { name: 'edit_posts' }],
+        },
+        {
+            name: 'editor',
+            permissions: [{ name: 'edit_posts' }],
+        },
+    ],
+}
+
 const fakeToken: TokenResource = {
     accessToken: 'fake-access-token-abc123',
-    user: { id: 1, email: 'test@example.com' },
+    user: fakeUser,
 }
 
 describe('auth store', () => {
@@ -115,7 +131,7 @@ describe('auth store', () => {
     describe('logout', () => {
         it('clears state and calls API', async () => {
             store.accessToken = 'some-token'
-            store.user = { id: 1, email: 'test@example.com' }
+            store.user = { ...fakeUser }
             localStorage.setItem(AUTH_STORAGE_KEY, 'some-token')
 
             mockLogout.mockResolvedValue({
@@ -134,7 +150,7 @@ describe('auth store', () => {
 
         it('clears state even if API call fails', async () => {
             store.accessToken = 'some-token'
-            store.user = { id: 1, email: 'test@example.com' }
+            store.user = { ...fakeUser }
 
             mockLogout.mockRejectedValue(new Error('Network error'))
 
@@ -148,11 +164,11 @@ describe('auth store', () => {
     describe('refreshAccessToken', () => {
         it('updates token on successful refresh', async () => {
             store.accessToken = 'old-token'
-            store.user = { id: 1, email: 'old@example.com' }
+            store.user = { ...fakeUser }
 
             const newToken: TokenResource = {
                 accessToken: 'new-refreshed-token',
-                user: { id: 1, email: 'new@example.com' },
+                user: { ...fakeUser, name: 'Refreshed User' },
             }
 
             mockRefresh.mockResolvedValue({
@@ -172,7 +188,7 @@ describe('auth store', () => {
 
         it('clears state on 401 (refresh token expired)', async () => {
             store.accessToken = 'old-token'
-            store.user = { id: 1, email: 'test@example.com' }
+            store.user = { ...fakeUser }
             localStorage.setItem(AUTH_STORAGE_KEY, 'old-token')
 
             mockRefresh.mockResolvedValue({
@@ -213,6 +229,48 @@ describe('auth store', () => {
             store.loadFromStorage()
 
             expect(store.accessToken).toBeNull()
+        })
+    })
+
+    describe('hasRole', () => {
+        it('returns true when user has the role', () => {
+            store.user = { ...fakeUser }
+
+            expect(store.hasRole('admin')).toBe(true)
+        })
+
+        it('returns false when user does not have the role', () => {
+            store.user = { ...fakeUser }
+
+            expect(store.hasRole('superadmin')).toBe(false)
+        })
+
+        it('returns false when user is null', () => {
+            expect(store.hasRole('admin')).toBe(false)
+        })
+    })
+
+    describe('hasPermission', () => {
+        it('returns true when a role has the permission', () => {
+            store.user = { ...fakeUser }
+
+            expect(store.hasPermission('manage_users')).toBe(true)
+        })
+
+        it('returns true when permission exists in a different role', () => {
+            store.user = { ...fakeUser }
+
+            expect(store.hasPermission('edit_posts')).toBe(true)
+        })
+
+        it('returns false when no role has the permission', () => {
+            store.user = { ...fakeUser }
+
+            expect(store.hasPermission('delete_everything')).toBe(false)
+        })
+
+        it('returns false when user is null', () => {
+            expect(store.hasPermission('manage_users')).toBe(false)
         })
     })
 })

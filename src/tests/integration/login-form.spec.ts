@@ -9,6 +9,13 @@ import LoginForm from '@/components/LoginForm.vue'
 
 import { server } from '../setup'
 
+const fakeUser = {
+    id: 1,
+    name: 'Test User',
+    email: 'test@example.com',
+    roles: [{ name: 'admin', permissions: [{ name: 'manage_users' }] }],
+}
+
 const HomeView = { template: '<div>Home</div>' }
 const DashboardView = { template: '<div>Dashboard</div>' }
 
@@ -63,7 +70,7 @@ describe('LoginForm integration', () => {
                 HttpResponse.json(
                     getLoginResponseMock({
                         accessToken: 'token',
-                        user: { id: 1, email: 'test@example.com' },
+                        user: fakeUser,
                     }),
                     { status: 200 }
                 )
@@ -86,7 +93,7 @@ describe('LoginForm integration', () => {
                 HttpResponse.json(
                     getLoginResponseMock({
                         accessToken: 'token',
-                        user: { id: 1, email: 'test@example.com' },
+                        user: fakeUser,
                     }),
                     { status: 200 }
                 )
@@ -150,7 +157,7 @@ describe('LoginForm integration', () => {
                 return HttpResponse.json(
                     getLoginResponseMock({
                         accessToken: 'token',
-                        user: { id: 1, email: 'test@example.com' },
+                        user: fakeUser,
                     }),
                     { status: 200 }
                 )
@@ -195,7 +202,7 @@ describe('LoginForm integration', () => {
                 HttpResponse.json(
                     getLoginResponseMock({
                         accessToken: 'token',
-                        user: { id: 1, email: 'test@example.com' },
+                        user: fakeUser,
                     }),
                     { status: 200 }
                 )

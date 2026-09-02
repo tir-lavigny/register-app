@@ -11,6 +11,22 @@ import { useAuthStore } from '@/stores/auth'
 
 import { server } from '../setup'
 
+const fakeUser = {
+    id: 1,
+    name: 'Test User',
+    email: 'test@example.com',
+    roles: [
+        {
+            name: 'admin',
+            permissions: [{ name: 'manage_users' }, { name: 'edit_posts' }],
+        },
+        {
+            name: 'editor',
+            permissions: [{ name: 'edit_posts' }],
+        },
+    ],
+}
+
 describe('auth flow integration', () => {
     let store: ReturnType<typeof useAuthStore>
 
@@ -24,7 +40,7 @@ describe('auth flow integration', () => {
         it('stores token and user on successful login', async () => {
             const mockToken = getLoginResponseMock({
                 accessToken: 'test-access-token',
-                user: { id: 1, email: 'test@example.com' },
+                user: fakeUser,
             })
 
             server.use(getLoginMockHandler(mockToken))
@@ -33,7 +49,7 @@ describe('auth flow integration', () => {
 
             expect(result).toEqual({ success: true })
             expect(store.accessToken).toBe('test-access-token')
-            expect(store.user).toEqual({ id: 1, email: 'test@example.com' })
+            expect(store.user).toEqual(fakeUser)
             expect(localStorage.getItem('access_token')).toBe(
                 'test-access-token'
             )
@@ -85,11 +101,11 @@ describe('auth flow integration', () => {
     describe('refreshAccessToken', () => {
         it('updates token on successful refresh', async () => {
             store.accessToken = 'old-token'
-            store.user = { id: 1, email: 'old@example.com' }
+            store.user = { ...fakeUser }
 
             const newToken = getLoginResponseMock({
                 accessToken: 'refreshed-token',
-                user: { id: 1, email: 'refreshed@example.com' },
+                user: { ...fakeUser, name: 'Refreshed User' },
             })
 
             server.use(getRefreshMockHandler(newToken))
@@ -98,15 +114,15 @@ describe('auth flow integration', () => {
 
             expect(store.accessToken).toBe('refreshed-token')
             expect(store.user).toEqual({
-                id: 1,
-                email: 'refreshed@example.com',
+                ...fakeUser,
+                name: 'Refreshed User',
             })
             expect(localStorage.getItem('access_token')).toBe('refreshed-token')
         })
 
         it('clears state on 401', async () => {
             store.accessToken = 'old-token'
-            store.user = { id: 1, email: 'test@example.com' }
+            store.user = { ...fakeUser }
             localStorage.setItem('access_token', 'old-token')
 
             server.use(
@@ -129,7 +145,7 @@ describe('auth flow integration', () => {
     describe('logout', () => {
         it('clears state and calls API', async () => {
             store.accessToken = 'some-token'
-            store.user = { id: 1, email: 'test@example.com' }
+            store.user = { ...fakeUser }
             localStorage.setItem('access_token', 'some-token')
 
             let handlerCalled = false
@@ -150,7 +166,7 @@ describe('auth flow integration', () => {
 
         it('clears state even on network error', async () => {
             store.accessToken = 'some-token'
-            store.user = { id: 1, email: 'test@example.com' }
+            store.user = { ...fakeUser }
 
             server.use(http.post('*/auth/logout', () => HttpResponse.error()))
 
@@ -158,6 +174,40 @@ describe('auth flow integration', () => {
 
             expect(store.accessToken).toBeNull()
             expect(store.user).toBeNull()
+        })
+    })
+
+    describe('hasRole', () => {
+        it('returns true after login when user has the role', async () => {
+            const mockToken = getLoginResponseMock({
+                accessToken: 'token',
+                user: fakeUser,
+            })
+
+            server.use(getLoginMockHandler(mockToken))
+
+            await store.login('test@example.com', 'pass')
+
+            expect(store.hasRole('admin')).toBe(true)
+            expect(store.hasRole('editor')).toBe(true)
+            expect(store.hasRole('superadmin')).toBe(false)
+        })
+    })
+
+    describe('hasPermission', () => {
+        it('returns true after login when a role has the permission', async () => {
+            const mockToken = getLoginResponseMock({
+                accessToken: 'token',
+                user: fakeUser,
+            })
+
+            server.use(getLoginMockHandler(mockToken))
+
+            await store.login('test@example.com', 'pass')
+
+            expect(store.hasPermission('manage_users')).toBe(true)
+            expect(store.hasPermission('edit_posts')).toBe(true)
+            expect(store.hasPermission('delete_everything')).toBe(false)
         })
     })
 
@@ -181,11 +231,11 @@ describe('auth flow integration', () => {
         it('login → refresh → logout', async () => {
             const loginToken = getLoginResponseMock({
                 accessToken: 'login-token',
-                user: { id: 1, email: 'user@example.com' },
+                user: fakeUser,
             })
             const refreshToken = getLoginResponseMock({
                 accessToken: 'refresh-token',
-                user: { id: 1, email: 'user@example.com' },
+                user: fakeUser,
             })
 
             server.use(
@@ -196,6 +246,7 @@ describe('auth flow integration', () => {
             const loginResult = await store.login('user@example.com', 'pass')
             expect(loginResult).toEqual({ success: true })
             expect(store.accessToken).toBe('login-token')
+            expect(store.hasRole('admin')).toBe(true)
 
             await store.refreshAccessToken()
             expect(store.accessToken).toBe('refresh-token')
