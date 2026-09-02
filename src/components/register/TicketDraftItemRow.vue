@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Tag, X } from '@lucide/vue'
 import { Button } from '@/components/ui/button'
 import type { TicketDraftItem } from '@/stores/ticket'
 
@@ -27,10 +28,10 @@ function decrementQty(index: number, qty: number) {
 <template>
     <div class="flex items-center gap-3 rounded-lg border px-3 py-2">
         <div class="flex-1 min-w-0">
-            <span class="block truncate text-sm font-medium text-gray-900">{{
+            <span class="block truncate text-sm font-medium text-foreground">{{
                 item.productName
             }}</span>
-            <span class="text-xs text-gray-500">
+            <span class="text-xs text-muted-foreground">
                 {{ item.effectivePrice.toFixed(2) }} CHF
                 <span v-if="item.voucherDiscount" class="text-green-600">
                     (-{{ item.voucherDiscount.toFixed(2) }} CHF)
@@ -65,15 +66,15 @@ function decrementQty(index: number, qty: number) {
             class="min-h-11 min-w-11"
             @click="emit('apply-voucher', index)"
         >
-            <span v-if="item.voucherId" class="text-green-600">🏷</span>
-            <span v-else class="text-gray-400">🏷</span>
+            <Tag v-if="item.voucherId" class="size-4 text-green-600" />
+            <Tag v-else class="size-4 text-muted-foreground" />
         </Button>
         <Button
             variant="ghost"
             size="icon"
-            class="min-h-11 min-w-11 text-red-500"
+            class="min-h-11 min-w-11 text-destructive"
             @click="emit('remove', index)"
-            >✕</Button
+            ><X class="size-4" /></Button
         >
     </div>
 </template>

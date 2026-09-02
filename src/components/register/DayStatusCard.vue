@@ -50,13 +50,13 @@ const dayDate = computed(() =>
             <CardTitle class="flex items-center gap-2">
                 <span
                     v-if="dayStore.isOpen"
-                    class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800"
+                    class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-600"
                 >
                     OUVERT
                 </span>
                 <span
                     v-else-if="dayStore.currentDay"
-                    class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800"
+                    class="inline-flex items-center rounded-full bg-destructive/10 px-2.5 py-0.5 text-xs font-medium text-destructive"
                 >
                     FERMÉ
                 </span>

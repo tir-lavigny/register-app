@@ -159,7 +159,7 @@ function goToPayment() {
                         <CardContent class="flex flex-col gap-2">
                             <div
                                 v-if="items.length === 0"
-                                class="py-8 text-center text-sm text-gray-500"
+                                class="py-8 text-center text-sm text-muted-foreground"
                             >
                                 Aucun article
                             </div>
@@ -186,7 +186,7 @@ function goToPayment() {
                         <CardContent class="flex flex-col gap-2">
                             <div
                                 v-if="memberVouchers.length === 0"
-                                class="py-4 text-center text-sm text-gray-500"
+                                class="py-4 text-center text-sm text-muted-foreground"
                             >
                                 Aucun bon disponible
                             </div>
@@ -200,7 +200,7 @@ function goToPayment() {
                                             item.availableVoucher &&
                                             !item.voucherId
                                         "
-                                        class="flex w-full items-center gap-2 rounded-lg border border-dashed border-green-300 bg-green-50 px-3 py-2 text-sm text-green-700 transition-colors hover:bg-green-100"
+                                        class="flex w-full items-center gap-2 rounded-lg border border-dashed border-green-300 bg-green-50 px-3 py-2 text-sm text-green-600 transition-colors hover:bg-green-100"
                                         @click="handleToggleVoucher(index)"
                                     >
                                         <Tag class="size-4" />
@@ -208,7 +208,7 @@ function goToPayment() {
                                     </button>
                                     <button
                                         v-else-if="item.voucherId"
-                                        class="flex w-full items-center gap-2 rounded-lg border border-green-300 bg-green-50 px-3 py-2 text-sm text-green-700 transition-colors hover:bg-green-100"
+                                        class="flex w-full items-center gap-2 rounded-lg border border-green-300 bg-green-50 px-3 py-2 text-sm text-green-600 transition-colors hover:bg-green-100"
                                         @click="handleToggleVoucher(index)"
                                     >
                                         <Tag class="size-4" />
@@ -223,7 +223,7 @@ function goToPayment() {
                     <Card>
                         <CardContent class="flex flex-col gap-3 pt-6">
                             <div class="flex items-center justify-between">
-                                <span class="text-sm text-gray-500">Total</span>
+                                <span class="text-sm text-muted-foreground">Total</span>
                                 <span class="text-lg font-bold"
                                     >{{ total.toFixed(2) }} CHF</span
                                 >
@@ -232,7 +232,7 @@ function goToPayment() {
                             <div
                                 class="flex items-center justify-between border-t pt-3"
                             >
-                                <span class="text-sm text-gray-500">
+                                <span class="text-sm text-muted-foreground">
                                     Membre: {{ memberName ?? 'Aucun' }}
                                 </span>
                                 <Button

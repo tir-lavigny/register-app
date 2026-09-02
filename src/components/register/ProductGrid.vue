@@ -42,7 +42,7 @@ function handleSelectProduct(product: Product) {
             v-if="categoriesLoading || productsLoading"
             class="flex items-center justify-center py-8"
         >
-            <span class="text-sm text-gray-500">Chargement...</span>
+            <span class="text-sm text-muted-foreground">Chargement...</span>
         </div>
         <template v-else>
             <Tabs v-model="activeTab">

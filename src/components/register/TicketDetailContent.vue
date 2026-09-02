@@ -25,7 +25,7 @@ function formatPayment(method: string): string {
             >
             <span
                 v-if="ticket.deleted_at"
-                class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800"
+                class="inline-flex items-center rounded-full bg-destructive/10 px-2.5 py-0.5 text-xs font-medium text-destructive"
             >
                 Annulé
             </span>
@@ -70,7 +70,7 @@ function formatPayment(method: string): string {
                         </span>
                         <span
                             v-if="item.voucher_id"
-                            class="ml-1 inline-flex items-center rounded-full bg-green-100 px-1.5 py-0.5 text-[10px] font-medium text-green-700"
+                            class="ml-1 inline-flex items-center rounded-full bg-green-100 px-1.5 py-0.5 text-[10px] font-medium text-green-600"
                         >
                             Bon
                         </span>

@@ -67,26 +67,26 @@ function handleClear() {
                     v-if="isLoading"
                     class="flex items-center justify-center py-4"
                 >
-                    <span class="text-sm text-gray-500">Chargement...</span>
+                    <span class="text-sm text-muted-foreground">Chargement...</span>
                 </div>
 
                 <div v-else class="max-h-80 overflow-y-auto">
                     <div
                         v-for="voucher in vouchers"
                         :key="voucher.id"
-                        class="flex min-h-12 cursor-pointer items-center justify-between rounded-lg px-3 py-2 transition-colors hover:bg-gray-100"
+                        class="flex min-h-12 cursor-pointer items-center justify-between rounded-lg px-3 py-2 transition-colors hover:bg-accent"
                         @click="handleSelect(voucher)"
                     >
                         <span class="text-sm font-medium"
                             >Bon #{{ voucher.id }}</span
                         >
-                        <span class="text-xs text-gray-500">{{
+                        <span class="text-xs text-muted-foreground">{{
                             formatDiscount(voucher)
                         }}</span>
                     </div>
                     <div
                         v-if="vouchers.length === 0"
-                        class="py-4 text-center text-sm text-gray-500"
+                        class="py-4 text-center text-sm text-muted-foreground"
                     >
                         Aucun bon disponible
                     </div>

@@ -17,7 +17,7 @@ function formatPrice(price: string): string {
 <template>
     <button
         type="button"
-        class="flex min-h-12 w-full flex-col items-center gap-1 rounded-lg border bg-white p-3 text-center transition-colors hover:bg-gray-50 active:bg-gray-100"
+        class="flex min-h-12 w-full flex-col items-center gap-1 rounded-lg border bg-card p-3 text-center transition-colors hover:bg-accent active:bg-accent"
         @click="emit('click', product)"
     >
         <img
@@ -28,14 +28,14 @@ function formatPrice(price: string): string {
         />
         <div
             v-else
-            class="flex h-16 w-16 items-center justify-center rounded bg-gray-100 text-gray-400"
+            class="flex h-16 w-16 items-center justify-center rounded bg-muted text-muted-foreground"
         >
             <span class="text-xl">?</span>
         </div>
-        <span class="mt-1 text-sm font-medium leading-tight text-gray-900">{{
+        <span class="mt-1 text-sm font-medium leading-tight text-foreground">{{
             product.name
         }}</span>
-        <span class="text-xs text-gray-500">{{
+        <span class="text-xs text-muted-foreground">{{
             formatPrice(product.unit_price)
         }}</span>
     </button>
