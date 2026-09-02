@@ -26,6 +26,7 @@ import type {
     RegisterTicketsPreview200,
     RegisterTicketsShow200,
     RegisterTicketsStore201,
+    StoreTicketPreviewRequest,
     StoreTicketRequest,
     ValidationExceptionResponse,
 } from '../../model'
@@ -225,7 +226,7 @@ export const getRegisterTicketsPreviewUrl = () => {
 }
 
 export const registerTicketsPreview = async (
-    storeTicketRequest: StoreTicketRequest,
+    storeTicketPreviewRequest: StoreTicketPreviewRequest,
     options?: RequestInit
 ): Promise<registerTicketsPreviewResponse> => {
     const getHeaders = (
@@ -243,7 +244,7 @@ export const registerTicketsPreview = async (
             'Content-Type': 'application/json',
             ...getHeaders(options?.headers),
         },
-        body: JSON.stringify(storeTicketRequest),
+        body: JSON.stringify(storeTicketPreviewRequest),
     })
 
     const body = [204, 205, 304].includes(res.status) ? null : await res.text()
@@ -305,13 +306,13 @@ export const getRegisterTicketsPreviewMutationOptions = <
 export type RegisterTicketsPreviewMutationResult = NonNullable<
     Awaited<ReturnType<typeof registerTicketsPreview>>
 >
-export type RegisterTicketsPreviewMutationBody = StoreTicketRequest
+export type RegisterTicketsPreviewMutationBody = StoreTicketPreviewRequest
 export type RegisterTicketsPreviewMutationError =
     | AuthenticationExceptionResponse
     | AuthorizationExceptionResponse
     | ValidationExceptionResponse
 export type RegisterTicketsPreviewMutationVariables = {
-    data: StoreTicketRequest
+    data: StoreTicketPreviewRequest
 }
 
 export const useRegisterTicketsPreview = <

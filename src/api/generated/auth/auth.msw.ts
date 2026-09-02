@@ -7,10 +7,18 @@
 import { HttpResponse, http } from 'msw'
 import type { RequestHandlerOptions } from 'msw'
 
-import type { TokenResource } from '../../model'
-import { getLoginResponseMock, getRefreshResponseMock } from './auth.faker'
+import type { Me200, TokenResource } from '../../model'
+import {
+    getLoginResponseMock,
+    getMeResponseMock,
+    getRefreshResponseMock,
+} from './auth.faker'
 
-export { getLoginResponseMock, getRefreshResponseMock } from './auth.faker'
+export {
+    getLoginResponseMock,
+    getRefreshResponseMock,
+    getMeResponseMock,
+} from './auth.faker'
 
 export const getLoginMockHandler = (
     overrideResponse?:
@@ -60,6 +68,30 @@ export const getRefreshMockHandler = (
     )
 }
 
+export const getMeMockHandler = (
+    overrideResponse?:
+        | Me200
+        | ((
+              info: Parameters<Parameters<typeof http.get>[1]>[0]
+          ) => Promise<Me200> | Me200),
+    options?: RequestHandlerOptions
+) => {
+    return http.get(
+        '*/auth/me',
+        async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+            return HttpResponse.json(
+                overrideResponse !== undefined
+                    ? typeof overrideResponse === 'function'
+                        ? await overrideResponse(info)
+                        : overrideResponse
+                    : getMeResponseMock(),
+                { status: 200 }
+            )
+        },
+        options
+    )
+}
+
 export const getLogoutMockHandler = (
     overrideResponse?:
         | void
@@ -83,5 +115,6 @@ export const getLogoutMockHandler = (
 export const getAuthMock = () => [
     getLoginMockHandler(),
     getRefreshMockHandler(),
+    getMeMockHandler(),
     getLogoutMockHandler(),
 ]

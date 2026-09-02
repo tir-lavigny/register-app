@@ -6,7 +6,7 @@
  */
 import { faker } from '@faker-js/faker'
 
-import type { TokenResource } from '../../model'
+import type { Me200, TokenResource } from '../../model'
 
 export const getLoginResponseMock = (
     overrideResponse: Partial<Extract<TokenResource, object>> = {}
@@ -59,5 +59,28 @@ export const getRefreshResponseMock = (
         },
         null,
     ]),
+    ...overrideResponse,
+})
+
+export const getMeResponseMock = (
+    overrideResponse: Partial<Extract<Me200, object>> = {}
+): Me200 => ({
+    data: {
+        id: faker.number.int(),
+        name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+        email: faker.string.alpha({ length: { min: 10, max: 20 } }),
+        roles: Array.from(
+            { length: faker.number.int({ min: 1, max: 10 }) },
+            (_, i) => i + 1
+        ).map(() => ({
+            name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+            permissions: Array.from(
+                { length: faker.number.int({ min: 1, max: 10 }) },
+                (_, i) => i + 1
+            ).map(() => ({
+                name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+            })),
+        })),
+    },
     ...overrideResponse,
 })

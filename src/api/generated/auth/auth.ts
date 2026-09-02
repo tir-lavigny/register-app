@@ -4,18 +4,25 @@
  * Tir Lavigny
  * OpenAPI spec version: 0.0.1
  */
-import { useMutation } from '@tanstack/vue-query'
+import { useMutation, useQuery } from '@tanstack/vue-query'
 import type {
+    DataTag,
     MutationFunction,
     QueryClient,
+    QueryFunction,
+    QueryKey,
     UseMutationOptions,
     UseMutationReturnType,
+    UseQueryOptions,
+    UseQueryReturnType,
 } from '@tanstack/vue-query'
+import { unref } from 'vue'
 
 import type {
     AuthenticationExceptionResponse,
     Login401,
     LoginRequest,
+    Me200,
     TokenResource,
     ValidationExceptionResponse,
 } from '../../model'
@@ -246,6 +253,102 @@ export const useRefresh = <
 > => {
     return useMutation(getRefreshMutationOptions(options), queryClient)
 }
+export type meResponse200 = {
+    data: Me200
+    status: 200
+}
+
+export type meResponse401 = {
+    data: AuthenticationExceptionResponse
+    status: 401
+}
+
+export type meResponseSuccess = meResponse200 & {
+    headers: Headers
+}
+export type meResponseError = meResponse401 & {
+    headers: Headers
+}
+
+export type meResponse = meResponseSuccess | meResponseError
+
+export const getMeUrl = () => {
+    return `${import.meta.env.VITE_API_BASE_URL}/auth/me`
+}
+
+export const me = async (options?: RequestInit): Promise<meResponse> => {
+    const res = await fetch(getMeUrl(), {
+        ...options,
+        method: 'GET',
+    })
+
+    const body = [204, 205, 304].includes(res.status) ? null : await res.text()
+
+    const data: meResponse['data'] = body ? JSON.parse(body) : {}
+    return { data, status: res.status, headers: res.headers } as meResponse
+}
+
+export const getMeQueryKey = () => {
+    return [import.meta.env.VITE_API_BASE_URL, 'auth', 'me'] as const
+}
+
+export const getMeQueryOptions = <
+    TData = Awaited<ReturnType<typeof me>>,
+    TError = AuthenticationExceptionResponse,
+>(options?: {
+    query?: Partial<
+        UseQueryOptions<Awaited<ReturnType<typeof me>>, TError, TData>
+    >
+    fetch?: RequestInit
+}) => {
+    const { query: queryOptions, fetch: fetchOptions } = options ?? {}
+
+    const queryKey = getMeQueryKey()
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof me>>> = ({
+        signal,
+    }) => me({ signal, ...fetchOptions })
+
+    return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+        Awaited<ReturnType<typeof me>>,
+        TError,
+        TData
+    >
+}
+
+export type MeQueryResult = NonNullable<Awaited<ReturnType<typeof me>>>
+export type MeQueryError = AuthenticationExceptionResponse
+
+export function useMe<
+    TData = Awaited<ReturnType<typeof me>>,
+    TError = AuthenticationExceptionResponse,
+>(
+    options?: {
+        query?: Partial<
+            UseQueryOptions<Awaited<ReturnType<typeof me>>, TError, TData>
+        >
+        fetch?: RequestInit
+    },
+    queryClient?: QueryClient
+): UseQueryReturnType<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+} {
+    const queryOptions = getMeQueryOptions(options)
+
+    const query = useQuery(queryOptions, queryClient) as UseQueryReturnType<
+        TData,
+        TError
+    > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+    query.queryKey = unref(queryOptions).queryKey as DataTag<
+        QueryKey,
+        TData,
+        TError
+    >
+
+    return query
+}
+
 export type logoutResponse204 = {
     data: void
     status: 204
