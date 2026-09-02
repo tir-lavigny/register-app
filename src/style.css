@@ -41,6 +41,9 @@
     --color-success: var(--success);
     --color-success-foreground: var(--success-foreground);
     --color-success-subtle: var(--success-subtle);
+    --color-danger: var(--danger);
+    --color-danger-foreground: var(--danger-foreground);
+    --color-danger-subtle: var(--danger-subtle);
     --radius-sm: calc(var(--radius) - 4px);
     --radius-md: calc(var(--radius) - 2px);
     --radius-lg: var(--radius);
@@ -90,6 +93,10 @@
     --success: hsl(142 76% 36%);
     --success-foreground: hsl(355 7% 97%);
     --success-subtle: hsl(141 78% 95%);
+
+    --danger: hsl(0 84% 60%);
+    --danger-foreground: hsl(0 0% 98%);
+    --danger-subtle: hsl(0 86% 97%);
 }
 
 .dark {
@@ -134,6 +141,10 @@
     --success: hsl(142 71% 45%);
     --success-foreground: hsl(144 80% 10%);
     --success-subtle: hsl(142 71% 15%);
+
+    --danger: hsl(0 72% 51%);
+    --danger-foreground: hsl(0 0% 98%);
+    --danger-subtle: hsl(0 72% 15%);
 }
 
 @layer base {
