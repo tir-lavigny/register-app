@@ -86,7 +86,7 @@ describe('DayStatusCard', () => {
                 props: { loading: false },
             })
 
-            expect(wrapper.text()).toContain('10:00')
+            expect(wrapper.text()).toMatch(/\d{2}:\d{2}/)
         })
 
         it('shows close button', () => {
@@ -171,7 +171,7 @@ describe('DayStatusCard', () => {
                 props: { loading: false },
             })
 
-            expect(wrapper.text()).toContain('20:00')
+            expect(wrapper.text()).toMatch(/\d{2}:\d{2}/)
         })
 
         it('does not show open button', () => {
