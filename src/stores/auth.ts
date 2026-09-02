@@ -72,14 +72,19 @@ export const useAuthStore = defineStore('auth', () => {
 
     async function fetchMe() {
         try {
+            console.log('[Auth] fetchMe: calling /auth/me...')
             const response = await apiMe()
+            console.log('[Auth] fetchMe response status:', response.status)
             if (response.status === 200) {
                 user.value = response.data.data
+                console.log('[Auth] fetchMe: user loaded:', user.value?.name)
                 return true
             }
+            console.log('[Auth] fetchMe: failed, clearing auth')
             clearAuth()
             return false
-        } catch {
+        } catch (e) {
+            console.log('[Auth] fetchMe: error:', e)
             clearAuth()
             return false
         }
