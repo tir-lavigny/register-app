@@ -6,12 +6,12 @@ import { createRouter, createWebHistory } from 'vue-router'
 import RegisterDashboardView from './RegisterDashboardView.vue'
 
 vi.mock('@/lib/permissions', () => ({
-  hasPermission: vi.fn().mockReturnValue(true),
-  Permissions: {
-    CREATE_TICKET: 'create ticket',
-    VIEW_TICKETS: 'view tickets',
-    CLOSE_DAY: 'close day',
-  },
+    hasPermission: vi.fn().mockReturnValue(true),
+    Permissions: {
+        CREATE_TICKET: 'create ticket',
+        VIEW_TICKETS: 'view tickets',
+        CLOSE_DAY: 'close day',
+    },
 }))
 
 const mockFetchCurrentSeason = vi.fn()
@@ -19,7 +19,12 @@ const mockFetchCurrentDay = vi.fn()
 
 vi.mock('@/stores/season', () => ({
     useSeasonStore: () => ({
-        currentSeason: { id: 1, name: 'Summer 2026', start_date: '2026-06-01', end_date: '2026-09-30' },
+        currentSeason: {
+            id: 1,
+            name: 'Summer 2026',
+            start_date: '2026-06-01',
+            end_date: '2026-09-30',
+        },
         error: null,
         loading: false,
         seasonId: 1,
@@ -67,7 +72,10 @@ describe('RegisterDashboardView', () => {
             global: {
                 plugins: [
                     router,
-                    createTestingPinia({ createSpy: vi.fn, stubActions: false }),
+                    createTestingPinia({
+                        createSpy: vi.fn,
+                        stubActions: false,
+                    }),
                 ],
             },
         })

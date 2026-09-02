@@ -1,19 +1,18 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { computed } from 'vue'
 import { Receipt, Ticket, XCircle } from '@lucide/vue'
+import { onMounted, ref } from 'vue'
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 
-import { hasPermission, Permissions } from '@/lib/permissions'
-
-import { Card, CardContent } from '@/components/ui/card'
 import CloseDayDialog from '@/components/register/CloseDayDialog.vue'
 import DayStatusCard from '@/components/register/DayStatusCard.vue'
 import DaySummaryCard from '@/components/register/DaySummaryCard.vue'
 import NoSeasonBanner from '@/components/register/NoSeasonBanner.vue'
 import OpenDayDialog from '@/components/register/OpenDayDialog.vue'
 import ReopenDayDialog from '@/components/register/ReopenDayDialog.vue'
+import { Card, CardContent } from '@/components/ui/card'
 import AppLayout from '@/layouts/AppLayout.vue'
+import { Permissions, hasPermission } from '@/lib/permissions'
 import { useOperatingDayStore } from '@/stores/operating-day'
 import { useSeasonStore } from '@/stores/season'
 
@@ -29,7 +28,9 @@ const canCreateTicket = computed(() => hasPermission(Permissions.CREATE_TICKET))
 const canCloseDay = computed(() => hasPermission(Permissions.CLOSE_DAY))
 const canViewTickets = computed(() => hasPermission(Permissions.VIEW_TICKETS))
 
-const initialRemark = computed(() => dayStore.currentDay?.cash_remark ?? undefined)
+const initialRemark = computed(
+    () => dayStore.currentDay?.cash_remark ?? undefined
+)
 
 onMounted(async () => {
     await seasonStore.fetchCurrentSeason()

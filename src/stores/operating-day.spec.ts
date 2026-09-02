@@ -194,9 +194,21 @@ describe('operatingDay store', () => {
             const day = makeDay({
                 id: 1,
                 tickets: [
-                    makeTicket({ id: 10, total: '25.00', payment_method: 'cash' }),
-                    makeTicket({ id: 11, total: '15.50', payment_method: 'twint' }),
-                    makeTicket({ id: 12, total: '10.00', payment_method: 'cash' }),
+                    makeTicket({
+                        id: 10,
+                        total: '25.00',
+                        payment_method: 'cash',
+                    }),
+                    makeTicket({
+                        id: 11,
+                        total: '15.50',
+                        payment_method: 'twint',
+                    }),
+                    makeTicket({
+                        id: 12,
+                        total: '10.00',
+                        payment_method: 'cash',
+                    }),
                     makeTicket({
                         id: 13,
                         total: '5.00',
@@ -220,9 +232,21 @@ describe('operatingDay store', () => {
             const day = makeDay({
                 id: 1,
                 tickets: [
-                    makeTicket({ id: 10, total: '25.00', payment_method: 'cash' }),
-                    makeTicket({ id: 11, total: '15.50', payment_method: 'twint' }),
-                    makeTicket({ id: 12, total: '10.00', payment_method: 'twint' }),
+                    makeTicket({
+                        id: 10,
+                        total: '25.00',
+                        payment_method: 'cash',
+                    }),
+                    makeTicket({
+                        id: 11,
+                        total: '15.50',
+                        payment_method: 'twint',
+                    }),
+                    makeTicket({
+                        id: 12,
+                        total: '10.00',
+                        payment_method: 'twint',
+                    }),
                 ],
             })
             mockFetchCurrent.mockResolvedValue({
@@ -344,7 +368,9 @@ describe('operatingDay store', () => {
             await store.fetchCurrentDay()
 
             mockUpdate.mockResolvedValue({
-                data: { data: makeDay({ id: 1, closed_at: '2026-09-02T18:00:00Z' }) },
+                data: {
+                    data: makeDay({ id: 1, closed_at: '2026-09-02T18:00:00Z' }),
+                },
                 status: 200,
                 headers: new Headers(),
             })
@@ -366,7 +392,9 @@ describe('operatingDay store', () => {
             await store.fetchCurrentDay()
 
             mockUpdate.mockResolvedValue({
-                data: { data: makeDay({ id: 1, closed_at: '2026-09-02T18:00:00Z' }) },
+                data: {
+                    data: makeDay({ id: 1, closed_at: '2026-09-02T18:00:00Z' }),
+                },
                 status: 200,
                 headers: new Headers(),
             })

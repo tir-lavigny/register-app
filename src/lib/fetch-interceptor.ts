@@ -30,7 +30,12 @@ window.fetch = async function (
     input: RequestInfo | URL,
     init?: RequestInit
 ): Promise<Response> {
-    const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url
+    const url =
+        typeof input === 'string'
+            ? input
+            : input instanceof URL
+              ? input.href
+              : input.url
 
     if (url.includes('/auth/login') || url.includes('/auth/refresh-token')) {
         return originalFetch(input, init)

@@ -1,12 +1,12 @@
 <script setup lang="ts">
+import { ArrowLeft, Check } from '@lucide/vue'
 import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { ArrowLeft, Check } from '@lucide/vue'
 import { toast } from 'vue-sonner'
 
+import PaymentSelector from '@/components/register/PaymentSelector.vue'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import PaymentSelector from '@/components/register/PaymentSelector.vue'
 import AppLayout from '@/layouts/AppLayout.vue'
 import { useOperatingDayStore } from '@/stores/operating-day'
 import { useTicketStore } from '@/stores/ticket'
@@ -21,10 +21,13 @@ const paymentMethod = computed(() => ticketStore.draft?.paymentMethod ?? null)
 const canFinalize = computed(() => ticketStore.canFinalize)
 
 const itemsWithDiscounts = computed(() =>
-  items.value.filter((i) => i.voucherDiscount && i.voucherDiscount > 0)
+    items.value.filter((i) => i.voucherDiscount && i.voucherDiscount > 0)
 )
 const totalDiscount = computed(() =>
-  itemsWithDiscounts.value.reduce((sum, i) => sum + (i.voucherDiscount ?? 0), 0)
+    itemsWithDiscounts.value.reduce(
+        (sum, i) => sum + (i.voucherDiscount ?? 0),
+        0
+    )
 )
 
 onMounted(async () => {
@@ -60,7 +63,11 @@ async function handleFinalize() {
     <AppLayout>
         <div class="flex flex-1 flex-col gap-4 p-4">
             <div class="flex items-center gap-3">
-                <Button variant="ghost" size="icon" @click="router.push('/register/ticket/summary')">
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    @click="router.push('/register/ticket/summary')"
+                >
                     <ArrowLeft class="size-5" />
                 </Button>
                 <h1 class="flex-1 text-xl font-bold">Paiement</h1>
@@ -80,10 +87,11 @@ async function handleFinalize() {
                             class="flex items-center justify-between text-sm"
                         >
                             <span class="text-green-600">
-                                {{ item.productName }} (voucher)
+                                {{ item.productName }} (bon)
                             </span>
                             <span class="font-medium text-green-600">
-                                -{{ (item.voucherDiscount ?? 0).toFixed(2) }} CHF
+                                -{{ (item.voucherDiscount ?? 0).toFixed(2) }}
+                                CHF
                             </span>
                         </div>
                         <div
@@ -99,7 +107,14 @@ async function handleFinalize() {
                         <div class="border-t pt-4">
                             <PaymentSelector
                                 :model-value="paymentMethod"
-                                @update:model-value="(v) => v && ticketStore.setPaymentMethod(v, dayStore.dayId ?? undefined)"
+                                @update:model-value="
+                                    (v) =>
+                                        v &&
+                                        ticketStore.setPaymentMethod(
+                                            v,
+                                            dayStore.dayId ?? undefined
+                                        )
+                                "
                             />
                         </div>
 

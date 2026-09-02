@@ -47,7 +47,11 @@ function computeVoucherDiscount(
     const subtotal = effectivePrice * quantity
     if (voucher.discount_percent) {
         return (
-            Math.round(subtotal * (Number.parseFloat(voucher.discount_percent) / 100) * 100) / 100
+            Math.round(
+                subtotal *
+                    (Number.parseFloat(voucher.discount_percent) / 100) *
+                    100
+            ) / 100
         )
     }
     if (voucher.discount_fixed) {
@@ -89,7 +93,10 @@ export const useTicketStore = defineStore('ticket', () => {
 
     function saveDraftToStorage(dayId: number) {
         if (draft.value) {
-            localStorage.setItem(getDraftStorageKey(dayId), JSON.stringify(draft.value))
+            localStorage.setItem(
+                getDraftStorageKey(dayId),
+                JSON.stringify(draft.value)
+            )
         }
     }
 
@@ -137,10 +144,9 @@ export const useTicketStore = defineStore('ticket', () => {
 
         const unitPrice = Number.parseFloat(product.unit_price)
         const effectivePrice = customPrice ?? unitPrice
-        const voucherDiscount =
-            voucher
-                ? computeVoucherDiscount(product, voucher, effectivePrice, quantity)
-                : null
+        const voucherDiscount = voucher
+            ? computeVoucherDiscount(product, voucher, effectivePrice, quantity)
+            : null
 
         const existingIndex = draft.value.items.findIndex(
             (i) => i.productId === product.id
@@ -167,9 +173,10 @@ export const useTicketStore = defineStore('ticket', () => {
                 customUnitPrice: customPrice ?? existing.customUnitPrice,
                 effectivePrice:
                     customPrice ?? existing.effectivePrice ?? unitPrice,
-                voucherId: voucherDiscount !== null
-                    ? (voucher?.id ?? existing.voucherId)
-                    : existing.voucherId,
+                voucherId:
+                    voucherDiscount !== null
+                        ? (voucher?.id ?? existing.voucherId)
+                        : existing.voucherId,
                 voucherDiscount: voucherDiscount ?? existing.voucherDiscount,
             }
             merged.lineTotal = computeLineTotal(merged)
@@ -187,7 +194,11 @@ export const useTicketStore = defineStore('ticket', () => {
         if (dayId !== undefined) saveDraftToStorage(dayId)
     }
 
-    function updateItemQuantity(index: number, quantity: number, dayId?: number) {
+    function updateItemQuantity(
+        index: number,
+        quantity: number,
+        dayId?: number
+    ) {
         if (!draft.value) return
         const item = draft.value.items[index]
         if (!item) return
@@ -199,7 +210,10 @@ export const useTicketStore = defineStore('ticket', () => {
         if (dayId !== undefined) saveDraftToStorage(dayId)
     }
 
-    function setPaymentMethod(method: StoreTicketRequestPaymentMethod, dayId?: number) {
+    function setPaymentMethod(
+        method: StoreTicketRequestPaymentMethod,
+        dayId?: number
+    ) {
         if (!draft.value) return
         draft.value.paymentMethod = method
         if (dayId !== undefined) saveDraftToStorage(dayId)
@@ -220,7 +234,12 @@ export const useTicketStore = defineStore('ticket', () => {
         const subtotal = item.effectivePrice * item.quantity
         let discount = 0
         if (voucher.discount_percent) {
-            discount = Math.round(subtotal * (Number.parseFloat(voucher.discount_percent) / 100) * 100) / 100
+            discount =
+                Math.round(
+                    subtotal *
+                        (Number.parseFloat(voucher.discount_percent) / 100) *
+                        100
+                ) / 100
         } else if (voucher.discount_fixed) {
             discount = Number.parseFloat(voucher.discount_fixed)
         }
@@ -269,7 +288,9 @@ export const useTicketStore = defineStore('ticket', () => {
         }
     }
 
-    async function finalizeTicket(operatingDayId: number): Promise<
+    async function finalizeTicket(
+        operatingDayId: number
+    ): Promise<
         | { success: true }
         | { success: false; error: string; errors?: Record<string, string[]> }
     > {
@@ -296,9 +317,15 @@ export const useTicketStore = defineStore('ticket', () => {
                 }
             }
 
-            return { success: false, error: 'Une erreur inattendue est survenue.' }
+            return {
+                success: false,
+                error: 'Une erreur inattendue est survenue.',
+            }
         } catch {
-            return { success: false, error: 'Une erreur inattendue est survenue.' }
+            return {
+                success: false,
+                error: 'Une erreur inattendue est survenue.',
+            }
         }
     }
 

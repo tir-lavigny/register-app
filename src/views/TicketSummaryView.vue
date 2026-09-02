@@ -1,19 +1,19 @@
 <script setup lang="ts">
+import { ArrowLeft, Tag } from '@lucide/vue'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { ArrowLeft, Tag } from '@lucide/vue'
 
+import { useRegisterMembersVouchers } from '@/api/generated/member/member'
 import type { Voucher } from '@/api/model'
+import MemberSelectDialog from '@/components/register/MemberSelectDialog.vue'
+import TicketDraftItemRow from '@/components/register/TicketDraftItemRow.vue'
+import VoucherSelectDialog from '@/components/register/VoucherSelectDialog.vue'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import MemberSelectDialog from '@/components/register/MemberSelectDialog.vue'
-import VoucherSelectDialog from '@/components/register/VoucherSelectDialog.vue'
-import TicketDraftItemRow from '@/components/register/TicketDraftItemRow.vue'
 import AppLayout from '@/layouts/AppLayout.vue'
+import { extractData } from '@/lib/utils'
 import { useOperatingDayStore } from '@/stores/operating-day'
 import { useTicketStore } from '@/stores/ticket'
-import { extractData } from '@/lib/utils'
-import { useRegisterMembersVouchers } from '@/api/generated/member/member'
 
 const router = useRouter()
 const dayStore = useOperatingDayStore()
@@ -29,19 +29,19 @@ const memberId = computed(() => ticketStore.draft?.memberId ?? 0)
 const memberName = computed(() => ticketStore.draft?.memberName)
 
 const { data: vouchersData } = useRegisterMembersVouchers(memberId.value, {
-  query: { enabled: computed(() => memberId.value > 0) },
+    query: { enabled: computed(() => memberId.value > 0) },
 })
 
 const memberVouchers = computed(() => extractData<Voucher>(vouchersData.value))
 
 const itemsWithVouchers = computed(() =>
-  items.value.map((item, index) => ({
-    ...item,
-    index,
-    availableVoucher: memberVouchers.value.find(
-      (v) => v.product_id === item.productId
-    ),
-  }))
+    items.value.map((item, index) => ({
+        ...item,
+        index,
+        availableVoucher: memberVouchers.value.find(
+            (v) => v.product_id === item.productId
+        ),
+    }))
 )
 
 onMounted(async () => {
@@ -61,7 +61,11 @@ onMounted(async () => {
 
 function handleUpdateQuantity(payload: { index: number; quantity: number }) {
     if (!dayStore.dayId) return
-    ticketStore.updateItemQuantity(payload.index, payload.quantity, dayStore.dayId)
+    ticketStore.updateItemQuantity(
+        payload.index,
+        payload.quantity,
+        dayStore.dayId
+    )
     ticketStore.fetchPreview(dayStore.dayId)
 }
 
@@ -90,7 +94,11 @@ function handleToggleVoucher(index: number) {
     } else {
         const itemWithVoucher = itemsWithVouchers.value[index]
         if (itemWithVoucher?.availableVoucher) {
-            ticketStore.applyVoucher(index, itemWithVoucher.availableVoucher, dayStore.dayId)
+            ticketStore.applyVoucher(
+                index,
+                itemWithVoucher.availableVoucher,
+                dayStore.dayId
+            )
         }
     }
     ticketStore.fetchPreview(dayStore.dayId)
@@ -129,7 +137,11 @@ function goToPayment() {
     <AppLayout>
         <div class="flex flex-1 flex-col gap-4 p-4">
             <div class="flex items-center gap-3">
-                <Button variant="ghost" size="icon" @click="router.push('/register/ticket/new')">
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    @click="router.push('/register/ticket/new')"
+                >
                     <ArrowLeft class="size-5" />
                 </Button>
                 <h1 class="flex-1 text-xl font-bold">Récapitulatif</h1>
@@ -145,7 +157,10 @@ function goToPayment() {
                             <CardTitle class="text-lg">Articles</CardTitle>
                         </CardHeader>
                         <CardContent class="flex flex-col gap-2">
-                            <div v-if="items.length === 0" class="py-8 text-center text-sm text-gray-500">
+                            <div
+                                v-if="items.length === 0"
+                                class="py-8 text-center text-sm text-gray-500"
+                            >
                                 Aucun article
                             </div>
                             <template v-else>
@@ -169,8 +184,11 @@ function goToPayment() {
                             <CardTitle class="text-lg">Vouchers</CardTitle>
                         </CardHeader>
                         <CardContent class="flex flex-col gap-2">
-                            <div v-if="memberVouchers.length === 0" class="py-4 text-center text-sm text-gray-500">
-                                Aucun voucher disponible
+                            <div
+                                v-if="memberVouchers.length === 0"
+                                class="py-4 text-center text-sm text-gray-500"
+                            >
+                                Aucun bon disponible
                             </div>
                             <template v-else>
                                 <div
@@ -178,7 +196,10 @@ function goToPayment() {
                                     :key="item.productId"
                                 >
                                     <button
-                                        v-if="item.availableVoucher && !item.voucherId"
+                                        v-if="
+                                            item.availableVoucher &&
+                                            !item.voucherId
+                                        "
                                         class="flex w-full items-center gap-2 rounded-lg border border-dashed border-green-300 bg-green-50 px-3 py-2 text-sm text-green-700 transition-colors hover:bg-green-100"
                                         @click="handleToggleVoucher(index)"
                                     >
@@ -191,7 +212,8 @@ function goToPayment() {
                                         @click="handleToggleVoucher(index)"
                                     >
                                         <Tag class="size-4" />
-                                        {{ item.productName }} — Voucher appliqué (retirer)
+                                        {{ item.productName }} — Bon appliqué
+                                        (retirer)
                                     </button>
                                 </div>
                             </template>
@@ -202,15 +224,25 @@ function goToPayment() {
                         <CardContent class="flex flex-col gap-3 pt-6">
                             <div class="flex items-center justify-between">
                                 <span class="text-sm text-gray-500">Total</span>
-                                <span class="text-lg font-bold">{{ total.toFixed(2) }} CHF</span>
+                                <span class="text-lg font-bold"
+                                    >{{ total.toFixed(2) }} CHF</span
+                                >
                             </div>
 
-                            <div class="flex items-center justify-between border-t pt-3">
+                            <div
+                                class="flex items-center justify-between border-t pt-3"
+                            >
                                 <span class="text-sm text-gray-500">
                                     Membre: {{ memberName ?? 'Aucun' }}
                                 </span>
-                                <Button variant="ghost" size="sm" @click="showMemberDialog = true">
-                                    {{ memberName ? 'Changer' : 'Sélectionner' }}
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    @click="showMemberDialog = true"
+                                >
+                                    {{
+                                        memberName ? 'Changer' : 'Sélectionner'
+                                    }}
                                 </Button>
                             </div>
 
@@ -236,7 +268,8 @@ function goToPayment() {
                 v-model:open="showVoucherDialog"
                 :member-id="ticketStore.draft?.memberId ?? 0"
                 :product-id="
-                    voucherTargetIndex >= 0 && ticketStore.draft?.items[voucherTargetIndex]
+                    voucherTargetIndex >= 0 &&
+                    ticketStore.draft?.items[voucherTargetIndex]
                         ? ticketStore.draft.items[voucherTargetIndex].productId
                         : 0
                 "

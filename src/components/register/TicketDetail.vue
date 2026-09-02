@@ -4,67 +4,68 @@ import { computed } from 'vue'
 
 import type { TicketResource } from '@/api/model'
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet'
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
+    Drawer,
+    DrawerContent,
+    DrawerHeader,
+    DrawerTitle,
 } from '@/components/ui/drawer'
+import {
+    Sheet,
+    SheetContent,
+    SheetHeader,
+    SheetTitle,
+} from '@/components/ui/sheet'
+
 import TicketDetailContent from './TicketDetailContent.vue'
 
 const props = defineProps<{
-  open: boolean
-  ticket: TicketResource | null
+    open: boolean
+    ticket: TicketResource | null
 }>()
 
 const emit = defineEmits<{
-  'update:open': [value: boolean]
+    'update:open': [value: boolean]
 }>()
 
 const isDesktop = useMediaQuery('(min-width: 768px)')
 
 const [DefineContent, ReuseContent] = createReusableTemplate<{
-  ticket: TicketResource
+    ticket: TicketResource
 }>()
 
 const title = computed(() =>
-  props.ticket ? `Ticket #${props.ticket.id}` : 'Ticket'
+    props.ticket ? `Ticket #${props.ticket.id}` : 'Ticket'
 )
 
 function handleClose() {
-  emit('update:open', false)
+    emit('update:open', false)
 }
 </script>
 
 <template>
-  <DefineContent v-slot="{ ticket }">
-    <TicketDetailContent :ticket="ticket" />
-  </DefineContent>
+    <DefineContent v-slot="{ ticket }">
+        <TicketDetailContent :ticket="ticket" />
+    </DefineContent>
 
-  <Sheet v-if="isDesktop" :open="open" @update:open="handleClose">
-    <SheetContent side="right">
-      <SheetHeader>
-        <SheetTitle>{{ title }}</SheetTitle>
-      </SheetHeader>
-      <div class="overflow-y-auto px-4 pb-4">
-        <ReuseContent v-if="ticket" :ticket="ticket" />
-      </div>
-    </SheetContent>
-  </Sheet>
+    <Sheet v-if="isDesktop" :open="open" @update:open="handleClose">
+        <SheetContent side="right">
+            <SheetHeader>
+                <SheetTitle>{{ title }}</SheetTitle>
+            </SheetHeader>
+            <div class="overflow-y-auto px-4 pb-4">
+                <ReuseContent v-if="ticket" :ticket="ticket" />
+            </div>
+        </SheetContent>
+    </Sheet>
 
-  <Drawer v-else :open="open" @update:open="handleClose">
-    <DrawerContent>
-      <DrawerHeader>
-        <DrawerTitle>{{ title }}</DrawerTitle>
-      </DrawerHeader>
-      <div class="overflow-y-auto px-4 pb-4">
-        <ReuseContent v-if="ticket" :ticket="ticket" />
-      </div>
-    </DrawerContent>
-  </Drawer>
+    <Drawer v-else :open="open" @update:open="handleClose">
+        <DrawerContent>
+            <DrawerHeader>
+                <DrawerTitle>{{ title }}</DrawerTitle>
+            </DrawerHeader>
+            <div class="overflow-y-auto px-4 pb-4">
+                <ReuseContent v-if="ticket" :ticket="ticket" />
+            </div>
+        </DrawerContent>
+    </Drawer>
 </template>

@@ -1,27 +1,27 @@
 <script setup lang="ts">
+import { ArrowLeft, ShoppingCart } from '@lucide/vue'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { ArrowLeft, ShoppingCart } from '@lucide/vue'
 import { toast } from 'vue-sonner'
 
 import type { Product } from '@/api/model'
-import type { TicketDraft } from '@/stores/ticket'
-import { Button } from '@/components/ui/button'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
 import ProductGrid from '@/components/register/ProductGrid.vue'
 import QuantityDialog from '@/components/register/QuantityDialog.vue'
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+import { Button } from '@/components/ui/button'
 import AppLayout from '@/layouts/AppLayout.vue'
-import { hasPermission, Permissions } from '@/lib/permissions'
+import { Permissions, hasPermission } from '@/lib/permissions'
 import { useOperatingDayStore } from '@/stores/operating-day'
+import type { TicketDraft } from '@/stores/ticket'
 import { useTicketStore } from '@/stores/ticket'
 
 const router = useRouter()
@@ -35,8 +35,12 @@ const hasRestoredDraft = ref(false)
 const savedDraft = ref<TicketDraft | null>(null)
 
 const items = computed(() => ticketStore.draft?.items ?? [])
-const itemCount = computed(() => items.value.reduce((sum, i) => sum + i.quantity, 0))
-const draftTotal = computed(() => items.value.reduce((sum, i) => sum + i.lineTotal, 0))
+const itemCount = computed(() =>
+    items.value.reduce((sum, i) => sum + i.quantity, 0)
+)
+const draftTotal = computed(() =>
+    items.value.reduce((sum, i) => sum + i.lineTotal, 0)
+)
 
 const savedDraftSummary = computed(() => {
     if (!savedDraft.value) return ''
@@ -117,14 +121,21 @@ function goToSummary() {
                 <AlertDialogHeader>
                     <AlertDialogTitle>Ticket en cours</AlertDialogTitle>
                     <AlertDialogDescription>
-                        Vous avez un ticket non terminé. Voulez-vous le reprendre ?
+                        Vous avez un ticket non terminé. Voulez-vous le
+                        reprendre ?
                     </AlertDialogDescription>
                 </AlertDialogHeader>
-                <div v-if="savedDraftSummary" class="rounded-md bg-muted px-4 py-3 text-sm text-muted-foreground">
+                <div
+                    v-if="savedDraftSummary"
+                    class="rounded-md bg-muted px-4 py-3 text-sm text-muted-foreground"
+                >
                     {{ savedDraftSummary }}
                 </div>
                 <AlertDialogFooter>
-                    <AlertDialogCancel class="bg-destructive text-destructive-foreground hover:bg-destructive/90" @click="handleDiscardDraft">
+                    <AlertDialogCancel
+                        class="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        @click="handleDiscardDraft"
+                    >
                         Nouveau ticket
                     </AlertDialogCancel>
                     <AlertDialogAction @click="handleRestoreDraft">
@@ -136,7 +147,11 @@ function goToSummary() {
 
         <div class="flex flex-1 flex-col gap-4 p-4">
             <div class="flex items-center gap-3">
-                <Button variant="ghost" size="icon" @click="router.push('/register')">
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    @click="router.push('/register')"
+                >
                     <ArrowLeft class="size-5" />
                 </Button>
                 <h1 class="flex-1 text-xl font-bold">Nouveau ticket</h1>
@@ -157,7 +172,8 @@ function goToSummary() {
                 @click="goToSummary"
             >
                 <ShoppingCart class="mr-2 size-5" />
-                {{ itemCount }} article{{ itemCount > 1 ? 's' : '' }} — {{ draftTotal.toFixed(2) }} CHF
+                {{ itemCount }} article{{ itemCount > 1 ? 's' : '' }} —
+                {{ draftTotal.toFixed(2) }} CHF
             </Button>
         </div>
     </AppLayout>

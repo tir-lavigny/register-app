@@ -89,9 +89,7 @@ describe('season store', () => {
         })
 
         it('sets error on network failure', async () => {
-            mockFetchCurrentSeason.mockRejectedValue(
-                new Error('Network error')
-            )
+            mockFetchCurrentSeason.mockRejectedValue(new Error('Network error'))
 
             await store.fetchCurrentSeason()
 
@@ -101,7 +99,14 @@ describe('season store', () => {
 
         it('sets loading to true during fetch and false after', async () => {
             mockFetchCurrentSeason.mockResolvedValue({
-                data: { data: { id: 1, name: 'S1', start_date: '2026-01-01', end_date: '2026-12-31' } },
+                data: {
+                    data: {
+                        id: 1,
+                        name: 'S1',
+                        start_date: '2026-01-01',
+                        end_date: '2026-12-31',
+                    },
+                },
                 status: 200,
                 headers: new Headers(),
             })

@@ -25,7 +25,7 @@ export const useSeasonStore = defineStore('season', () => {
 
             if (response.status === 404) {
                 error.value =
-                    'Aucune saison active. Veuillez demander à un administrateur d\'en créer une.'
+                    "Aucune saison active. Veuillez demander à un administrateur d'en créer une."
                 currentSeason.value = null
                 return
             }

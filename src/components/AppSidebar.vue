@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import { ChevronUp, User2 } from '@lucide/vue'
+import { computed } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-
-import { hasPermission, Permissions } from '@/lib/permissions'
 
 import {
     DropdownMenu,
@@ -24,6 +22,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar'
+import { Permissions, hasPermission } from '@/lib/permissions'
 
 import AppLogoIcon from './AppLogoIcon.vue'
 
@@ -45,9 +44,15 @@ const navMain = computed<NavItem[]>(() => [
         title: 'Caisse',
         url: '/register',
         items: [
-            ...(canViewRegister.value ? [{ title: 'Tableau de bord', url: '/register' }] : []),
-            ...(canCreateTicket.value ? [{ title: 'Nouveau ticket', url: '/register/ticket/new' }] : []),
-            ...(canViewTickets.value ? [{ title: 'Tickets du jour', url: '/register/tickets' }] : []),
+            ...(canViewRegister.value
+                ? [{ title: 'Tableau de bord', url: '/register' }]
+                : []),
+            ...(canCreateTicket.value
+                ? [{ title: 'Nouveau ticket', url: '/register/ticket/new' }]
+                : []),
+            ...(canViewTickets.value
+                ? [{ title: 'Tickets du jour', url: '/register/tickets' }]
+                : []),
         ],
     },
 ])
@@ -83,19 +88,19 @@ const navMain = computed<NavItem[]>(() => [
                 <SidebarGroupLabel>{{ item.title }}</SidebarGroupLabel>
                 <SidebarGroupContent>
                     <SidebarMenu>
-                            <SidebarMenuItem
-                                v-for="childItem in item.items"
-                                :key="childItem.title"
+                        <SidebarMenuItem
+                            v-for="childItem in item.items"
+                            :key="childItem.title"
+                        >
+                            <SidebarMenuButton
+                                as-child
+                                :is-active="route.path === childItem.url"
                             >
-                                <SidebarMenuButton
-                                    as-child
-                                    :is-active="route.path === childItem.url"
-                                >
-                                    <RouterLink :to="childItem.url">{{
-                                        childItem.title
-                                    }}</RouterLink>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
+                                <RouterLink :to="childItem.url">{{
+                                    childItem.title
+                                }}</RouterLink>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
                     </SidebarMenu>
                 </SidebarGroupContent>
             </SidebarGroup>

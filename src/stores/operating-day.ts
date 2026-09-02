@@ -7,10 +7,7 @@ import {
     registerOperatingDaysStore,
     registerOperatingDaysUpdate,
 } from '@/api/generated/operating-day/operating-day'
-import type {
-    OperatingDayResource,
-    UpdateDayRequestStatus,
-} from '@/api/model'
+import type { OperatingDayResource, UpdateDayRequestStatus } from '@/api/model'
 
 export const useOperatingDayStore = defineStore('operatingDay', () => {
     const currentDay = ref<OperatingDayResource | null>(null)
@@ -68,7 +65,9 @@ export const useOperatingDayStore = defineStore('operatingDay', () => {
 
         loading.value = true
         try {
-            const response = await registerOperatingDaysStore({ season_id: seasonId })
+            const response = await registerOperatingDaysStore({
+                season_id: seasonId,
+            })
 
             if (response.status === 201) {
                 currentDay.value = response.data.data
@@ -83,9 +82,15 @@ export const useOperatingDayStore = defineStore('operatingDay', () => {
                 }
             }
 
-            return { success: false, error: 'Une erreur inattendue est survenue.' }
+            return {
+                success: false,
+                error: 'Une erreur inattendue est survenue.',
+            }
         } catch {
-            return { success: false, error: 'Une erreur inattendue est survenue.' }
+            return {
+                success: false,
+                error: 'Une erreur inattendue est survenue.',
+            }
         } finally {
             loading.value = false
         }
@@ -114,17 +119,22 @@ export const useOperatingDayStore = defineStore('operatingDay', () => {
                 return { success: true, data: closedDay }
             }
 
-            return { success: false, error: 'Une erreur inattendue est survenue.' }
+            return {
+                success: false,
+                error: 'Une erreur inattendue est survenue.',
+            }
         } catch {
-            return { success: false, error: 'Une erreur inattendue est survenue.' }
+            return {
+                success: false,
+                error: 'Une erreur inattendue est survenue.',
+            }
         } finally {
             loading.value = false
         }
     }
 
     async function reopenDay(): Promise<
-        | { success: true }
-        | { success: false; error: string }
+        { success: true } | { success: false; error: string }
     > {
         if (!dayId.value) {
             return { success: false, error: 'Aucune journée refermée.' }
@@ -141,9 +151,15 @@ export const useOperatingDayStore = defineStore('operatingDay', () => {
                 return { success: true }
             }
 
-            return { success: false, error: 'Une erreur inattendue est survenue.' }
+            return {
+                success: false,
+                error: 'Une erreur inattendue est survenue.',
+            }
         } catch {
-            return { success: false, error: 'Une erreur inattendue est survenue.' }
+            return {
+                success: false,
+                error: 'Une erreur inattendue est survenue.',
+            }
         } finally {
             loading.value = false
         }
