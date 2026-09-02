@@ -38,7 +38,7 @@ const handleSubmit = async () => {
     loading.value = false
 
     if (result.success) {
-        const redirect = (route.query.redirect as string) || '/'
+        const redirect = (route.query.redirect as string) || '/register'
         router.push(redirect)
     } else {
         error.value = result.error
