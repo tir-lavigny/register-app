@@ -10,18 +10,15 @@ import DaySummaryCard from '@/components/register/DaySummaryCard.vue'
 import NoSeasonBanner from '@/components/register/NoSeasonBanner.vue'
 import OpenDayDialog from '@/components/register/OpenDayDialog.vue'
 import ReopenDayDialog from '@/components/register/ReopenDayDialog.vue'
-import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import AppLayout from '@/layouts/AppLayout.vue'
 import { Permissions, hasPermission } from '@/lib/permissions'
-import { useAuthStore } from '@/stores/auth'
 import { useOperatingDayStore } from '@/stores/operating-day'
 import { useSeasonStore } from '@/stores/season'
 
 const router = useRouter()
 const seasonStore = useSeasonStore()
 const dayStore = useOperatingDayStore()
-const authStore = useAuthStore()
 
 const showOpenDialog = ref(false)
 const showCloseDialog = ref(false)
@@ -41,20 +38,6 @@ onMounted(async () => {
         await dayStore.fetchCurrentDay()
     }
 })
-
-async function debugTestRefresh() {
-    console.log('[DEBUG] Token before:', authStore.accessToken?.substring(0, 20) + '...')
-    console.log('[DEBUG] User before:', authStore.user?.name)
-    console.log('[DEBUG] Calling /auth/register/seasons/current to trigger potential 401...')
-    try {
-        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/register/seasons/current`)
-        console.log('[DEBUG] Response status:', res.status)
-    } catch (e) {
-        console.log('[DEBUG] Error:', e)
-    }
-    console.log('[DEBUG] Token after:', authStore.accessToken?.substring(0, 20) + '...')
-    console.log('[DEBUG] User after:', authStore.user?.name)
-}
 </script>
 
 <template>
@@ -129,10 +112,6 @@ async function debugTestRefresh() {
                 :initial-remark="initialRemark"
             />
             <ReopenDayDialog v-model:open="showReopenDialog" />
-
-            <Button variant="outline" size="sm" class="mt-4" @click="debugTestRefresh">
-                [DEBUG] Test Refresh Token
-            </Button>
         </div>
     </AppLayout>
 </template>

@@ -5,24 +5,17 @@ const originalFetch = window.fetch
 let refreshPromise: Promise<boolean> | null = null
 
 async function tryRefreshToken(): Promise<boolean> {
-    console.log('[Auth] Attempting token refresh...')
     const res = await originalFetch(
         `${import.meta.env.VITE_API_BASE_URL}/auth/refresh-token`,
         { method: 'POST', credentials: 'include' }
     )
 
-    console.log('[Auth] Refresh response status:', res.status)
-
     if (res.ok) {
         const body = await res.json()
         if (body.accessToken) {
-            console.log('[Auth] Refresh successful, new token received')
             localStorage.setItem(AUTH_STORAGE_KEY, body.accessToken)
             return true
         }
-        console.log('[Auth] Refresh response missing accessToken')
-    } else {
-        console.log('[Auth] Refresh failed:', res.status)
     }
 
     return false
