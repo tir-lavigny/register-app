@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Tag, X } from '@lucide/vue'
+
 import { Button } from '@/components/ui/button'
 import type { TicketDraftItem } from '@/stores/ticket'
 
@@ -74,7 +75,7 @@ function decrementQty(index: number, qty: number) {
             size="icon"
             class="min-h-11 min-w-11 text-destructive"
             @click="emit('remove', index)"
-            ><X class="size-4" /></Button
-        >
+            ><X class="size-4"
+        /></Button>
     </div>
 </template>

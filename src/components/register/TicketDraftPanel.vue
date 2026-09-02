@@ -82,7 +82,9 @@ const emit = defineEmits<{
 
             <div class="border-t pt-3">
                 <div class="flex items-center justify-between">
-                    <span class="text-sm font-medium text-muted-foreground">Total</span>
+                    <span class="text-sm font-medium text-muted-foreground"
+                        >Total</span
+                    >
                     <span class="text-lg font-bold"
                         >{{ total.toFixed(2) }} CHF</span
                     >

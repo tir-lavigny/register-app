@@ -70,7 +70,9 @@ function handleClear() {
                     v-if="isLoading"
                     class="flex items-center justify-center py-4"
                 >
-                    <span class="text-sm text-muted-foreground">Chargement...</span>
+                    <span class="text-sm text-muted-foreground"
+                        >Chargement...</span
+                    >
                 </div>
 
                 <div v-else class="max-h-80 overflow-y-auto">

@@ -117,7 +117,9 @@ function handleCancel() {
 
             <div class="flex flex-col gap-4">
                 <div class="flex items-center justify-between">
-                    <span class="text-sm text-muted-foreground">Prix unitaire</span>
+                    <span class="text-sm text-muted-foreground"
+                        >Prix unitaire</span
+                    >
                     <span class="text-sm font-medium">{{
                         formatPrice(product?.unit_price ?? '0')
                     }}</span>
@@ -223,7 +225,9 @@ function handleCancel() {
                 </div>
 
                 <div class="flex items-center justify-between border-t pt-3">
-                    <span class="text-sm font-medium text-muted-foreground">Total</span>
+                    <span class="text-sm font-medium text-muted-foreground"
+                        >Total</span
+                    >
                     <span class="text-lg font-bold"
                         >{{ lineTotal.toFixed(2) }} CHF</span
                     >

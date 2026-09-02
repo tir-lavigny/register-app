@@ -223,7 +223,9 @@ function goToPayment() {
                     <Card>
                         <CardContent class="flex flex-col gap-3 pt-6">
                             <div class="flex items-center justify-between">
-                                <span class="text-sm text-muted-foreground">Total</span>
+                                <span class="text-sm text-muted-foreground"
+                                    >Total</span
+                                >
                                 <span class="text-lg font-bold"
                                     >{{ total.toFixed(2) }} CHF</span
                                 >
