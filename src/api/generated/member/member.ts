@@ -19,8 +19,126 @@ import type { MaybeRefOrGetter } from 'vue'
 import type {
     AuthenticationExceptionResponse,
     ModelNotFoundExceptionResponse,
+    RegisterMembersIndex200,
     RegisterMembersVouchers200,
 } from '../../model'
+
+export type registerMembersIndexResponse200 = {
+    data: RegisterMembersIndex200
+    status: 200
+}
+
+export type registerMembersIndexResponse401 = {
+    data: AuthenticationExceptionResponse
+    status: 401
+}
+
+export type registerMembersIndexResponseSuccess =
+    registerMembersIndexResponse200 & {
+        headers: Headers
+    }
+export type registerMembersIndexResponseError =
+    registerMembersIndexResponse401 & {
+        headers: Headers
+    }
+
+export type registerMembersIndexResponse =
+    registerMembersIndexResponseSuccess | registerMembersIndexResponseError
+
+export const getRegisterMembersIndexUrl = () => {
+    return `${import.meta.env.VITE_API_BASE_URL}/register/members`
+}
+
+export const registerMembersIndex = async (
+    options?: RequestInit
+): Promise<registerMembersIndexResponse> => {
+    const res = await fetch(getRegisterMembersIndexUrl(), {
+        ...options,
+        method: 'GET',
+    })
+
+    const body = [204, 205, 304].includes(res.status) ? null : await res.text()
+
+    const data: registerMembersIndexResponse['data'] = body
+        ? JSON.parse(body)
+        : {}
+    return {
+        data,
+        status: res.status,
+        headers: res.headers,
+    } as registerMembersIndexResponse
+}
+
+export const getRegisterMembersIndexQueryKey = () => {
+    return [import.meta.env.VITE_API_BASE_URL, 'register', 'members'] as const
+}
+
+export const getRegisterMembersIndexQueryOptions = <
+    TData = Awaited<ReturnType<typeof registerMembersIndex>>,
+    TError = AuthenticationExceptionResponse,
+>(options?: {
+    query?: Partial<
+        UseQueryOptions<
+            Awaited<ReturnType<typeof registerMembersIndex>>,
+            TError,
+            TData
+        >
+    >
+    fetch?: RequestInit
+}) => {
+    const { query: queryOptions, fetch: fetchOptions } = options ?? {}
+
+    const queryKey = getRegisterMembersIndexQueryKey()
+
+    const queryFn: QueryFunction<
+        Awaited<ReturnType<typeof registerMembersIndex>>
+    > = ({ signal }) => registerMembersIndex({ signal, ...fetchOptions })
+
+    return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+        Awaited<ReturnType<typeof registerMembersIndex>>,
+        TError,
+        TData
+    >
+}
+
+export type RegisterMembersIndexQueryResult = NonNullable<
+    Awaited<ReturnType<typeof registerMembersIndex>>
+>
+export type RegisterMembersIndexQueryError = AuthenticationExceptionResponse
+
+export function useRegisterMembersIndex<
+    TData = Awaited<ReturnType<typeof registerMembersIndex>>,
+    TError = AuthenticationExceptionResponse,
+>(
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<ReturnType<typeof registerMembersIndex>>,
+                TError,
+                TData
+            >
+        >
+        fetch?: RequestInit
+    },
+    queryClient?: QueryClient
+): UseQueryReturnType<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+} {
+    const queryOptions = getRegisterMembersIndexQueryOptions(options)
+
+    const query = useQuery(queryOptions, queryClient) as UseQueryReturnType<
+        TData,
+        TError
+    > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+    query.queryKey = unref(queryOptions).queryKey as DataTag<
+        QueryKey,
+        TData,
+        TError
+    >
+
+    return query
+}
 
 export type registerMembersVouchersResponse200 = {
     data: RegisterMembersVouchers200

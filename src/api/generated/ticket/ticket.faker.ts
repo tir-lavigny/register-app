@@ -7,6 +7,7 @@
 import { faker } from '@faker-js/faker'
 
 import type {
+    RegisterTicketsPreview200,
     RegisterTicketsShow200,
     RegisterTicketsStore201,
 } from '../../model'
@@ -34,6 +35,23 @@ export const getRegisterTicketsStoreResponseMock = (
         member_id: faker.helpers.arrayElement([faker.number.int(), null]),
         sold_at: faker.date.past().toISOString().slice(0, 19) + 'Z',
     },
+    ...overrideResponse,
+})
+
+export const getRegisterTicketsPreviewResponseMock = (
+    overrideResponse: Partial<Extract<RegisterTicketsPreview200, object>> = {}
+): RegisterTicketsPreview200 => ({
+    total: faker.number.int(),
+    items: Array.from(
+        { length: faker.number.int({ min: 1, max: 10 }) },
+        (_, i) => i + 1
+    ).map(() => ({
+        product_id: faker.number.int(),
+        voucher_id: faker.number.int(),
+        quantity: faker.string.alpha({ length: { min: 10, max: 20 } }),
+        unit_price: faker.string.alpha({ length: { min: 10, max: 20 } }),
+        subtotal: faker.string.alpha({ length: { min: 10, max: 20 } }),
+    })),
     ...overrideResponse,
 })
 

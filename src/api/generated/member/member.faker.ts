@@ -6,7 +6,24 @@
  */
 import { faker } from '@faker-js/faker'
 
-import type { RegisterMembersVouchers200 } from '../../model'
+import type {
+    RegisterMembersIndex200,
+    RegisterMembersVouchers200,
+} from '../../model'
+
+export const getRegisterMembersIndexResponseMock = (
+    overrideResponse: Partial<Extract<RegisterMembersIndex200, object>> = {}
+): RegisterMembersIndex200 => ({
+    data: Array.from(
+        { length: faker.number.int({ min: 1, max: 10 }) },
+        (_, i) => i + 1
+    ).map(() => ({
+        id: faker.number.int(),
+        first_name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+        last_name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+    })),
+    ...overrideResponse,
+})
 
 export const getRegisterMembersVouchersResponseMock = (
     overrideResponse: Partial<Extract<RegisterMembersVouchers200, object>> = {}

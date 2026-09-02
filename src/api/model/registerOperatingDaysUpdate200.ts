@@ -4,8 +4,8 @@
  * Tir Lavigny
  * OpenAPI spec version: 0.0.1
  */
-import type { OperatingDay } from './operatingDay'
+import type { OperatingDayResource } from './operatingDayResource'
 
 export type RegisterOperatingDaysUpdate200 = {
-    data: OperatingDay | null
+    data: OperatingDayResource
 }

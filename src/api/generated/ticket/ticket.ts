@@ -23,6 +23,7 @@ import type {
     AuthenticationExceptionResponse,
     AuthorizationExceptionResponse,
     ModelNotFoundExceptionResponse,
+    RegisterTicketsPreview200,
     RegisterTicketsShow200,
     RegisterTicketsStore201,
     StoreTicketRequest,
@@ -181,6 +182,163 @@ export const useRegisterTicketsStore = <
 > => {
     return useMutation(
         getRegisterTicketsStoreMutationOptions(options),
+        queryClient
+    )
+}
+export type registerTicketsPreviewResponse200 = {
+    data: RegisterTicketsPreview200
+    status: 200
+}
+
+export type registerTicketsPreviewResponse401 = {
+    data: AuthenticationExceptionResponse
+    status: 401
+}
+
+export type registerTicketsPreviewResponse403 = {
+    data: AuthorizationExceptionResponse
+    status: 403
+}
+
+export type registerTicketsPreviewResponse422 = {
+    data: ValidationExceptionResponse
+    status: 422
+}
+
+export type registerTicketsPreviewResponseSuccess =
+    registerTicketsPreviewResponse200 & {
+        headers: Headers
+    }
+export type registerTicketsPreviewResponseError = (
+    | registerTicketsPreviewResponse401
+    | registerTicketsPreviewResponse403
+    | registerTicketsPreviewResponse422
+) & {
+    headers: Headers
+}
+
+export type registerTicketsPreviewResponse =
+    registerTicketsPreviewResponseSuccess | registerTicketsPreviewResponseError
+
+export const getRegisterTicketsPreviewUrl = () => {
+    return `${import.meta.env.VITE_API_BASE_URL}/register/tickets/preview`
+}
+
+export const registerTicketsPreview = async (
+    storeTicketRequest: StoreTicketRequest,
+    options?: RequestInit
+): Promise<registerTicketsPreviewResponse> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit['headers']>
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {}
+        if (h instanceof Headers) return Object.fromEntries(h.entries())
+        if (Array.isArray(h)) return Object.fromEntries(h)
+        return h
+    }
+    const res = await fetch(getRegisterTicketsPreviewUrl(), {
+        ...options,
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            ...getHeaders(options?.headers),
+        },
+        body: JSON.stringify(storeTicketRequest),
+    })
+
+    const body = [204, 205, 304].includes(res.status) ? null : await res.text()
+
+    const data: registerTicketsPreviewResponse['data'] = body
+        ? JSON.parse(body)
+        : {}
+    return {
+        data,
+        status: res.status,
+        headers: res.headers,
+    } as registerTicketsPreviewResponse
+}
+
+export const getRegisterTicketsPreviewMutationKey = () =>
+    ['registerTicketsPreview'] as const
+
+export const getRegisterTicketsPreviewMutationOptions = <
+    TError =
+        | AuthenticationExceptionResponse
+        | AuthorizationExceptionResponse
+        | ValidationExceptionResponse,
+    TContext = unknown,
+>(options?: {
+    mutation?: UseMutationOptions<
+        Awaited<ReturnType<typeof registerTicketsPreview>>,
+        TError,
+        RegisterTicketsPreviewMutationVariables,
+        TContext
+    >
+    fetch?: RequestInit
+}): UseMutationOptions<
+    Awaited<ReturnType<typeof registerTicketsPreview>>,
+    TError,
+    RegisterTicketsPreviewMutationVariables,
+    TContext
+> => {
+    const mutationKey = getRegisterTicketsPreviewMutationKey()
+    const { mutation: mutationOptions, fetch: fetchOptions } = options
+        ? options.mutation &&
+          'mutationKey' in options.mutation &&
+          options.mutation.mutationKey
+            ? options
+            : { ...options, mutation: { ...options.mutation, mutationKey } }
+        : { mutation: { mutationKey }, fetch: undefined }
+
+    const mutationFn: MutationFunction<
+        Awaited<ReturnType<typeof registerTicketsPreview>>,
+        RegisterTicketsPreviewMutationVariables
+    > = (props) => {
+        const { data } = props ?? {}
+
+        return registerTicketsPreview(data, fetchOptions)
+    }
+
+    return { mutationFn, ...mutationOptions }
+}
+
+export type RegisterTicketsPreviewMutationResult = NonNullable<
+    Awaited<ReturnType<typeof registerTicketsPreview>>
+>
+export type RegisterTicketsPreviewMutationBody = StoreTicketRequest
+export type RegisterTicketsPreviewMutationError =
+    | AuthenticationExceptionResponse
+    | AuthorizationExceptionResponse
+    | ValidationExceptionResponse
+export type RegisterTicketsPreviewMutationVariables = {
+    data: StoreTicketRequest
+}
+
+export const useRegisterTicketsPreview = <
+    TError =
+        | AuthenticationExceptionResponse
+        | AuthorizationExceptionResponse
+        | ValidationExceptionResponse,
+    TContext = unknown,
+>(
+    options?: {
+        mutation?: UseMutationOptions<
+            Awaited<ReturnType<typeof registerTicketsPreview>>,
+            TError,
+            RegisterTicketsPreviewMutationVariables,
+            TContext
+        >
+        fetch?: RequestInit
+    },
+    queryClient?: QueryClient
+): UseMutationReturnType<
+    Awaited<ReturnType<typeof registerTicketsPreview>>,
+    TError,
+    RegisterTicketsPreviewMutationVariables,
+    TContext
+> => {
+    return useMutation(
+        getRegisterTicketsPreviewMutationOptions(options),
         queryClient
     )
 }

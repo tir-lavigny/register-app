@@ -7,10 +7,43 @@
 import { HttpResponse, http } from 'msw'
 import type { RequestHandlerOptions } from 'msw'
 
-import type { RegisterMembersVouchers200 } from '../../model'
-import { getRegisterMembersVouchersResponseMock } from './member.faker'
+import type {
+    RegisterMembersIndex200,
+    RegisterMembersVouchers200,
+} from '../../model'
+import {
+    getRegisterMembersIndexResponseMock,
+    getRegisterMembersVouchersResponseMock,
+} from './member.faker'
 
-export { getRegisterMembersVouchersResponseMock } from './member.faker'
+export {
+    getRegisterMembersIndexResponseMock,
+    getRegisterMembersVouchersResponseMock,
+} from './member.faker'
+
+export const getRegisterMembersIndexMockHandler = (
+    overrideResponse?:
+        | RegisterMembersIndex200
+        | ((
+              info: Parameters<Parameters<typeof http.get>[1]>[0]
+          ) => Promise<RegisterMembersIndex200> | RegisterMembersIndex200),
+    options?: RequestHandlerOptions
+) => {
+    return http.get(
+        '*/register/members',
+        async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+            return HttpResponse.json(
+                overrideResponse !== undefined
+                    ? typeof overrideResponse === 'function'
+                        ? await overrideResponse(info)
+                        : overrideResponse
+                    : getRegisterMembersIndexResponseMock(),
+                { status: 200 }
+            )
+        },
+        options
+    )
+}
 
 export const getRegisterMembersVouchersMockHandler = (
     overrideResponse?:
@@ -36,4 +69,7 @@ export const getRegisterMembersVouchersMockHandler = (
         options
     )
 }
-export const getMemberMock = () => [getRegisterMembersVouchersMockHandler()]
+export const getMemberMock = () => [
+    getRegisterMembersIndexMockHandler(),
+    getRegisterMembersVouchersMockHandler(),
+]

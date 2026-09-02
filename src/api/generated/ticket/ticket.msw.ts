@@ -8,16 +8,19 @@ import { HttpResponse, http } from 'msw'
 import type { RequestHandlerOptions } from 'msw'
 
 import type {
+    RegisterTicketsPreview200,
     RegisterTicketsShow200,
     RegisterTicketsStore201,
 } from '../../model'
 import {
+    getRegisterTicketsPreviewResponseMock,
     getRegisterTicketsShowResponseMock,
     getRegisterTicketsStoreResponseMock,
 } from './ticket.faker'
 
 export {
     getRegisterTicketsStoreResponseMock,
+    getRegisterTicketsPreviewResponseMock,
     getRegisterTicketsShowResponseMock,
 } from './ticket.faker'
 
@@ -39,6 +42,30 @@ export const getRegisterTicketsStoreMockHandler = (
                         : overrideResponse
                     : getRegisterTicketsStoreResponseMock(),
                 { status: 201 }
+            )
+        },
+        options
+    )
+}
+
+export const getRegisterTicketsPreviewMockHandler = (
+    overrideResponse?:
+        | RegisterTicketsPreview200
+        | ((
+              info: Parameters<Parameters<typeof http.post>[1]>[0]
+          ) => Promise<RegisterTicketsPreview200> | RegisterTicketsPreview200),
+    options?: RequestHandlerOptions
+) => {
+    return http.post(
+        '*/register/tickets/preview',
+        async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
+            return HttpResponse.json(
+                overrideResponse !== undefined
+                    ? typeof overrideResponse === 'function'
+                        ? await overrideResponse(info)
+                        : overrideResponse
+                    : getRegisterTicketsPreviewResponseMock(),
+                { status: 200 }
             )
         },
         options
@@ -70,5 +97,6 @@ export const getRegisterTicketsShowMockHandler = (
 }
 export const getTicketMock = () => [
     getRegisterTicketsStoreMockHandler(),
+    getRegisterTicketsPreviewMockHandler(),
     getRegisterTicketsShowMockHandler(),
 ]
