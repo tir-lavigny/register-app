@@ -38,6 +38,9 @@
     --color-card: var(--card);
     --color-foreground: var(--foreground);
     --color-background: var(--background);
+    --color-success: var(--success);
+    --color-success-foreground: var(--success-foreground);
+    --color-success-subtle: var(--success-subtle);
     --radius-sm: calc(var(--radius) - 4px);
     --radius-md: calc(var(--radius) - 2px);
     --radius-lg: var(--radius);
@@ -83,6 +86,10 @@
     --warning: hsl(27 96% 61%);
     --warning-foreground: hsl(21 90% 48%);
     --warning-subtle: hsl(33 100% 97%);
+
+    --success: hsl(142 76% 36%);
+    --success-foreground: hsl(355 7% 97%);
+    --success-subtle: hsl(141 78% 95%);
 }
 
 .dark {
@@ -123,6 +130,10 @@
     --warning: hsl(24 95% 53%);
     --warning-foreground: hsl(27 96% 61%);
     --warning-subtle: hsl(22 78% 10%);
+
+    --success: hsl(142 71% 45%);
+    --success-foreground: hsl(144 80% 10%);
+    --success-subtle: hsl(142 71% 15%);
 }
 
 @layer base {
