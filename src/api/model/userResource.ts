@@ -4,8 +4,11 @@
  * Tir Lavigny
  * OpenAPI spec version: 0.0.1
  */
+import type { RoleResource } from './roleResource'
 
 export interface UserResource {
     id: number
+    name: string
     email: string
+    roles: RoleResource[]
 }

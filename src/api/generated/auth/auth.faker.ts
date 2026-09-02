@@ -15,7 +15,20 @@ export const getLoginResponseMock = (
     user: faker.helpers.arrayElement([
         {
             id: faker.number.int(),
+            name: faker.string.alpha({ length: { min: 10, max: 20 } }),
             email: faker.string.alpha({ length: { min: 10, max: 20 } }),
+            roles: Array.from(
+                { length: faker.number.int({ min: 1, max: 10 }) },
+                (_, i) => i + 1
+            ).map(() => ({
+                name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+                permissions: Array.from(
+                    { length: faker.number.int({ min: 1, max: 10 }) },
+                    (_, i) => i + 1
+                ).map(() => ({
+                    name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+                })),
+            })),
         },
         null,
     ]),
@@ -29,7 +42,20 @@ export const getRefreshResponseMock = (
     user: faker.helpers.arrayElement([
         {
             id: faker.number.int(),
+            name: faker.string.alpha({ length: { min: 10, max: 20 } }),
             email: faker.string.alpha({ length: { min: 10, max: 20 } }),
+            roles: Array.from(
+                { length: faker.number.int({ min: 1, max: 10 }) },
+                (_, i) => i + 1
+            ).map(() => ({
+                name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+                permissions: Array.from(
+                    { length: faker.number.int({ min: 1, max: 10 }) },
+                    (_, i) => i + 1
+                ).map(() => ({
+                    name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+                })),
+            })),
         },
         null,
     ]),
