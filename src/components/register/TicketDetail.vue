@@ -43,8 +43,8 @@ function handleClose() {
 </script>
 
 <template>
-    <DefineContent v-slot="{ ticket }">
-        <TicketDetailContent :ticket="ticket" />
+    <DefineContent v-slot="{ ticket: slotTicket }">
+        <TicketDetailContent :ticket="slotTicket" />
     </DefineContent>
 
     <Sheet v-if="isDesktop" :open="open" @update:open="handleClose">

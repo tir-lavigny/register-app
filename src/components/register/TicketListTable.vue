@@ -4,7 +4,7 @@ import { Tag } from '@lucide/vue'
 import type { TicketResource } from '@/api/model'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
-const props = defineProps<{
+defineProps<{
     tickets: TicketResource[]
     cashTotal: number
     twintTotal: number
