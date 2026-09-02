@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import type { Voucher } from '@/api/model'
 import { useRegisterMembersVouchers } from '@/api/generated/member/member'
 import { Button } from '@/components/ui/button'
+import { extractData } from '@/lib/utils'
 import {
   Dialog,
   DialogContent,
@@ -26,16 +27,8 @@ const { data: vouchersData, isLoading } = useRegisterMembersVouchers(props.membe
   query: { enabled: computed(() => props.open && props.memberId > 0) },
 })
 
-function extractArray<T>(val: unknown, key: string): T[] {
-  if (val && typeof val === 'object' && key in val) {
-    const arr = (val as Record<string, unknown>)[key]
-    if (Array.isArray(arr)) return arr as T[]
-  }
-  return []
-}
-
 const vouchers = computed(() => {
-  const all = extractArray<Voucher>(vouchersData.value, 'data')
+  const all = extractData<Voucher>(vouchersData.value)
   return all.filter((v) => v.product_id === props.productId)
 })
 

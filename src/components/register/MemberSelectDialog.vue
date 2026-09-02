@@ -4,6 +4,7 @@ import type { MemberResource } from '@/api/model'
 import { useRegisterMembersIndex } from '@/api/generated/member/member'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { extractData } from '@/lib/utils'
 import {
   Dialog,
   DialogContent,
@@ -23,15 +24,7 @@ const emit = defineEmits<{
 
 const { data: membersData, isLoading } = useRegisterMembersIndex()
 
-function extractArray<T>(val: unknown, key: string): T[] {
-  if (val && typeof val === 'object' && key in val) {
-    const arr = (val as Record<string, unknown>)[key]
-    if (Array.isArray(arr)) return arr as T[]
-  }
-  return []
-}
-
-const members = computed(() => extractArray<MemberResource>(membersData.value, 'data'))
+const members = computed(() => extractData<MemberResource>(membersData.value))
 const searchQuery = ref('')
 
 const filteredMembers = computed(() => {

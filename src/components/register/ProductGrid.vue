@@ -4,6 +4,7 @@ import type { Product } from '@/api/model'
 import { useRegisterProductsIndex } from '@/api/generated/product/product'
 import { useRegisterCategoriesIndex } from '@/api/generated/category/category'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
+import { extractData } from '@/lib/utils'
 import ProductCard from './ProductCard.vue'
 
 const emit = defineEmits<{
@@ -13,16 +14,8 @@ const emit = defineEmits<{
 const { data: categoriesData, isLoading: categoriesLoading } = useRegisterCategoriesIndex()
 const { data: productsData, isLoading: productsLoading } = useRegisterProductsIndex()
 
-function extractArray<T>(val: unknown, key: string): T[] {
-  if (val && typeof val === 'object' && key in val) {
-    const arr = (val as Record<string, unknown>)[key]
-    if (Array.isArray(arr)) return arr as T[]
-  }
-  return []
-}
-
-const categories = computed(() => extractArray<{ id: number; name: string }>(categoriesData.value, 'data'))
-const products = computed(() => extractArray<Product>(productsData.value, 'data'))
+const categories = computed(() => extractData<{ id: number; name: string }>(categoriesData.value))
+const products = computed(() => extractData<Product>(productsData.value))
 
 const activeTab = ref('all')
 
