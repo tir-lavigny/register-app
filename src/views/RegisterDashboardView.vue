@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { computed } from 'vue'
 import { Receipt, Ticket, XCircle } from '@lucide/vue'
 
 import { Card, CardContent } from '@/components/ui/card'
@@ -21,6 +22,8 @@ const dayStore = useOperatingDayStore()
 const showOpenDialog = ref(false)
 const showCloseDialog = ref(false)
 const showReopenDialog = ref(false)
+
+const initialRemark = computed(() => dayStore.currentDay?.cash_remark ?? undefined)
 
 onMounted(async () => {
     await seasonStore.fetchCurrentSeason()
@@ -97,6 +100,7 @@ onMounted(async () => {
                 :cash-total="dayStore.cashTotal"
                 :twint-total="dayStore.twintTotal"
                 :ticket-count="dayStore.activeTickets.length"
+                :initial-remark="initialRemark"
             />
             <ReopenDayDialog v-model:open="showReopenDialog" />
         </div>

@@ -1,17 +1,23 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { ArrowLeft } from '@lucide/vue'
+import { ArrowLeft, ShoppingCart } from '@lucide/vue'
 import { toast } from 'vue-sonner'
 
-import type { Product, Voucher } from '@/api/model'
+import type { Product } from '@/api/model'
 import { Button } from '@/components/ui/button'
-import MemberSelectDialog from '@/components/register/MemberSelectDialog.vue'
-import PaymentSelector from '@/components/register/PaymentSelector.vue'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import ProductGrid from '@/components/register/ProductGrid.vue'
 import QuantityDialog from '@/components/register/QuantityDialog.vue'
-import TicketDraftItemRow from '@/components/register/TicketDraftItemRow.vue'
-import VoucherSelectDialog from '@/components/register/VoucherSelectDialog.vue'
 import AppLayout from '@/layouts/AppLayout.vue'
 import { useOperatingDayStore } from '@/stores/operating-day'
 import { useTicketStore } from '@/stores/ticket'
@@ -22,27 +28,46 @@ const ticketStore = useTicketStore()
 
 const showQuantityDialog = ref(false)
 const selectedProduct = ref<Product | null>(null)
-const showMemberDialog = ref(false)
-const showVoucherDialog = ref(false)
-const voucherTargetIndex = ref(-1)
+const showRestoreDialog = ref(false)
+const hasRestoredDraft = ref(false)
 
 const items = computed(() => ticketStore.draft?.items ?? [])
-const total = computed(() => ticketStore.preview?.total ?? 0)
-const canFinalize = computed(() => ticketStore.canFinalize)
-const memberName = computed(() => ticketStore.draft?.memberName)
+const itemCount = computed(() => items.value.reduce((sum, i) => sum + i.quantity, 0))
+const draftTotal = computed(() => items.value.reduce((sum, i) => sum + i.lineTotal, 0))
 
 onMounted(async () => {
     if (!dayStore.currentDay) {
         await dayStore.fetchCurrentDay()
     }
-    if (!dayStore.isOpen) {
+    if (!dayStore.isOpen || !dayStore.dayId) {
         router.replace('/register')
         return
     }
-    if (!ticketStore.draft) {
-        ticketStore.startDraft()
+
+    if (ticketStore.hasDraftInStorage(dayStore.dayId) && !ticketStore.draft) {
+        showRestoreDialog.value = true
+    } else if (!ticketStore.draft) {
+        ticketStore.startDraft(dayStore.dayId)
     }
 })
+
+function handleRestoreDraft() {
+    if (!dayStore.dayId) return
+    const saved = ticketStore.loadDraftFromStorage(dayStore.dayId)
+    if (saved) {
+        ticketStore.draft = saved
+        hasRestoredDraft.value = true
+        toast.success('Ticket précédent restauré.')
+    }
+    showRestoreDialog.value = false
+}
+
+function handleDiscardDraft() {
+    if (!dayStore.dayId) return
+    ticketStore.clearDraftStorage(dayStore.dayId)
+    ticketStore.startDraft(dayStore.dayId)
+    showRestoreDialog.value = false
+}
 
 function handleSelectProduct(product: Product) {
     selectedProduct.value = product
@@ -53,154 +78,53 @@ function handleQuantityConfirm(payload: {
     quantity: number
     customPrice: number | null
 }) {
-    if (!selectedProduct.value) return
+    if (!selectedProduct.value || !dayStore.dayId) return
     ticketStore.addItem(
         selectedProduct.value,
         payload.quantity,
-        payload.customPrice
+        payload.customPrice,
+        null,
+        dayStore.dayId
     )
-    if (dayStore.dayId) {
-        ticketStore.fetchPreview(dayStore.dayId)
-    }
+    toast.success(`${selectedProduct.value.name} ajouté`)
     selectedProduct.value = null
 }
 
-function handleUpdateQuantity(payload: {
-    index: number
-    quantity: number
-}) {
-    ticketStore.updateItemQuantity(payload.index, payload.quantity)
-    if (dayStore.dayId) {
-        ticketStore.fetchPreview(dayStore.dayId)
-    }
-}
-
-function handleRemoveItem(index: number) {
-    ticketStore.removeItem(index)
-    if (dayStore.dayId) {
-        ticketStore.fetchPreview(dayStore.dayId)
-    }
-}
-
-function handleApplyVoucher(index: number) {
-    if (!ticketStore.draft?.memberId) {
-        showMemberDialog.value = true
-        return
-    }
-    voucherTargetIndex.value = index
-    showVoucherDialog.value = true
-}
-
-function handleMemberSelect(member: { id: number; name: string } | null) {
-    if (member) {
-        ticketStore.setMember(member.id, member.name)
-    } else {
-        ticketStore.setMember(null, null)
-    }
-}
-
-function handleVoucherSelect(voucher: Voucher | null) {
-    const index = voucherTargetIndex.value
-    if (index < 0 || !ticketStore.draft) return
-
-    const item = ticketStore.draft.items[index]
-    if (!item) return
-
-    if (voucher) {
-        const subtotal = item.effectivePrice * item.quantity
-        let discount = 0
-        if (voucher.discount_percent) {
-            discount =
-                Math.round(
-                    subtotal *
-                        (Number.parseFloat(voucher.discount_percent) / 100) *
-                        100
-                ) / 100
-        } else if (voucher.discount_fixed) {
-            discount = Number.parseFloat(voucher.discount_fixed)
-        }
-        const newLineTotal = Math.max(0, subtotal - discount)
-        ticketStore.draft.items[index] = {
-            ...item,
-            voucherId: voucher.id,
-            voucherDiscount: discount,
-            lineTotal: newLineTotal,
-        }
-    } else {
-        ticketStore.clearVoucherForItem(index)
-    }
-    showVoucherDialog.value = false
-    voucherTargetIndex.value = -1
-}
-
-async function handleFinalize() {
-    if (!dayStore.dayId) return
-    const result = await ticketStore.finalizeTicket(dayStore.dayId)
-    if (result.success) {
-        toast.success('Ticket créé avec succès!')
-        await dayStore.refreshDay()
-        ticketStore.startDraft()
-        router.push('/register')
-    } else {
-        toast.error(result.error)
-    }
+function goToSummary() {
+    router.push('/register/ticket/summary')
 }
 </script>
 
 <template>
     <AppLayout>
+        <AlertDialog v-model:open="showRestoreDialog">
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Ticket en cours</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Vous avez un ticket non terminé. Voulez-vous le reprendre ?
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel @click="handleDiscardDraft">
+                        Nouveau ticket
+                    </AlertDialogCancel>
+                    <AlertDialogAction @click="handleRestoreDraft">
+                        Reprendre
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+
         <div class="flex flex-1 flex-col gap-4 p-4">
             <div class="flex items-center gap-3">
                 <Button variant="ghost" size="icon" @click="router.push('/register')">
                     <ArrowLeft class="size-5" />
                 </Button>
                 <h1 class="flex-1 text-xl font-bold">Nouveau ticket</h1>
-                <span class="text-lg font-bold">
-                    {{ total.toFixed(2) }} CHF
-                </span>
             </div>
 
             <ProductGrid @select-product="handleSelectProduct" />
-
-            <div class="flex flex-col gap-3 border-t pt-4">
-                <div v-if="items.length === 0" class="py-8 text-center text-sm text-gray-500">
-                    Sélectionnez un produit pour commencer
-                </div>
-                <template v-else>
-                    <TicketDraftItemRow
-                        v-for="(item, index) in items"
-                        :key="item.productId"
-                        :item="item"
-                        :index="index"
-                        @update-quantity="handleUpdateQuantity"
-                        @remove="handleRemoveItem"
-                        @apply-voucher="handleApplyVoucher"
-                    />
-
-                    <div class="flex items-center justify-between border-t pt-3">
-                        <span class="text-sm text-gray-500">
-                            Membre: {{ memberName ?? 'Aucun' }}
-                        </span>
-                        <Button variant="ghost" size="sm" @click="showMemberDialog = true">
-                            {{ memberName ? 'Changer' : 'Sélectionner' }}
-                        </Button>
-                    </div>
-
-                    <PaymentSelector
-                        :model-value="ticketStore.draft?.paymentMethod ?? null"
-                        @update:model-value="(v) => v && ticketStore.setPaymentMethod(v)"
-                    />
-
-                    <Button
-                        size="lg"
-                        class="min-h-14 w-full text-base font-bold"
-                        :disabled="!canFinalize"
-                        @click="handleFinalize"
-                    >
-                        Valider — {{ total.toFixed(2) }} CHF
-                    </Button>
-                </template>
-            </div>
 
             <QuantityDialog
                 v-model:open="showQuantityDialog"
@@ -208,21 +132,15 @@ async function handleFinalize() {
                 @confirm="handleQuantityConfirm"
             />
 
-            <MemberSelectDialog
-                v-model:open="showMemberDialog"
-                @select="handleMemberSelect"
-            />
-
-            <VoucherSelectDialog
-                v-model:open="showVoucherDialog"
-                :member-id="ticketStore.draft?.memberId ?? 0"
-                :product-id="
-                    voucherTargetIndex >= 0 && ticketStore.draft?.items[voucherTargetIndex]
-                        ? ticketStore.draft.items[voucherTargetIndex].productId
-                        : 0
-                "
-                @select="handleVoucherSelect"
-            />
+            <Button
+                v-if="itemCount > 0"
+                size="lg"
+                class="fixed bottom-6 left-1/2 z-50 min-h-14 -translate-x-1/2 rounded-full px-6 shadow-lg"
+                @click="goToSummary"
+            >
+                <ShoppingCart class="mr-2 size-5" />
+                {{ itemCount }} article{{ itemCount > 1 ? 's' : '' }} — {{ draftTotal.toFixed(2) }} CHF
+            </Button>
         </div>
     </AppLayout>
 </template>

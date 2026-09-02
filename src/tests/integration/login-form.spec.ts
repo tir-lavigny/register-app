@@ -80,7 +80,7 @@ describe('LoginForm integration', () => {
         await fillAndSubmit(wrapper)
         await flushPromises()
 
-        expect(router.currentRoute.value.path).toBe('/')
+        expect(router.currentRoute.value.path).toBe('/register')
     })
 
     it('redirects to query param on success', async () => {

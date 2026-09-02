@@ -23,12 +23,14 @@ const emit = defineEmits<{
 
 const quantity = ref(1)
 const customPrice = ref('')
+const hasTypedQuantity = ref(false)
 
 watch(
   () => props.open,
   (val) => {
     if (val) {
       quantity.value = 1
+      hasTypedQuantity.value = false
       if (props.product) {
         customPrice.value = Number.parseFloat(props.product.unit_price).toFixed(2)
       } else {
@@ -58,13 +60,19 @@ const effectivePrice = computed(() => {
 const lineTotal = computed(() => effectivePrice.value * quantity.value)
 
 function handleNumpad(digit: string) {
-  quantity.value = Number(quantity.value.toString() + digit)
+  if (!hasTypedQuantity.value) {
+    quantity.value = Number(digit)
+    hasTypedQuantity.value = true
+  } else {
+    quantity.value = Number(quantity.value.toString() + digit)
+  }
 }
 
 function handleBackspace() {
   const str = quantity.value.toString()
   if (str.length <= 1) {
     quantity.value = 1
+    hasTypedQuantity.value = false
   } else {
     quantity.value = Number(str.slice(0, -1))
   }

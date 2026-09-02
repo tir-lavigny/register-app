@@ -6,6 +6,8 @@ import LoginView from '@/views/LoginView.vue'
 import RegisterDashboardView from '@/views/RegisterDashboardView.vue'
 import TicketCreateView from '@/views/TicketCreateView.vue'
 import TicketListView from '@/views/TicketListView.vue'
+import TicketSummaryView from '@/views/TicketSummaryView.vue'
+import TicketPaymentView from '@/views/TicketPaymentView.vue'
 
 const routes = [
     { path: '/', component: HomeView, meta: { requiresAuth: true } },
@@ -18,6 +20,16 @@ const routes = [
     {
         path: '/register/ticket/new',
         component: TicketCreateView,
+        meta: { requiresAuth: true },
+    },
+    {
+        path: '/register/ticket/summary',
+        component: TicketSummaryView,
+        meta: { requiresAuth: true },
+    },
+    {
+        path: '/register/ticket/payment',
+        component: TicketPaymentView,
         meta: { requiresAuth: true },
     },
     {

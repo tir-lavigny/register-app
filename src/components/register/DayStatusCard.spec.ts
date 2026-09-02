@@ -32,7 +32,7 @@ describe('DayStatusCard', () => {
   })
 
   describe('when day is open', () => {
-    it('shows OUVERT badge', async () => {
+    it('shows OUVERT badge', () => {
       const dayStore = useOperatingDayStore()
       dayStore.currentDay = makeDay({ id: 1, closed_at: null })
 
@@ -43,7 +43,7 @@ describe('DayStatusCard', () => {
       expect(wrapper.text()).toContain('OUVERT')
     })
 
-    it('does not show FERMÉ badge', async () => {
+    it('does not show FERMÉ badge', () => {
       const dayStore = useOperatingDayStore()
       dayStore.currentDay = makeDay({ id: 1, closed_at: null })
 
@@ -54,7 +54,7 @@ describe('DayStatusCard', () => {
       expect(wrapper.text()).not.toContain('FERMÉ')
     })
 
-    it('shows the date', async () => {
+    it('shows the formatted date', () => {
       const dayStore = useOperatingDayStore()
       dayStore.currentDay = makeDay({ id: 1, date: '2026-09-02' })
 
@@ -62,10 +62,10 @@ describe('DayStatusCard', () => {
         props: { loading: false },
       })
 
-      expect(wrapper.text()).toContain('2026-09-02')
+      expect(wrapper.text()).toContain('02.09.2026')
     })
 
-    it('shows start time', async () => {
+    it('shows formatted start time', () => {
       const dayStore = useOperatingDayStore()
       dayStore.currentDay = makeDay({
         id: 1,
@@ -76,10 +76,10 @@ describe('DayStatusCard', () => {
         props: { loading: false },
       })
 
-      expect(wrapper.text()).toContain('2026-09-02T08:00:00Z')
+      expect(wrapper.text()).toContain('10:00')
     })
 
-    it('shows close button', async () => {
+    it('shows close button', () => {
       const dayStore = useOperatingDayStore()
       dayStore.currentDay = makeDay({ id: 1, closed_at: null })
 
@@ -107,7 +107,7 @@ describe('DayStatusCard', () => {
       expect(wrapper.emitted('close')).toHaveLength(1)
     })
 
-    it('does not show open button', async () => {
+    it('does not show open button', () => {
       const dayStore = useOperatingDayStore()
       dayStore.currentDay = makeDay({ id: 1, closed_at: null })
 
@@ -116,13 +116,13 @@ describe('DayStatusCard', () => {
       })
 
       const buttons = wrapper.findAll('button')
-      const openBtn = buttons.find((b) => b.text() === 'Ouvrir')
+      const openBtn = buttons.find((b) => b.text().includes('Ouvrir'))
       expect(openBtn).toBeUndefined()
     })
   })
 
   describe('when day is closed', () => {
-    it('shows FERMÉ badge', async () => {
+    it('shows FERMÉ badge', () => {
       const dayStore = useOperatingDayStore()
       dayStore.currentDay = makeDay({
         id: 1,
@@ -136,7 +136,7 @@ describe('DayStatusCard', () => {
       expect(wrapper.text()).toContain('FERMÉ')
     })
 
-    it('does not show OUVERT badge', async () => {
+    it('does not show OUVERT badge', () => {
       const dayStore = useOperatingDayStore()
       dayStore.currentDay = makeDay({
         id: 1,
@@ -150,7 +150,7 @@ describe('DayStatusCard', () => {
       expect(wrapper.text()).not.toContain('OUVERT')
     })
 
-    it('shows closed time', async () => {
+    it('shows formatted closed time', () => {
       const dayStore = useOperatingDayStore()
       dayStore.currentDay = makeDay({
         id: 1,
@@ -161,26 +161,10 @@ describe('DayStatusCard', () => {
         props: { loading: false },
       })
 
-      expect(wrapper.text()).toContain('2026-09-02T18:00:00Z')
+      expect(wrapper.text()).toContain('20:00')
     })
 
-    it('shows open button', async () => {
-      const dayStore = useOperatingDayStore()
-      dayStore.currentDay = makeDay({
-        id: 1,
-        closed_at: '2026-09-02T18:00:00Z',
-      })
-
-      const wrapper = mount(DayStatusCard, {
-        props: { loading: false },
-      })
-
-      const buttons = wrapper.findAll('button')
-      const openBtn = buttons.find((b) => b.text() === 'Ouvrir')
-      expect(openBtn).toBeDefined()
-    })
-
-    it('emits open event when open button is clicked', async () => {
+    it('does not show open button', () => {
       const dayStore = useOperatingDayStore()
       dayStore.currentDay = makeDay({
         id: 1,
@@ -192,13 +176,11 @@ describe('DayStatusCard', () => {
       })
 
       const buttons = wrapper.findAll('button')
-      const openBtn = buttons.find((b) => b.text() === 'Ouvrir')
-      await openBtn!.trigger('click')
-
-      expect(wrapper.emitted('open')).toHaveLength(1)
+      const openBtn = buttons.find((b) => b.text().includes('Ouvrir'))
+      expect(openBtn).toBeUndefined()
     })
 
-    it('shows reopen button when day has an id', async () => {
+    it('shows reopen button', () => {
       const dayStore = useOperatingDayStore()
       dayStore.currentDay = makeDay({
         id: 1,
@@ -232,7 +214,7 @@ describe('DayStatusCard', () => {
       expect(wrapper.emitted('reopen')).toHaveLength(1)
     })
 
-    it('does not show close button', async () => {
+    it('does not show close button', () => {
       const dayStore = useOperatingDayStore()
       dayStore.currentDay = makeDay({
         id: 1,
@@ -250,7 +232,7 @@ describe('DayStatusCard', () => {
   })
 
   describe('when loading', () => {
-    it('disables buttons', async () => {
+    it('disables buttons', () => {
       const dayStore = useOperatingDayStore()
       dayStore.currentDay = makeDay({ id: 1, closed_at: null })
 
@@ -272,7 +254,7 @@ describe('DayStatusCard', () => {
       })
 
       const buttons = wrapper.findAll('button')
-      const openBtn = buttons.find((b) => b.text() === 'Ouvrir')
+      const openBtn = buttons.find((b) => b.text().includes('Ouvrir'))
       expect(openBtn).toBeDefined()
     })
 
@@ -282,7 +264,7 @@ describe('DayStatusCard', () => {
       })
 
       const buttons = wrapper.findAll('button')
-      const openBtn = buttons.find((b) => b.text() === 'Ouvrir')
+      const openBtn = buttons.find((b) => b.text().includes('Ouvrir'))
       await openBtn!.trigger('click')
 
       expect(wrapper.emitted('open')).toHaveLength(1)

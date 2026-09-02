@@ -71,6 +71,10 @@ function buildPreviewPayload(draft: TicketDraft, operatingDayId: number) {
     }
 }
 
+function getDraftStorageKey(dayId: number): string {
+    return `register_draft_${dayId}`
+}
+
 export const useTicketStore = defineStore('ticket', () => {
     const draft = ref<TicketDraft | null>(null)
     const preview = ref<RegisterTicketsPreview200 | null>(null)
@@ -83,7 +87,33 @@ export const useTicketStore = defineStore('ticket', () => {
             draft.value.paymentMethod !== null
     )
 
-    function startDraft() {
+    function saveDraftToStorage(dayId: number) {
+        if (draft.value) {
+            localStorage.setItem(getDraftStorageKey(dayId), JSON.stringify(draft.value))
+        }
+    }
+
+    function loadDraftFromStorage(dayId: number): TicketDraft | null {
+        const raw = localStorage.getItem(getDraftStorageKey(dayId))
+        if (raw) {
+            try {
+                return JSON.parse(raw) as TicketDraft
+            } catch {
+                return null
+            }
+        }
+        return null
+    }
+
+    function clearDraftStorage(dayId: number) {
+        localStorage.removeItem(getDraftStorageKey(dayId))
+    }
+
+    function hasDraftInStorage(dayId: number): boolean {
+        return localStorage.getItem(getDraftStorageKey(dayId)) !== null
+    }
+
+    function startDraft(dayId?: number) {
         draft.value = {
             items: [],
             paymentMethod: null,
@@ -91,13 +121,17 @@ export const useTicketStore = defineStore('ticket', () => {
             memberName: null,
         }
         preview.value = null
+        if (dayId !== undefined) {
+            saveDraftToStorage(dayId)
+        }
     }
 
     function addItem(
         product: Product,
         quantity: number,
         customPrice: number | null = null,
-        voucher: Voucher | null = null
+        voucher: Voucher | null = null,
+        dayId?: number
     ) {
         if (!draft.value) return
 
@@ -143,14 +177,17 @@ export const useTicketStore = defineStore('ticket', () => {
         } else {
             draft.value.items.push(newItem)
         }
+
+        if (dayId !== undefined) saveDraftToStorage(dayId)
     }
 
-    function removeItem(index: number) {
+    function removeItem(index: number, dayId?: number) {
         if (!draft.value) return
         draft.value.items.splice(index, 1)
+        if (dayId !== undefined) saveDraftToStorage(dayId)
     }
 
-    function updateItemQuantity(index: number, quantity: number) {
+    function updateItemQuantity(index: number, quantity: number, dayId?: number) {
         if (!draft.value) return
         const item = draft.value.items[index]
         if (!item) return
@@ -159,20 +196,45 @@ export const useTicketStore = defineStore('ticket', () => {
             quantity,
             lineTotal: computeLineTotal({ ...item, quantity }),
         }
+        if (dayId !== undefined) saveDraftToStorage(dayId)
     }
 
-    function setPaymentMethod(method: StoreTicketRequestPaymentMethod) {
+    function setPaymentMethod(method: StoreTicketRequestPaymentMethod, dayId?: number) {
         if (!draft.value) return
         draft.value.paymentMethod = method
+        if (dayId !== undefined) saveDraftToStorage(dayId)
     }
 
-    function setMember(id: number | null, name: string | null) {
+    function setMember(id: number | null, name: string | null, dayId?: number) {
         if (!draft.value) return
         draft.value.memberId = id
         draft.value.memberName = name
+        if (dayId !== undefined) saveDraftToStorage(dayId)
     }
 
-    function clearVoucherForItem(index: number) {
+    function applyVoucher(index: number, voucher: Voucher, dayId?: number) {
+        if (!draft.value) return
+        const item = draft.value.items[index]
+        if (!item) return
+
+        const subtotal = item.effectivePrice * item.quantity
+        let discount = 0
+        if (voucher.discount_percent) {
+            discount = Math.round(subtotal * (Number.parseFloat(voucher.discount_percent) / 100) * 100) / 100
+        } else if (voucher.discount_fixed) {
+            discount = Number.parseFloat(voucher.discount_fixed)
+        }
+
+        draft.value.items[index] = {
+            ...item,
+            voucherId: voucher.id,
+            voucherDiscount: discount,
+            lineTotal: Math.max(0, subtotal - discount),
+        }
+        if (dayId !== undefined) saveDraftToStorage(dayId)
+    }
+
+    function clearVoucherForItem(index: number, dayId?: number) {
         if (!draft.value) return
         const item = draft.value.items[index]
         if (!item) return
@@ -186,6 +248,7 @@ export const useTicketStore = defineStore('ticket', () => {
                 voucherDiscount: null,
             }),
         }
+        if (dayId !== undefined) saveDraftToStorage(dayId)
     }
 
     async function fetchPreview(operatingDayId: number) {
@@ -221,6 +284,7 @@ export const useTicketStore = defineStore('ticket', () => {
             if (response.status === 201) {
                 draft.value = null
                 preview.value = null
+                clearDraftStorage(operatingDayId)
                 return { success: true }
             }
 
@@ -249,8 +313,13 @@ export const useTicketStore = defineStore('ticket', () => {
         updateItemQuantity,
         setPaymentMethod,
         setMember,
+        applyVoucher,
         clearVoucherForItem,
         fetchPreview,
         finalizeTicket,
+        saveDraftToStorage,
+        loadDraftFromStorage,
+        clearDraftStorage,
+        hasDraftInStorage,
     }
 })

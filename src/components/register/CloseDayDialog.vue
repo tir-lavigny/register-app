@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useOperatingDayStore } from '@/stores/operating-day'
 import { Button } from '@/components/ui/button'
 import {
@@ -17,6 +17,7 @@ const props = defineProps<{
   cashTotal: number
   twintTotal: number
   ticketCount: number
+  initialRemark?: string
 }>()
 
 const emit = defineEmits<{
@@ -26,6 +27,15 @@ const emit = defineEmits<{
 const dayStore = useOperatingDayStore()
 const remark = ref('')
 const submitting = ref(false)
+
+watch(
+  () => props.open,
+  (val) => {
+    if (val) {
+      remark.value = props.initialRemark ?? ''
+    }
+  },
+)
 
 async function handleConfirm() {
   submitting.value = true
