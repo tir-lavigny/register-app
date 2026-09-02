@@ -21,6 +21,16 @@ async function tryRefreshToken(): Promise<boolean> {
     return false
 }
 
+async function fetchMeAfterRefresh() {
+    try {
+        const { useAuthStore } = await import('@/stores/auth')
+        const authStore = useAuthStore()
+        await authStore.fetchMe()
+    } catch {
+        // Ignore errors - the router guard will handle unauthenticated state
+    }
+}
+
 function redirectToLogin() {
     localStorage.removeItem(AUTH_STORAGE_KEY)
     window.location.href = '/login'
@@ -60,6 +70,7 @@ window.fetch = async function (
         const refreshed = await refreshPromise
 
         if (refreshed) {
+            await fetchMeAfterRefresh()
             const newToken = localStorage.getItem(AUTH_STORAGE_KEY)
             const retryHeaders = new Headers(init?.headers)
             if (newToken) {

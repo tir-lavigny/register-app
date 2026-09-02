@@ -4,6 +4,7 @@ import { ref } from 'vue'
 import {
     login as apiLogin,
     logout as apiLogout,
+    me as apiMe,
     refresh as apiRefresh,
 } from '@/api/generated/auth/auth'
 import type { UserResource } from '@/api/model'
@@ -69,13 +70,28 @@ export const useAuthStore = defineStore('auth', () => {
         }
     }
 
+    async function fetchMe() {
+        try {
+            const response = await apiMe()
+            if (response.status === 200) {
+                user.value = response.data.data
+                return true
+            }
+            clearAuth()
+            return false
+        } catch {
+            clearAuth()
+            return false
+        }
+    }
+
     async function refreshAccessToken() {
         try {
             const response = await apiRefresh()
 
             if (response.status === 200) {
                 setToken(response.data.accessToken)
-                user.value = response.data.user
+                await fetchMe()
                 return
             }
 
@@ -110,6 +126,7 @@ export const useAuthStore = defineStore('auth', () => {
         isLoggedIn,
         login,
         logout,
+        fetchMe,
         refreshAccessToken,
         loadFromStorage,
         hasRole,

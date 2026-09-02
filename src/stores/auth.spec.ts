@@ -9,11 +9,13 @@ import { AUTH_STORAGE_KEY, useAuthStore } from './auth'
 const mockLogin = vi.fn()
 const mockRefresh = vi.fn()
 const mockLogout = vi.fn()
+const mockMe = vi.fn()
 
 vi.mock('@/api/generated/auth/auth', () => ({
     login: (...args: unknown[]) => mockLogin(...args),
     refresh: (...args: unknown[]) => mockRefresh(...args),
     logout: (...args: unknown[]) => mockLogout(...args),
+    me: (...args: unknown[]) => mockMe(...args),
 }))
 
 const fakeUser: UserResource = {
@@ -162,27 +164,28 @@ describe('auth store', () => {
     })
 
     describe('refreshAccessToken', () => {
-        it('updates token on successful refresh', async () => {
+        it('updates token and fetches user on successful refresh', async () => {
             store.accessToken = 'old-token'
             store.user = { ...fakeUser }
 
-            const newToken: TokenResource = {
-                accessToken: 'new-refreshed-token',
-                user: { ...fakeUser, name: 'Refreshed User' },
-            }
-
             mockRefresh.mockResolvedValue({
-                data: newToken,
+                data: { accessToken: 'new-refreshed-token' },
+                status: 200,
+                headers: new Headers(),
+            })
+
+            mockMe.mockResolvedValue({
+                data: { data: { ...fakeUser, name: 'Refreshed User' } },
                 status: 200,
                 headers: new Headers(),
             })
 
             await store.refreshAccessToken()
 
-            expect(store.accessToken).toBe(newToken.accessToken)
-            expect(store.user).toEqual(newToken.user)
+            expect(store.accessToken).toBe('new-refreshed-token')
+            expect(store.user?.name).toBe('Refreshed User')
             expect(localStorage.getItem(AUTH_STORAGE_KEY)).toBe(
-                newToken.accessToken
+                'new-refreshed-token'
             )
         })
 

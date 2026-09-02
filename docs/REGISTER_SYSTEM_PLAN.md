@@ -2,19 +2,19 @@
 
 ## API Endpoints
 
-| Endpoint | Method | Returns | Notes |
-|---|---|---|---|
-| `GET /register/seasons/current` | GET | `SeasonResource` or 404 | Current active season |
-| `POST /register/days` | POST | `OperatingDayResource` | Body: `{ season_id }` |
-| `PATCH /register/days/:id` | PATCH | `OperatingDayResource` | Body: `{ status, cash_remark }` |
-| `GET /register/days/current` | GET | `OperatingDayResource` | Includes `tickets: TicketResource[]` |
-| `GET /register/days/:id` | GET | `OperatingDayResource` | Includes `tickets: TicketResource[]` |
-| `POST /register/tickets` | POST | `Ticket` | Create ticket |
-| `POST /register/tickets/preview` | POST | `{ total, items[] }` | Compute total without submitting |
-| `GET /register/products` | GET | `Product[]` | List all products |
-| `GET /register/categories` | GET | `Category[]` | List all categories |
-| `GET /register/members` | GET | `MemberResource[]` | List all members |
-| `GET /register/members/:id/vouchers` | GET | `Voucher[]` | Vouchers for a member |
+| Endpoint                             | Method | Returns                 | Notes                                |
+| ------------------------------------ | ------ | ----------------------- | ------------------------------------ |
+| `GET /register/seasons/current`      | GET    | `SeasonResource` or 404 | Current active season                |
+| `POST /register/days`                | POST   | `OperatingDayResource`  | Body: `{ season_id }`                |
+| `PATCH /register/days/:id`           | PATCH  | `OperatingDayResource`  | Body: `{ status, cash_remark }`      |
+| `GET /register/days/current`         | GET    | `OperatingDayResource`  | Includes `tickets: TicketResource[]` |
+| `GET /register/days/:id`             | GET    | `OperatingDayResource`  | Includes `tickets: TicketResource[]` |
+| `POST /register/tickets`             | POST   | `Ticket`                | Create ticket                        |
+| `POST /register/tickets/preview`     | POST   | `{ total, items[] }`    | Compute total without submitting     |
+| `GET /register/products`             | GET    | `Product[]`             | List all products                    |
+| `GET /register/categories`           | GET    | `Category[]`            | List all categories                  |
+| `GET /register/members`              | GET    | `MemberResource[]`      | List all members                     |
+| `GET /register/members/:id/vouchers` | GET    | `Voucher[]`             | Vouchers for a member                |
 
 **Missing endpoint:** No `GET /register/days/:id/tickets`. Tickets come embedded in the day response.
 
@@ -25,83 +25,88 @@
 ## Key Data Models
 
 ### OperatingDayResource
+
 ```ts
 interface OperatingDayResource {
-  id: number
-  date: string
-  started_at: string
-  closed_at: string | null
-  season_id: number
-  cash_remark: string | null
-  closing_balance: string | null
-  total_cash: string
-  total_twint: string
-  created_at: string | null
-  updated_at: string | null
-  tickets?: TicketResource[]  // embedded tickets
+    id: number
+    date: string
+    started_at: string
+    closed_at: string | null
+    season_id: number
+    cash_remark: string | null
+    closing_balance: string | null
+    total_cash: string
+    total_twint: string
+    created_at: string | null
+    updated_at: string | null
+    tickets?: TicketResource[] // embedded tickets
 }
 ```
 
 ### TicketResource
+
 ```ts
 interface TicketResource {
-  id: number
-  total: string
-  payment_method: string
-  operating_day_id: number
-  member_id: number | null
-  sold_at: string
-  deleted_at: string | null        // non-null = canceled
-  created_at: string | null
-  updated_at: string | null
-  ticketItems?: TicketItemResource[]
+    id: number
+    total: string
+    payment_method: string
+    operating_day_id: number
+    member_id: number | null
+    sold_at: string
+    deleted_at: string | null // non-null = canceled
+    created_at: string | null
+    updated_at: string | null
+    ticketItems?: TicketItemResource[]
 }
 ```
 
 ### TicketItemResource
+
 ```ts
 interface TicketItemResource {
-  id: number
-  product_id: number
-  ticket_id: number
-  voucher_id: number | null
-  quantity: number
-  unit_price: string
-  subtotal: string
-  created_at: string | null
-  updated_at: string | null
-  product?: ProductResource
-  voucher?: VoucherResource | null
+    id: number
+    product_id: number
+    ticket_id: number
+    voucher_id: number | null
+    quantity: number
+    unit_price: string
+    subtotal: string
+    created_at: string | null
+    updated_at: string | null
+    product?: ProductResource
+    voucher?: VoucherResource | null
 }
 ```
 
 ### StoreTicketRequest (for POST /tickets and POST /tickets/preview)
+
 ```ts
 interface StoreTicketRequest {
-  payment_method: 'cash' | 'twint'
-  operating_day_id: number
-  member_id?: number | null
-  sold_at: string
-  items: Array<{
-    product_id: number
-    quantity: number           // minimum 1
-    custom_unit_price?: number | null
-    voucher_id?: number | null
-  }>
+    payment_method: 'cash' | 'twint'
+    operating_day_id: number
+    member_id?: number | null
+    sold_at: string
+    items: Array<{
+        product_id: number
+        quantity: number // minimum 1
+        custom_unit_price?: number | null
+        voucher_id?: number | null
+    }>
 }
 ```
 
 ### RegisterTicketsPreview200
+
 ```ts
 interface RegisterTicketsPreview200 {
-  total: number
-  items: Array<{
-    product_id: number
-    voucher_id: number
-    quantity: string
-    unit_price: string
-    subtotal: string
-  }>
+    total: number
+    items: Array<{
+        product_id: number
+        voucher_id: number
+        quantity: string
+        unit_price: string
+        subtotal: string
+    }>
 }
 ```
 
@@ -130,13 +135,13 @@ error: string | null
 loading: boolean
 
 // Computed
-seasonId: number | null  // currentSeason?.id ?? null
+seasonId: number | null // currentSeason?.id ?? null
 
 // Actions
 fetchCurrentSeason()
-  // GET /register/seasons/current
-  // 200 → set season
-  // 404 → set error: "Aucune saison active. Veuillez demander à un administrateur d'en créer une."
+// GET /register/seasons/current
+// 200 → set season
+// 404 → set error: "Aucune saison active. Veuillez demander à un administrateur d'en créer une."
 ```
 
 ### 1.2 `operatingDay` Store (`src/stores/operating-day.ts`)
@@ -241,6 +246,7 @@ finalizeTicket(operatingDayId)
 ```
 
 **Voucher discount** (client-side for display):
+
 - `discount_percent`: `effectivePrice * quantity * (1 - discount_percent / 100)`
 - `discount_fixed`: `effectivePrice * quantity - discount_fixed`
 - Clamp to minimum 0.
@@ -308,11 +314,12 @@ finalizeTicket(operatingDayId)
 **On mount:** redirect if no open day.
 
 **Flow when tapping a product:**
+
 1. User taps product card
 2. `QuantityDialog` opens (always — no implicit x1)
-   - Shows product name, price, quantity numpad
-   - If `allows_custom_price`: also shows editable price field with numpad
-   - If not `allows_custom_price`: price field is read-only
+    - Shows product name, price, quantity numpad
+    - If `allows_custom_price`: also shows editable price field with numpad
+    - If not `allows_custom_price`: price field is read-only
 3. User sets quantity (and optionally custom price), confirms
 4. Item added to draft → `fetchPreview()` → total updates
 
@@ -343,6 +350,7 @@ finalizeTicket(operatingDayId)
 ```
 
 **Interactions (all via Dialog):**
+
 - **Tap product card** → `QuantityDialog` opens
 - **Tap +/- on draft item** → `QuantityDialog` with current quantity
 - **Tap × on draft item** → remove → `fetchPreview()`
@@ -383,35 +391,35 @@ Canceled tickets (`deleted_at !== null`): strikethrough + "(annulé)".
 
 ### Day Management
 
-| Component | Description |
-|---|---|
-| `NoSeasonBanner.vue` | Full-page error when no season active |
-| `DayStatusCard.vue` | Status, date, times, Open/Close/Reopen buttons |
-| `DaySummaryCard.vue` | Ticket count, cash total, twint total |
-| `OpenDayDialog.vue` | Confirmation to open day |
-| `CloseDayDialog.vue` | Summary + cash remark textarea |
-| `ReopenDayDialog.vue` | Confirmation to reopen day |
+| Component             | Description                                    |
+| --------------------- | ---------------------------------------------- |
+| `NoSeasonBanner.vue`  | Full-page error when no season active          |
+| `DayStatusCard.vue`   | Status, date, times, Open/Close/Reopen buttons |
+| `DaySummaryCard.vue`  | Ticket count, cash total, twint total          |
+| `OpenDayDialog.vue`   | Confirmation to open day                       |
+| `CloseDayDialog.vue`  | Summary + cash remark textarea                 |
+| `ReopenDayDialog.vue` | Confirmation to reopen day                     |
 
 ### Ticket Creation
 
-| Component | Description |
-|---|---|
-| `ProductGrid.vue` | Category tabs + product card grid |
-| `ProductCard.vue` | Product name, price, image. Large tap target (>=48px) |
-| `QuantityDialog.vue` | **Always opens when tapping a product.** Numpad for quantity. If `allows_custom_price`: editable price field. |
-| `TicketDraftPanel.vue` | Running summary. Total from preview endpoint. |
-| `TicketDraftItemRow.vue` | Item: name, qty +/-, price, remove, voucher button |
-| `PaymentSelector.vue` | Two large buttons: Espèces / Twint |
-| `MemberSelectDialog.vue` | Searchable member list |
-| `VoucherSelectDialog.vue` | Member's vouchers filtered to product |
+| Component                 | Description                                                                                                   |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `ProductGrid.vue`         | Category tabs + product card grid                                                                             |
+| `ProductCard.vue`         | Product name, price, image. Large tap target (>=48px)                                                         |
+| `QuantityDialog.vue`      | **Always opens when tapping a product.** Numpad for quantity. If `allows_custom_price`: editable price field. |
+| `TicketDraftPanel.vue`    | Running summary. Total from preview endpoint.                                                                 |
+| `TicketDraftItemRow.vue`  | Item: name, qty +/-, price, remove, voucher button                                                            |
+| `PaymentSelector.vue`     | Two large buttons: Espèces / Twint                                                                            |
+| `MemberSelectDialog.vue`  | Searchable member list                                                                                        |
+| `VoucherSelectDialog.vue` | Member's vouchers filtered to product                                                                         |
 
 ### Ticket Display (Responsive)
 
-| Component | Description |
-|---|---|
-| `TicketDetailContent.vue` | Shared content: ticket info, items, product names, totals |
-| `TicketDetail.vue` | Responsive wrapper: `createReusableTemplate` + `useMediaQuery` → Sheet (>=md) or Drawer (<md) |
-| `TicketListTable.vue` | List of tickets. Canceled shown with strikethrough. |
+| Component                 | Description                                                                                   |
+| ------------------------- | --------------------------------------------------------------------------------------------- |
+| `TicketDetailContent.vue` | Shared content: ticket info, items, product names, totals                                     |
+| `TicketDetail.vue`        | Responsive wrapper: `createReusableTemplate` + `useMediaQuery` → Sheet (>=md) or Drawer (<md) |
+| `TicketListTable.vue`     | List of tickets. Canceled shown with strikethrough.                                           |
 
 ### QuantityDialog Detail
 
@@ -458,29 +466,33 @@ import { createReusableTemplate, useMediaQuery } from '@vueuse/core'
 const isDesktop = useMediaQuery('(min-width: 768px)')
 
 const [DefineTemplate, ReuseTemplate] = createReusableTemplate<{
-  ticket: TicketResource
+    ticket: TicketResource
 }>()
 </script>
 
 <template>
-  <DefineTemplate v-slot="{ ticket }">
-    <TicketDetailContent :ticket="ticket" />
-  </DefineTemplate>
+    <DefineTemplate v-slot="{ ticket }">
+        <TicketDetailContent :ticket="ticket" />
+    </DefineTemplate>
 
-  <Sheet v-if="isDesktop" :open="open" @update:open="$emit('update:open', $event)">
-    <SheetContent side="right" class="w-full sm:max-w-md">
-      <SheetHeader>
-        <SheetTitle>Ticket #{{ ticket.id }}</SheetTitle>
-      </SheetHeader>
-      <ReuseTemplate :ticket="ticket" />
-    </SheetContent>
-  </Sheet>
+    <Sheet
+        v-if="isDesktop"
+        :open="open"
+        @update:open="$emit('update:open', $event)"
+    >
+        <SheetContent side="right" class="w-full sm:max-w-md">
+            <SheetHeader>
+                <SheetTitle>Ticket #{{ ticket.id }}</SheetTitle>
+            </SheetHeader>
+            <ReuseTemplate :ticket="ticket" />
+        </SheetContent>
+    </Sheet>
 
-  <Drawer v-else :open="open" @update:open="$emit('update:open', $event)">
-    <DrawerContent class="max-h-[85vh]">
-      <ReuseTemplate :ticket="ticket" />
-    </DrawerContent>
-  </Drawer>
+    <Drawer v-else :open="open" @update:open="$emit('update:open', $event)">
+        <DrawerContent class="max-h-[85vh]">
+            <ReuseTemplate :ticket="ticket" />
+        </DrawerContent>
+    </Drawer>
 </template>
 ```
 
@@ -491,10 +503,12 @@ const [DefineTemplate, ReuseTemplate] = createReusableTemplate<{
 ### Store Tests
 
 **`src/stores/season.spec.ts`**
+
 - `fetchCurrentSeason()`: 200 → sets season; 404 → sets error
 - `seasonId`: returns id or null
 
 **`src/stores/operating-day.spec.ts`**
+
 - `fetchCurrentDay()`: 200 → sets day with tickets; 404 → sets null
 - `createDay()`: 201 → sets day; blocks if already open
 - `closeDay()`: 200 → returns closed day with totals; blocks if no day
@@ -504,6 +518,7 @@ const [DefineTemplate, ReuseTemplate] = createReusableTemplate<{
 - `isOpen`, `dayId` computed
 
 **`src/stores/ticket.spec.ts`**
+
 - `startDraft()`: creates empty draft
 - `addItem()`: adds item; handles custom price; handles voucher discount (matching product_id only)
 - `addItem()` duplicate: merges quantities
@@ -515,29 +530,29 @@ const [DefineTemplate, ReuseTemplate] = createReusableTemplate<{
 
 ### Component Tests
 
-| Test File | Key Tests |
-|---|---|
-| `DayStatusCard.spec.ts` | Open/closed rendering; button visibility |
-| `DaySummaryCard.spec.ts` | Correct totals displayed |
-| `ProductGrid.spec.ts` | Products rendered; category filter works |
-| `ProductCard.spec.ts` | Name/price displayed; click emits |
-| `QuantityDialog.spec.ts` | Opens with qty=1; numpad input; custom price enabled/disabled; confirms |
-| `TicketDraftPanel.spec.ts` | Items rendered; total from preview; empty state |
-| `TicketDraftItemRow.spec.ts` | Item details; +/- buttons; remove button |
-| `PaymentSelector.spec.ts` | Two buttons; selection; active state |
-| `MemberSelectDialog.spec.ts` | Member list; selection; search |
-| `VoucherSelectDialog.spec.ts` | Vouchers filtered by product; selection |
-| `CloseDayDialog.spec.ts` | Summary; remark textarea; confirm |
-| `TicketDetailContent.spec.ts` | Ticket info; items with product names; canceled state |
-| `TicketListTable.spec.ts` | Tickets rendered; canceled strikethrough; empty state |
+| Test File                     | Key Tests                                                               |
+| ----------------------------- | ----------------------------------------------------------------------- |
+| `DayStatusCard.spec.ts`       | Open/closed rendering; button visibility                                |
+| `DaySummaryCard.spec.ts`      | Correct totals displayed                                                |
+| `ProductGrid.spec.ts`         | Products rendered; category filter works                                |
+| `ProductCard.spec.ts`         | Name/price displayed; click emits                                       |
+| `QuantityDialog.spec.ts`      | Opens with qty=1; numpad input; custom price enabled/disabled; confirms |
+| `TicketDraftPanel.spec.ts`    | Items rendered; total from preview; empty state                         |
+| `TicketDraftItemRow.spec.ts`  | Item details; +/- buttons; remove button                                |
+| `PaymentSelector.spec.ts`     | Two buttons; selection; active state                                    |
+| `MemberSelectDialog.spec.ts`  | Member list; selection; search                                          |
+| `VoucherSelectDialog.spec.ts` | Vouchers filtered by product; selection                                 |
+| `CloseDayDialog.spec.ts`      | Summary; remark textarea; confirm                                       |
+| `TicketDetailContent.spec.ts` | Ticket info; items with product names; canceled state                   |
+| `TicketListTable.spec.ts`     | Tickets rendered; canceled strikethrough; empty state                   |
 
 ### View Tests
 
-| Test File | Key Tests |
-|---|---|
+| Test File                       | Key Tests                                                          |
+| ------------------------------- | ------------------------------------------------------------------ |
 | `RegisterDashboardView.spec.ts` | No season → error; no day → open button; day open → info + tickets |
-| `TicketCreateView.spec.ts` | No day → redirect; tap product → dialog → add; finalize → success |
-| `TicketListView.spec.ts` | Tickets from store; totals; tap opens detail |
+| `TicketCreateView.spec.ts`      | No day → redirect; tap product → dialog → add; finalize → success  |
+| `TicketListView.spec.ts`        | Tickets from store; totals; tap opens detail                       |
 
 ### Mocking Strategy
 
@@ -549,23 +564,23 @@ const [DefineTemplate, ReuseTemplate] = createReusableTemplate<{
 
 ## Phase 6: Implementation Order
 
-| Step | Files | Est. |
-|---|---|---|
-| 1 | Install shadcn-vue `dialog`, `drawer`, `tabs` | Small |
-| 2 | `src/stores/season.ts` + tests | Small |
-| 3 | `src/stores/operating-day.ts` + tests | Medium |
-| 4 | `src/stores/ticket.ts` + tests (preview integration) | Large |
-| 5 | Router + Sidebar updates | Small |
-| 6 | `NoSeasonBanner.vue` + tests | Small |
-| 7 | `DayStatusCard.vue` + `DaySummaryCard.vue` + tests | Medium |
-| 8 | `OpenDayDialog.vue` + `CloseDayDialog.vue` + `ReopenDayDialog.vue` + tests | Medium |
-| 9 | `RegisterDashboardView.vue` + tests | Medium |
-| 10 | `ProductGrid.vue` + `ProductCard.vue` + tests | Medium |
-| 11 | `QuantityDialog.vue` + tests | Medium |
-| 12 | `TicketDraftPanel.vue` + `TicketDraftItemRow.vue` + tests | Medium |
-| 13 | `PaymentSelector.vue` + `MemberSelectDialog.vue` + `VoucherSelectDialog.vue` + tests | Medium |
-| 14 | `TicketCreateView.vue` + tests | Large |
-| 15 | `TicketDetailContent.vue` + `TicketDetail.vue` (responsive) + tests | Medium |
-| 16 | `TicketListTable.vue` + `TicketListView.vue` + tests | Medium |
-| 17 | Integration test: full ticket creation flow | Medium |
-| 18 | Polish: loading states, error toasts, empty states | Small |
+| Step | Files                                                                                | Est.   |
+| ---- | ------------------------------------------------------------------------------------ | ------ |
+| 1    | Install shadcn-vue `dialog`, `drawer`, `tabs`                                        | Small  |
+| 2    | `src/stores/season.ts` + tests                                                       | Small  |
+| 3    | `src/stores/operating-day.ts` + tests                                                | Medium |
+| 4    | `src/stores/ticket.ts` + tests (preview integration)                                 | Large  |
+| 5    | Router + Sidebar updates                                                             | Small  |
+| 6    | `NoSeasonBanner.vue` + tests                                                         | Small  |
+| 7    | `DayStatusCard.vue` + `DaySummaryCard.vue` + tests                                   | Medium |
+| 8    | `OpenDayDialog.vue` + `CloseDayDialog.vue` + `ReopenDayDialog.vue` + tests           | Medium |
+| 9    | `RegisterDashboardView.vue` + tests                                                  | Medium |
+| 10   | `ProductGrid.vue` + `ProductCard.vue` + tests                                        | Medium |
+| 11   | `QuantityDialog.vue` + tests                                                         | Medium |
+| 12   | `TicketDraftPanel.vue` + `TicketDraftItemRow.vue` + tests                            | Medium |
+| 13   | `PaymentSelector.vue` + `MemberSelectDialog.vue` + `VoucherSelectDialog.vue` + tests | Medium |
+| 14   | `TicketCreateView.vue` + tests                                                       | Large  |
+| 15   | `TicketDetailContent.vue` + `TicketDetail.vue` (responsive) + tests                  | Medium |
+| 16   | `TicketListTable.vue` + `TicketListView.vue` + tests                                 | Medium |
+| 17   | Integration test: full ticket creation flow                                          | Medium |
+| 18   | Polish: loading states, error toasts, empty states                                   | Small  |

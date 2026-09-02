@@ -99,24 +99,28 @@ describe('auth flow integration', () => {
     })
 
     describe('refreshAccessToken', () => {
-        it('updates token on successful refresh', async () => {
+        it('updates token and fetches user on successful refresh', async () => {
             store.accessToken = 'old-token'
             store.user = { ...fakeUser }
 
             const newToken = getLoginResponseMock({
                 accessToken: 'refreshed-token',
-                user: { ...fakeUser, name: 'Refreshed User' },
             })
 
-            server.use(getRefreshMockHandler(newToken))
+            server.use(
+                getRefreshMockHandler(newToken),
+                http.get('*/auth/me', () =>
+                    HttpResponse.json(
+                        { data: { ...fakeUser, name: 'Refreshed User' } },
+                        { status: 200 }
+                    )
+                )
+            )
 
             await store.refreshAccessToken()
 
             expect(store.accessToken).toBe('refreshed-token')
-            expect(store.user).toEqual({
-                ...fakeUser,
-                name: 'Refreshed User',
-            })
+            expect(store.user?.name).toBe('Refreshed User')
             expect(localStorage.getItem('access_token')).toBe('refreshed-token')
         })
 
