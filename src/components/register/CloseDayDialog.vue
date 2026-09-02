@@ -1,0 +1,84 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+import { useOperatingDayStore } from '@/stores/operating-day'
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+
+const props = defineProps<{
+  open: boolean
+  cashTotal: number
+  twintTotal: number
+  ticketCount: number
+}>()
+
+const emit = defineEmits<{
+  'update:open': [value: boolean]
+}>()
+
+const dayStore = useOperatingDayStore()
+const remark = ref('')
+const submitting = ref(false)
+
+async function handleConfirm() {
+  submitting.value = true
+  const result = await dayStore.closeDay(remark.value || undefined)
+  submitting.value = false
+
+  if (result.success) {
+    emit('update:open', false)
+  }
+}
+</script>
+
+<template>
+  <Dialog :open="props.open" @update:open="emit('update:open', $event)">
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>Fermer la journée</DialogTitle>
+        <DialogDescription>
+          Résumé de la journée
+        </DialogDescription>
+      </DialogHeader>
+      <div class="flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <span class="text-sm text-muted-foreground">Tickets</span>
+          <span class="font-medium">{{ props.ticketCount }}</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-sm text-muted-foreground">Espèces</span>
+          <span class="font-medium">CHF {{ props.cashTotal.toFixed(2) }}</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-sm text-muted-foreground">Twint</span>
+          <span class="font-medium">CHF {{ props.twintTotal.toFixed(2) }}</span>
+        </div>
+        <div class="mt-2 flex flex-col gap-1.5">
+          <label for="cash-remark" class="text-sm font-medium">Remarque espèces</label>
+          <textarea
+            id="cash-remark"
+            v-model="remark"
+            rows="3"
+            class="rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            placeholder="Ex: différence de caisse..."
+          />
+        </div>
+      </div>
+      <DialogFooter>
+        <DialogClose as-child>
+          <Button variant="outline" :disabled="submitting">Annuler</Button>
+        </DialogClose>
+        <Button variant="destructive" :disabled="submitting" @click="handleConfirm">
+          {{ submitting ? 'Fermeture...' : 'Fermer' }}
+        </Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
+</template>

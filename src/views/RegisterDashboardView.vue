@@ -3,7 +3,6 @@ import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { Receipt, Ticket, XCircle } from '@lucide/vue'
 
-import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import CloseDayDialog from '@/components/register/CloseDayDialog.vue'
 import DayStatusCard from '@/components/register/DayStatusCard.vue'

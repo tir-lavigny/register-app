@@ -97,6 +97,8 @@ describe('RegisterDashboardView', () => {
                 closing_balance: null,
                 total_cash: '0',
                 total_twint: '0',
+                created_at: null,
+                updated_at: null,
                 tickets: [],
             },
             loading: false,
@@ -111,7 +113,13 @@ describe('RegisterDashboardView', () => {
             closeDay: vi.fn(),
             reopenDay: vi.fn(),
             refreshDay: vi.fn(),
-        })
+            $state: {},
+            $patch: vi.fn(),
+            $reset: vi.fn(),
+            $subscribe: vi.fn(),
+            $onAction: vi.fn(),
+            $dispose: vi.fn(),
+        } as unknown as ReturnType<typeof useOperatingDayStore>)
 
         const wrapper = mountView()
         await flushPromises()

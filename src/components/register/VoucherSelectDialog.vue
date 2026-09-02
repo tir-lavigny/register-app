@@ -1,0 +1,93 @@
+<script setup lang="ts">
+import { computed } from 'vue'
+import type { Voucher } from '@/api/model'
+import { useRegisterMembersVouchers } from '@/api/generated/member/member'
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog'
+
+const props = defineProps<{
+  open: boolean
+  memberId: number
+  productId: number
+}>()
+
+const emit = defineEmits<{
+  'update:open': [value: boolean]
+  select: [voucher: Voucher | null]
+}>()
+
+const { data: vouchersData, isLoading } = useRegisterMembersVouchers(props.memberId, {
+  query: { enabled: computed(() => props.open && props.memberId > 0) },
+})
+
+function extractArray<T>(val: unknown, key: string): T[] {
+  if (val && typeof val === 'object' && key in val) {
+    const arr = (val as Record<string, unknown>)[key]
+    if (Array.isArray(arr)) return arr as T[]
+  }
+  return []
+}
+
+const vouchers = computed(() => {
+  const all = extractArray<Voucher>(vouchersData.value, 'data')
+  return all.filter((v) => v.product_id === props.productId)
+})
+
+function formatDiscount(voucher: Voucher): string {
+  if (voucher.discount_percent) return `${Number.parseFloat(voucher.discount_percent)}%`
+  if (voucher.discount_fixed) return `${Number.parseFloat(voucher.discount_fixed).toFixed(2)} CHF`
+  return ''
+}
+
+function handleSelect(voucher: Voucher) {
+  emit('select', voucher)
+  emit('update:open', false)
+}
+
+function handleClear() {
+  emit('select', null)
+  emit('update:open', false)
+}
+</script>
+
+<template>
+  <Dialog :open="open" @update:open="emit('update:open', $event)">
+    <DialogContent class="max-w-sm">
+      <DialogHeader>
+        <DialogTitle>Sélectionner un voucher</DialogTitle>
+      </DialogHeader>
+
+      <div class="flex flex-col gap-3">
+        <div v-if="isLoading" class="flex items-center justify-center py-4">
+          <span class="text-sm text-gray-500">Chargement...</span>
+        </div>
+
+        <div v-else class="max-h-80 overflow-y-auto">
+          <div
+            v-for="voucher in vouchers"
+            :key="voucher.id"
+            class="flex min-h-12 cursor-pointer items-center justify-between rounded-lg px-3 py-2 transition-colors hover:bg-gray-100"
+            @click="handleSelect(voucher)"
+          >
+            <span class="text-sm font-medium">Voucher #{{ voucher.id }}</span>
+            <span class="text-xs text-gray-500">{{ formatDiscount(voucher) }}</span>
+          </div>
+          <div v-if="vouchers.length === 0" class="py-4 text-center text-sm text-gray-500">
+            Aucun voucher disponible
+          </div>
+        </div>
+      </div>
+
+      <DialogFooter>
+        <Button variant="outline" @click="handleClear">Sans voucher</Button>
+        <Button variant="ghost" @click="emit('update:open', false)">Fermer</Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
+</template>
