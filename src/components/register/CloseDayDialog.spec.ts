@@ -5,6 +5,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { useOperatingDayStore } from '@/stores/operating-day'
 import CloseDayDialog from './CloseDayDialog.vue'
 
+vi.mock('@/lib/permissions', () => ({
+  hasPermission: vi.fn().mockReturnValue(true),
+  Permissions: {
+    ADD_CASH_REMARK: 'add cash remark',
+  },
+}))
+
 const mockFetchCurrent = vi.fn().mockResolvedValue({
   data: { data: null },
   status: 404,

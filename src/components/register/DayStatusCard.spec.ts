@@ -6,6 +6,15 @@ import type { OperatingDayResource } from '@/api/model'
 import { useOperatingDayStore } from '@/stores/operating-day'
 import DayStatusCard from './DayStatusCard.vue'
 
+vi.mock('@/lib/permissions', () => ({
+  hasPermission: vi.fn().mockReturnValue(true),
+  Permissions: {
+    OPEN_DAY: 'open day',
+    CLOSE_DAY: 'close day',
+    REOPEN_DAY: 'reopen day',
+  },
+}))
+
 function makeDay(
   overrides: Partial<OperatingDayResource> & { id: number }
 ): OperatingDayResource {

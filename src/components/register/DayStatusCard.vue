@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useOperatingDayStore } from '@/stores/operating-day'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { hasPermission, Permissions } from '@/lib/permissions'
 
 defineProps<{
   loading: boolean
@@ -15,6 +16,10 @@ const emit = defineEmits<{
 }>()
 
 const dayStore = useOperatingDayStore()
+
+const canOpenDay = computed(() => hasPermission(Permissions.OPEN_DAY))
+const canCloseDay = computed(() => hasPermission(Permissions.CLOSE_DAY))
+const canReopenDay = computed(() => hasPermission(Permissions.REOPEN_DAY))
 
 function formatDate(iso: string): string {
   const date = new Date(iso)
@@ -77,7 +82,7 @@ const dayDate = computed(() =>
       </div>
       <div class="flex gap-2">
         <Button
-          v-if="!dayStore.currentDay"
+          v-if="!dayStore.currentDay && canOpenDay"
           size="lg"
           :disabled="loading"
           @click="emit('open')"
@@ -85,7 +90,7 @@ const dayDate = computed(() =>
           Ouvrir la journée
         </Button>
         <Button
-          v-if="dayStore.isOpen"
+          v-if="dayStore.isOpen && canCloseDay"
           size="lg"
           variant="destructive"
           :disabled="loading"
@@ -94,7 +99,7 @@ const dayDate = computed(() =>
           Fermer
         </Button>
         <Button
-          v-if="dayStore.currentDay && !dayStore.isOpen"
+          v-if="dayStore.currentDay && !dayStore.isOpen && canReopenDay"
           size="lg"
           variant="outline"
           :disabled="loading"

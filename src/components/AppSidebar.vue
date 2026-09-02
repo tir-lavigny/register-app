@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { ChevronUp, User2 } from '@lucide/vue'
 import { RouterLink, useRoute } from 'vue-router'
+
+import { hasPermission, Permissions } from '@/lib/permissions'
 
 import {
     DropdownMenu,
@@ -27,32 +30,27 @@ import AppLogoIcon from './AppLogoIcon.vue'
 const props = defineProps<SidebarProps>()
 const route = useRoute()
 
+const canViewRegister = computed(() => hasPermission(Permissions.VIEW_REGISTER))
+const canCreateTicket = computed(() => hasPermission(Permissions.CREATE_TICKET))
+const canViewTickets = computed(() => hasPermission(Permissions.VIEW_TICKETS))
+
 interface NavItem {
     title: string
     url: string
     isActive?: boolean
     items?: NavItem[]
 }
-const navMain: NavItem[] = [
+const navMain = computed<NavItem[]>(() => [
     {
         title: 'Caisse',
         url: '/register',
         items: [
-            {
-                title: 'Tableau de bord',
-                url: '/register',
-            },
-            {
-                title: 'Nouveau ticket',
-                url: '/register/ticket/new',
-            },
-            {
-                title: 'Tickets du jour',
-                url: '/register/tickets',
-            },
+            ...(canViewRegister.value ? [{ title: 'Tableau de bord', url: '/register' }] : []),
+            ...(canCreateTicket.value ? [{ title: 'Nouveau ticket', url: '/register/ticket/new' }] : []),
+            ...(canViewTickets.value ? [{ title: 'Tickets du jour', url: '/register/tickets' }] : []),
         ],
     },
-]
+])
 </script>
 
 <template>

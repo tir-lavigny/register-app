@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import TicketDetail from '@/components/register/TicketDetail.vue'
 import TicketListTable from '@/components/register/TicketListTable.vue'
 import AppLayout from '@/layouts/AppLayout.vue'
+import { hasPermission, Permissions } from '@/lib/permissions'
 import { useOperatingDayStore } from '@/stores/operating-day'
 
 const router = useRouter()
@@ -26,6 +27,10 @@ const ticketCount = computed(() => dayStore.activeTickets.length)
 onMounted(async () => {
   if (!dayStore.currentDay) {
     await dayStore.fetchCurrentDay()
+  }
+  if (!hasPermission(Permissions.VIEW_TICKETS)) {
+    router.replace('/register')
+    return
   }
   if (!dayStore.isOpen && !dayStore.currentDay) {
     router.replace('/register')

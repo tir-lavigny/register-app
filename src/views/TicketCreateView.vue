@@ -5,6 +5,7 @@ import { ArrowLeft, ShoppingCart } from '@lucide/vue'
 import { toast } from 'vue-sonner'
 
 import type { Product } from '@/api/model'
+import type { TicketDraft } from '@/stores/ticket'
 import { Button } from '@/components/ui/button'
 import {
   AlertDialog,
@@ -19,6 +20,7 @@ import {
 import ProductGrid from '@/components/register/ProductGrid.vue'
 import QuantityDialog from '@/components/register/QuantityDialog.vue'
 import AppLayout from '@/layouts/AppLayout.vue'
+import { hasPermission, Permissions } from '@/lib/permissions'
 import { useOperatingDayStore } from '@/stores/operating-day'
 import { useTicketStore } from '@/stores/ticket'
 
@@ -30,10 +32,19 @@ const showQuantityDialog = ref(false)
 const selectedProduct = ref<Product | null>(null)
 const showRestoreDialog = ref(false)
 const hasRestoredDraft = ref(false)
+const savedDraft = ref<TicketDraft | null>(null)
 
 const items = computed(() => ticketStore.draft?.items ?? [])
 const itemCount = computed(() => items.value.reduce((sum, i) => sum + i.quantity, 0))
 const draftTotal = computed(() => items.value.reduce((sum, i) => sum + i.lineTotal, 0))
+
+const savedDraftSummary = computed(() => {
+    if (!savedDraft.value) return ''
+    const items = savedDraft.value.items
+    const total = items.reduce((sum, i) => sum + i.lineTotal, 0)
+    const names = items.map((i) => `${i.productName} ×${i.quantity}`).join(', ')
+    return `${items.length} article${items.length > 1 ? 's' : ''} — ${names} — Total: ${total.toFixed(2)} CHF`
+})
 
 onMounted(async () => {
     if (!dayStore.currentDay) {
@@ -43,8 +54,13 @@ onMounted(async () => {
         router.replace('/register')
         return
     }
+    if (!hasPermission(Permissions.CREATE_TICKET)) {
+        router.replace('/register')
+        return
+    }
 
     if (ticketStore.hasDraftInStorage(dayStore.dayId) && !ticketStore.draft) {
+        savedDraft.value = ticketStore.loadDraftFromStorage(dayStore.dayId)
         showRestoreDialog.value = true
     } else if (!ticketStore.draft) {
         ticketStore.startDraft(dayStore.dayId)
@@ -52,14 +68,12 @@ onMounted(async () => {
 })
 
 function handleRestoreDraft() {
-    if (!dayStore.dayId) return
-    const saved = ticketStore.loadDraftFromStorage(dayStore.dayId)
-    if (saved) {
-        ticketStore.draft = saved
-        hasRestoredDraft.value = true
-        toast.success('Ticket précédent restauré.')
-    }
+    if (!dayStore.dayId || !savedDraft.value) return
+    ticketStore.draft = savedDraft.value
+    hasRestoredDraft.value = true
+    toast.success('Ticket précédent restauré.')
     showRestoreDialog.value = false
+    savedDraft.value = null
 }
 
 function handleDiscardDraft() {
@@ -67,6 +81,7 @@ function handleDiscardDraft() {
     ticketStore.clearDraftStorage(dayStore.dayId)
     ticketStore.startDraft(dayStore.dayId)
     showRestoreDialog.value = false
+    savedDraft.value = null
 }
 
 function handleSelectProduct(product: Product) {
@@ -105,8 +120,11 @@ function goToSummary() {
                         Vous avez un ticket non terminé. Voulez-vous le reprendre ?
                     </AlertDialogDescription>
                 </AlertDialogHeader>
+                <div v-if="savedDraftSummary" class="rounded-md bg-muted px-4 py-3 text-sm text-muted-foreground">
+                    {{ savedDraftSummary }}
+                </div>
                 <AlertDialogFooter>
-                    <AlertDialogCancel @click="handleDiscardDraft">
+                    <AlertDialogCancel class="bg-destructive text-destructive-foreground hover:bg-destructive/90" @click="handleDiscardDraft">
                         Nouveau ticket
                     </AlertDialogCancel>
                     <AlertDialogAction @click="handleRestoreDraft">

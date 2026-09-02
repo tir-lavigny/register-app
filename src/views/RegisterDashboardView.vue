@@ -4,6 +4,8 @@ import { useRouter } from 'vue-router'
 import { computed } from 'vue'
 import { Receipt, Ticket, XCircle } from '@lucide/vue'
 
+import { hasPermission, Permissions } from '@/lib/permissions'
+
 import { Card, CardContent } from '@/components/ui/card'
 import CloseDayDialog from '@/components/register/CloseDayDialog.vue'
 import DayStatusCard from '@/components/register/DayStatusCard.vue'
@@ -22,6 +24,10 @@ const dayStore = useOperatingDayStore()
 const showOpenDialog = ref(false)
 const showCloseDialog = ref(false)
 const showReopenDialog = ref(false)
+
+const canCreateTicket = computed(() => hasPermission(Permissions.CREATE_TICKET))
+const canCloseDay = computed(() => hasPermission(Permissions.CLOSE_DAY))
+const canViewTickets = computed(() => hasPermission(Permissions.VIEW_TICKETS))
 
 const initialRemark = computed(() => dayStore.currentDay?.cash_remark ?? undefined)
 
@@ -55,6 +61,7 @@ onMounted(async () => {
 
             <div class="grid gap-4 sm:grid-cols-3">
                 <Card
+                    v-if="canCreateTicket"
                     class="cursor-pointer transition-colors hover:bg-accent"
                     @click="router.push('/register/ticket/new')"
                 >
@@ -67,6 +74,7 @@ onMounted(async () => {
                 </Card>
 
                 <Card
+                    v-if="canViewTickets"
                     class="cursor-pointer transition-colors hover:bg-accent"
                     @click="router.push('/register/tickets')"
                 >
@@ -79,7 +87,7 @@ onMounted(async () => {
                 </Card>
 
                 <Card
-                    v-if="dayStore.isOpen"
+                    v-if="dayStore.isOpen && canCloseDay"
                     class="cursor-pointer transition-colors hover:bg-destructive/10"
                     @click="showCloseDialog = true"
                 >

@@ -57,6 +57,9 @@ function formatPayment(method: string): string {
             <span class="text-xs text-muted-foreground">
               {{ Number.parseFloat(item.unit_price).toFixed(2) }} CHF × {{ item.quantity }}
             </span>
+            <span v-if="item.voucher_id" class="ml-1 inline-flex items-center rounded-full bg-green-100 px-1.5 py-0.5 text-[10px] font-medium text-green-700">
+              Voucher
+            </span>
           </div>
           <span class="text-sm font-medium">{{ Number.parseFloat(item.subtotal).toFixed(2) }} CHF</span>
         </div>

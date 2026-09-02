@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import { Tag } from '@lucide/vue'
 import type { TicketResource } from '@/api/model'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
-defineProps<{
+const props = defineProps<{
   tickets: TicketResource[]
   cashTotal: number
   twintTotal: number
@@ -26,6 +27,10 @@ function formatPayment(method: string): string {
 
 function formatTotal(total: string): string {
   return Number.parseFloat(total).toFixed(2) + ' CHF'
+}
+
+function hasVoucher(ticket: TicketResource): boolean {
+  return ticket.ticketItems?.some((i) => i.voucher_id !== null) ?? false
 }
 </script>
 
@@ -68,6 +73,7 @@ function formatTotal(total: string): string {
           <span class="text-xs text-muted-foreground">{{ formatTime(ticket.sold_at) }}</span>
         </div>
         <span class="text-xs text-muted-foreground">{{ formatPayment(ticket.payment_method) }}</span>
+        <Tag v-if="hasVoucher(ticket)" class="size-3.5 text-green-600" />
         <span class="min-w-20 text-right text-sm font-medium">{{ formatTotal(ticket.total) }}</span>
       </button>
     </div>

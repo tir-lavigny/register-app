@@ -5,6 +5,15 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 import RegisterDashboardView from './RegisterDashboardView.vue'
 
+vi.mock('@/lib/permissions', () => ({
+  hasPermission: vi.fn().mockReturnValue(true),
+  Permissions: {
+    CREATE_TICKET: 'create ticket',
+    VIEW_TICKETS: 'view tickets',
+    CLOSE_DAY: 'close day',
+  },
+}))
+
 const mockFetchCurrentSeason = vi.fn()
 const mockFetchCurrentDay = vi.fn()
 

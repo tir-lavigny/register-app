@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useOperatingDayStore } from '@/stores/operating-day'
 import { Button } from '@/components/ui/button'
 import {
@@ -11,6 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { hasPermission, Permissions } from '@/lib/permissions'
 
 const props = defineProps<{
   open: boolean
@@ -28,6 +29,8 @@ const dayStore = useOperatingDayStore()
 const remark = ref('')
 const submitting = ref(false)
 
+const canAddRemark = computed(() => hasPermission(Permissions.ADD_CASH_REMARK))
+
 watch(
   () => props.open,
   (val) => {
@@ -39,7 +42,7 @@ watch(
 
 async function handleConfirm() {
   submitting.value = true
-  const result = await dayStore.closeDay(remark.value || undefined)
+  const result = await dayStore.closeDay(canAddRemark.value ? (remark.value || undefined) : undefined)
   submitting.value = false
 
   if (result.success) {
@@ -70,7 +73,7 @@ async function handleConfirm() {
           <span class="text-sm text-muted-foreground">Twint</span>
           <span class="font-medium">CHF {{ props.twintTotal.toFixed(2) }}</span>
         </div>
-        <div class="mt-2 flex flex-col gap-1.5">
+        <div v-if="canAddRemark" class="mt-2 flex flex-col gap-1.5">
           <label for="cash-remark" class="text-sm font-medium">Remarque espèces</label>
           <textarea
             id="cash-remark"
