@@ -181,7 +181,7 @@ function goToPayment() {
                 <div class="flex flex-col gap-4 md:w-1/2">
                     <Card v-if="memberId > 0">
                         <CardHeader>
-                            <CardTitle class="text-lg">Vouchers</CardTitle>
+                            <CardTitle class="text-lg">Bons</CardTitle>
                         </CardHeader>
                         <CardContent class="flex flex-col gap-2">
                             <div
