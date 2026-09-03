@@ -23,10 +23,11 @@ const categories = computed(() =>
 )
 const products = computed(() => extractData<Product>(productsData.value))
 
-const activeTab = ref('all')
+const activeTab = ref(
+    categories.value.at(0)?.id ? String(categories.value.at(0)?.id) : '0'
+)
 
 const filteredProducts = computed(() => {
-    if (activeTab.value === 'all') return products.value
     const catId = Number(activeTab.value)
     return products.value.filter((p) => p.category_id === catId)
 })
@@ -47,7 +48,6 @@ function handleSelectProduct(product: Product) {
         <template v-else>
             <Tabs v-model="activeTab">
                 <TabsList class="w-full overflow-x-auto">
-                    <TabsTrigger value="all">Tout</TabsTrigger>
                     <TabsTrigger
                         v-for="cat in categories"
                         :key="cat.id"
@@ -56,16 +56,7 @@ function handleSelectProduct(product: Product) {
                         {{ cat.name }}
                     </TabsTrigger>
                 </TabsList>
-                <TabsContent value="all">
-                    <div class="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                        <ProductCard
-                            v-for="product in filteredProducts"
-                            :key="product.id"
-                            :product="product"
-                            @click="handleSelectProduct"
-                        />
-                    </div>
-                </TabsContent>
+
                 <TabsContent
                     v-for="cat in categories"
                     :key="cat.id"
