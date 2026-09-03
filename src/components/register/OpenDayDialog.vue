@@ -26,6 +26,7 @@ const emit = defineEmits<{
 const dayStore = useOperatingDayStore()
 const seasonStore = useSeasonStore()
 const submitting = ref(false)
+const error = ref<string | null>(null)
 
 async function handleConfirm() {
     if (!seasonStore.seasonId) return
@@ -37,6 +38,13 @@ async function handleConfirm() {
     if (result.success) {
         emit('confirm')
         emit('update:open', false)
+    } else {
+        const apiError = result.error || 'Une erreur est survenue'
+        error.value =
+            apiError ===
+            'An operating day with this date already exists for this season.'
+                ? "Une journée non cloturée existe déjà pour cette saison. Veuillez la cloturer avant d'en ouvrir une nouvelle."
+                : apiError
     }
 }
 </script>
@@ -50,6 +58,9 @@ async function handleConfirm() {
                     Ouvrir une nouvelle journée?
                 </DialogDescription>
             </DialogHeader>
+            <template v-if="error">
+                <p class="text-sm text-destructive">{{ error }}</p>
+            </template>
             <DialogFooter>
                 <DialogClose as-child>
                     <Button variant="outline" :disabled="submitting"

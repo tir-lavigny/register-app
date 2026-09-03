@@ -116,6 +116,7 @@ export const useOperatingDayStore = defineStore('operatingDay', () => {
             if (response.status === 200 && response.data.data) {
                 const closedDay = response.data.data
                 currentDay.value = null
+                void fetchCurrentDay() // Refresh the current day after closing
                 return { success: true, data: closedDay }
             }
 
