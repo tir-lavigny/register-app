@@ -25,6 +25,7 @@ const emit = defineEmits<{
 const quantity = ref(1)
 const customPrice = ref('')
 const hasTypedQuantity = ref(false)
+const hasTypedPrice = ref(false)
 
 watch(
     () => props.open,
@@ -32,6 +33,7 @@ watch(
         if (val) {
             quantity.value = 1
             hasTypedQuantity.value = false
+            hasTypedPrice.value = false
             if (props.product) {
                 customPrice.value = Number.parseFloat(
                     props.product.unit_price
@@ -82,12 +84,18 @@ function handleBackspace() {
 }
 
 function handleNumpadPrice(digit: string) {
-    customPrice.value = customPrice.value + digit
+    if (!hasTypedPrice.value) {
+        customPrice.value = digit
+        hasTypedPrice.value = true
+    } else {
+        customPrice.value = customPrice.value + digit
+    }
 }
 
 function handleBackspacePrice() {
     if (customPrice.value.length <= 1) {
         customPrice.value = '0'
+        hasTypedPrice.value = false
     } else {
         customPrice.value = customPrice.value.slice(0, -1)
     }
