@@ -9,11 +9,13 @@ import type { RequestHandlerOptions } from 'msw'
 
 import type {
     RegisterTicketsPreview200,
+    RegisterTicketsRefund200,
     RegisterTicketsShow200,
     RegisterTicketsStore201,
 } from '../../model'
 import {
     getRegisterTicketsPreviewResponseMock,
+    getRegisterTicketsRefundResponseMock,
     getRegisterTicketsShowResponseMock,
     getRegisterTicketsStoreResponseMock,
 } from './ticket.faker'
@@ -22,6 +24,7 @@ export {
     getRegisterTicketsStoreResponseMock,
     getRegisterTicketsPreviewResponseMock,
     getRegisterTicketsShowResponseMock,
+    getRegisterTicketsRefundResponseMock,
 } from './ticket.faker'
 
 export const getRegisterTicketsStoreMockHandler = (
@@ -95,8 +98,33 @@ export const getRegisterTicketsShowMockHandler = (
         options
     )
 }
+
+export const getRegisterTicketsRefundMockHandler = (
+    overrideResponse?:
+        | RegisterTicketsRefund200
+        | ((
+              info: Parameters<Parameters<typeof http.post>[1]>[0]
+          ) => Promise<RegisterTicketsRefund200> | RegisterTicketsRefund200),
+    options?: RequestHandlerOptions
+) => {
+    return http.post(
+        '*/register/tickets/:ticket/refund',
+        async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
+            return HttpResponse.json(
+                overrideResponse !== undefined
+                    ? typeof overrideResponse === 'function'
+                        ? await overrideResponse(info)
+                        : overrideResponse
+                    : getRegisterTicketsRefundResponseMock(),
+                { status: 200 }
+            )
+        },
+        options
+    )
+}
 export const getTicketMock = () => [
     getRegisterTicketsStoreMockHandler(),
     getRegisterTicketsPreviewMockHandler(),
     getRegisterTicketsShowMockHandler(),
+    getRegisterTicketsRefundMockHandler(),
 ]

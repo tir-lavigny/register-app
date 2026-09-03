@@ -8,6 +8,7 @@ import { faker } from '@faker-js/faker'
 
 import type {
     RegisterTicketsPreview200,
+    RegisterTicketsRefund200,
     RegisterTicketsShow200,
     RegisterTicketsStore201,
 } from '../../model'
@@ -78,5 +79,12 @@ export const getRegisterTicketsShowResponseMock = (
         member_id: faker.helpers.arrayElement([faker.number.int(), null]),
         sold_at: faker.date.past().toISOString().slice(0, 19) + 'Z',
     },
+    ...overrideResponse,
+})
+
+export const getRegisterTicketsRefundResponseMock = (
+    overrideResponse: Partial<Extract<RegisterTicketsRefund200, object>> = {}
+): RegisterTicketsRefund200 => ({
+    message: 'Ticket refunded successfully.',
     ...overrideResponse,
 })

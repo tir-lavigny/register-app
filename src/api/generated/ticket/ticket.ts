@@ -24,6 +24,7 @@ import type {
     AuthorizationExceptionResponse,
     ModelNotFoundExceptionResponse,
     RegisterTicketsPreview200,
+    RegisterTicketsRefund200,
     RegisterTicketsShow200,
     RegisterTicketsStore201,
     StoreTicketPreviewRequest,
@@ -485,4 +486,132 @@ export function useRegisterTicketsShow<
     >
 
     return query
+}
+
+export type registerTicketsRefundResponse200 = {
+    data: RegisterTicketsRefund200
+    status: 200
+}
+
+export type registerTicketsRefundResponse401 = {
+    data: AuthenticationExceptionResponse
+    status: 401
+}
+
+export type registerTicketsRefundResponse404 = {
+    data: ModelNotFoundExceptionResponse
+    status: 404
+}
+
+export type registerTicketsRefundResponseSuccess =
+    registerTicketsRefundResponse200 & {
+        headers: Headers
+    }
+export type registerTicketsRefundResponseError = (
+    registerTicketsRefundResponse401 | registerTicketsRefundResponse404
+) & {
+    headers: Headers
+}
+
+export type registerTicketsRefundResponse =
+    registerTicketsRefundResponseSuccess | registerTicketsRefundResponseError
+
+export const getRegisterTicketsRefundUrl = (ticket: number) => {
+    return `${import.meta.env.VITE_API_BASE_URL}/register/tickets/${ticket}/refund`
+}
+
+export const registerTicketsRefund = async (
+    ticket: number,
+    options?: RequestInit
+): Promise<registerTicketsRefundResponse> => {
+    const res = await fetch(getRegisterTicketsRefundUrl(ticket), {
+        ...options,
+        method: 'POST',
+    })
+
+    const body = [204, 205, 304].includes(res.status) ? null : await res.text()
+
+    const data: registerTicketsRefundResponse['data'] = body
+        ? JSON.parse(body)
+        : {}
+    return {
+        data,
+        status: res.status,
+        headers: res.headers,
+    } as registerTicketsRefundResponse
+}
+
+export const getRegisterTicketsRefundMutationKey = () =>
+    ['registerTicketsRefund'] as const
+
+export const getRegisterTicketsRefundMutationOptions = <
+    TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse,
+    TContext = unknown,
+>(options?: {
+    mutation?: UseMutationOptions<
+        Awaited<ReturnType<typeof registerTicketsRefund>>,
+        TError,
+        RegisterTicketsRefundMutationVariables,
+        TContext
+    >
+    fetch?: RequestInit
+}): UseMutationOptions<
+    Awaited<ReturnType<typeof registerTicketsRefund>>,
+    TError,
+    RegisterTicketsRefundMutationVariables,
+    TContext
+> => {
+    const mutationKey = getRegisterTicketsRefundMutationKey()
+    const { mutation: mutationOptions, fetch: fetchOptions } = options
+        ? options.mutation &&
+          'mutationKey' in options.mutation &&
+          options.mutation.mutationKey
+            ? options
+            : { ...options, mutation: { ...options.mutation, mutationKey } }
+        : { mutation: { mutationKey }, fetch: undefined }
+
+    const mutationFn: MutationFunction<
+        Awaited<ReturnType<typeof registerTicketsRefund>>,
+        RegisterTicketsRefundMutationVariables
+    > = (props) => {
+        const { ticket } = props ?? {}
+
+        return registerTicketsRefund(ticket, fetchOptions)
+    }
+
+    return { mutationFn, ...mutationOptions }
+}
+
+export type RegisterTicketsRefundMutationResult = NonNullable<
+    Awaited<ReturnType<typeof registerTicketsRefund>>
+>
+
+export type RegisterTicketsRefundMutationError =
+    AuthenticationExceptionResponse | ModelNotFoundExceptionResponse
+export type RegisterTicketsRefundMutationVariables = { ticket: number }
+
+export const useRegisterTicketsRefund = <
+    TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse,
+    TContext = unknown,
+>(
+    options?: {
+        mutation?: UseMutationOptions<
+            Awaited<ReturnType<typeof registerTicketsRefund>>,
+            TError,
+            RegisterTicketsRefundMutationVariables,
+            TContext
+        >
+        fetch?: RequestInit
+    },
+    queryClient?: QueryClient
+): UseMutationReturnType<
+    Awaited<ReturnType<typeof registerTicketsRefund>>,
+    TError,
+    RegisterTicketsRefundMutationVariables,
+    TContext
+> => {
+    return useMutation(
+        getRegisterTicketsRefundMutationOptions(options),
+        queryClient
+    )
 }
