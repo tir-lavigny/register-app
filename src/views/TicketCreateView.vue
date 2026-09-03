@@ -65,7 +65,13 @@ onMounted(async () => {
 
     if (ticketStore.hasDraftInStorage(dayStore.dayId) && !ticketStore.draft) {
         savedDraft.value = ticketStore.loadDraftFromStorage(dayStore.dayId)
-        showRestoreDialog.value = true
+        if (!savedDraft.value || savedDraft.value.items.length === 0) {
+            ticketStore.clearDraftStorage(dayStore.dayId)
+            ticketStore.startDraft(dayStore.dayId)
+            savedDraft.value = null
+        } else {
+            showRestoreDialog.value = true
+        }
     } else if (!ticketStore.draft) {
         ticketStore.startDraft(dayStore.dayId)
     }
