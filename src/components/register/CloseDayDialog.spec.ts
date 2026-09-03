@@ -336,6 +336,6 @@ describe('CloseDayDialog', () => {
     it('displays remark label', () => {
         const wrapper = mountDialog()
 
-        expect(wrapper.text()).toContain('Remarque espèces')
+        expect(wrapper.text()).toContain('Remarque')
     })
 })

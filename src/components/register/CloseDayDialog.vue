@@ -20,6 +20,7 @@ const props = defineProps<{
     twintTotal: number
     ticketCount: number
     initialRemark?: string
+    closingBalance?: string | null
     targetDayId?: number
     targetDayDate?: string
 }>()
@@ -33,6 +34,12 @@ const remark = ref('')
 const submitting = ref(false)
 
 const canAddRemark = computed(() => hasPermission(Permissions.ADD_CASH_REMARK))
+
+const parsedClosingBalance = computed(() => {
+    if (!props.closingBalance) return null
+    const value = Number.parseFloat(props.closingBalance)
+    return isNaN(value) ? null : value
+})
 
 watch(
     () => props.open,
@@ -80,6 +87,18 @@ async function handleConfirm() {
                 </DialogDescription>
             </DialogHeader>
             <div class="flex flex-col gap-3">
+                <div
+                    v-if="parsedClosingBalance !== null"
+                    class="flex items-center justify-between rounded-md bg-muted px-3 py-2"
+                >
+                    <span class="text-sm font-medium"
+                        >Solde de fermeture attendu</span
+                    >
+                    <span class="text-lg font-bold"
+                        >CHF {{ parsedClosingBalance.toFixed(2) }}</span
+                    >
+                </div>
+                <div class="h-px bg-border" />
                 <div class="flex items-center justify-between">
                     <span class="text-sm text-muted-foreground">Tickets</span>
                     <span class="font-medium">{{ props.ticketCount }}</span>
@@ -98,7 +117,7 @@ async function handleConfirm() {
                 </div>
                 <div v-if="canAddRemark" class="mt-2 flex flex-col gap-1.5">
                     <label for="cash-remark" class="text-sm font-medium"
-                        >Remarque espèces</label
+                        >Remarque</label
                     >
                     <textarea
                         id="cash-remark"

@@ -133,6 +133,7 @@ onMounted(async () => {
                 :twint-total="dayStore.twintTotal"
                 :ticket-count="dayStore.activeTickets.length"
                 :initial-remark="initialRemark"
+                :closing-balance="dayStore.currentDay?.closing_balance"
             />
             <CloseDayDialog
                 v-model:open="showClosePreviousDialog"
@@ -141,6 +142,7 @@ onMounted(async () => {
                 :ticket-count="previousUnclosedTickets.length"
                 :target-day-id="previousUnclosedDayId"
                 :target-day-date="previousUnclosedDayDate"
+                :closing-balance="dayStore.previousUnclosedDay?.closing_balance"
             />
             <ReopenDayDialog v-model:open="showReopenDialog" />
         </div>
