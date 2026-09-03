@@ -41,6 +41,12 @@ function handleSelectTicket(ticket: TicketResource) {
     selectedTicket.value = ticket
     showDetail.value = true
 }
+
+async function handleRefunded() {
+    showDetail.value = false
+    selectedTicket.value = null
+    await dayStore.refreshDay()
+}
 </script>
 
 <template>
@@ -65,7 +71,11 @@ function handleSelectTicket(ticket: TicketResource) {
                 @select="handleSelectTicket"
             />
 
-            <TicketDetail v-model:open="showDetail" :ticket="selectedTicket" />
+            <TicketDetail
+                v-model:open="showDetail"
+                :ticket="selectedTicket"
+                @refunded="handleRefunded"
+            />
         </div>
     </AppLayout>
 </template>

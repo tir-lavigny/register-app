@@ -1,9 +1,37 @@
 <script setup lang="ts">
-import type { TicketResource } from '@/api/model'
+import { ref } from 'vue'
 
-defineProps<{
+import type { TicketResource } from '@/api/model'
+import { useRegisterTicketsRefund } from '@/api/generated/ticket/ticket'
+import { Button } from '@/components/ui/button'
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
+import { Permissions, hasPermission } from '@/lib/permissions'
+
+const props = defineProps<{
     ticket: TicketResource
 }>()
+
+const emit = defineEmits<{
+    refunded: []
+}>()
+
+const showRefundDialog = ref(false)
+const isRefunding = ref(false)
+
+const canRefund = hasPermission(Permissions.REFUND_TICKET)
+const isAlreadyRefunded = !!props.ticket.deleted_at
+
+const refundMutation = useRegisterTicketsRefund()
 
 function formatTime(iso: string): string {
     const d = new Date(iso)
@@ -15,6 +43,19 @@ function formatPayment(method: string): string {
     if (method === 'twint') return 'Twint'
     return method
 }
+
+async function handleRefund() {
+    isRefunding.value = true
+    try {
+        await refundMutation.mutateAsync({ ticket: props.ticket.id })
+        emit('refunded')
+        showRefundDialog.value = false
+    } catch (error) {
+        console.error('Erreur lors du remboursement:', error)
+    } finally {
+        isRefunding.value = false
+    }
+}
 </script>
 
 <template>
@@ -24,7 +65,7 @@ function formatPayment(method: string): string {
                 >Ticket #{{ ticket.id }}</span
             >
             <span
-                v-if="ticket.deleted_at"
+                v-if="isAlreadyRefunded"
                 class="inline-flex items-center rounded-full bg-destructive/10 px-2.5 py-0.5 text-xs font-medium text-destructive"
             >
                 Annulé
@@ -83,6 +124,53 @@ function formatPayment(method: string): string {
                     >
                 </div>
             </div>
+        </div>
+
+        <div v-if="!isAlreadyRefunded && canRefund" class="border-t pt-4">
+            <AlertDialog v-model:open="showRefundDialog">
+                <AlertDialogTrigger as-child>
+                    <Button
+                        variant="destructive"
+                        class="w-full"
+                        :disabled="isRefunding"
+                    >
+                        {{ isRefunding ? 'Remboursement...' : 'Rembourser le ticket' }}
+                    </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle
+                            >Confirmer le remboursement</AlertDialogTitle
+                        >
+                        <AlertDialogDescription>
+                            Êtes-vous sûr de vouloir rembourser le ticket #{{
+                                ticket.id
+                            }}
+                            ?
+                            <br />
+                            <strong
+                                >{{ Number.parseFloat(ticket.total).toFixed(2) }}
+                                CHF</strong
+                            >
+                            - {{ formatPayment(ticket.payment_method) }}
+                            <br />
+                            Cette action est irréversible.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel :disabled="isRefunding"
+                            >Annuler</AlertDialogCancel
+                        >
+                        <AlertDialogAction
+                            variant="destructive"
+                            :disabled="isRefunding"
+                            @click="handleRefund"
+                        >
+                            {{ isRefunding ? 'Remboursement...' : 'Rembourser' }}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     </div>
 </template>

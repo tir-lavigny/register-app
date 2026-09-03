@@ -25,6 +25,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
     'update:open': [value: boolean]
+    refunded: []
 }>()
 
 const isDesktop = useMediaQuery('(min-width: 768px)')
@@ -40,11 +41,15 @@ const title = computed(() =>
 function handleClose() {
     emit('update:open', false)
 }
+
+function handleRefunded() {
+    emit('refunded')
+}
 </script>
 
 <template>
     <DefineContent v-slot="{ ticket: slotTicket }">
-        <TicketDetailContent :ticket="slotTicket" />
+        <TicketDetailContent :ticket="slotTicket" @refunded="handleRefunded" />
     </DefineContent>
 
     <Sheet v-if="isDesktop" :open="open" @update:open="handleClose">
