@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { Tag } from '@lucide/vue'
+import { computed } from 'vue'
 
 import type { TicketResource } from '@/api/model'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
-defineProps<{
+const props = defineProps<{
     tickets: TicketResource[]
     cashTotal: number
     twintTotal: number
@@ -14,6 +15,14 @@ defineProps<{
 const emit = defineEmits<{
     select: [ticket: TicketResource]
 }>()
+
+const sortedTickets = computed(() =>
+    [...props.tickets].sort((a, b) => {
+        const dateA = new Date(a.sold_at)
+        const dateB = new Date(b.sold_at)
+        return dateB.getTime() - dateA.getTime()
+    })
+)
 
 function formatTime(iso: string): string {
     const d = new Date(iso)
@@ -70,7 +79,7 @@ function hasVoucher(ticket: TicketResource): boolean {
 
         <div v-else class="flex flex-col gap-2">
             <button
-                v-for="ticket in tickets"
+                v-for="ticket in sortedTickets"
                 :key="ticket.id"
                 class="flex items-center gap-3 rounded-lg border px-4 py-3 text-left transition-colors hover:bg-accent"
                 :class="{ 'line-through opacity-60': ticket.deleted_at }"
