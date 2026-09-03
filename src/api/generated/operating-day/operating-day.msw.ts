@@ -9,12 +9,14 @@ import type { RequestHandlerOptions } from 'msw'
 
 import type {
     RegisterOperatingDaysCurrent200,
+    RegisterOperatingDaysPreviousUnclosed200,
     RegisterOperatingDaysShow200,
     RegisterOperatingDaysStore201,
     RegisterOperatingDaysUpdate200,
 } from '../../model'
 import {
     getRegisterOperatingDaysCurrentResponseMock,
+    getRegisterOperatingDaysPreviousUnclosedResponseMock,
     getRegisterOperatingDaysShowResponseMock,
     getRegisterOperatingDaysStoreResponseMock,
     getRegisterOperatingDaysUpdateResponseMock,
@@ -25,6 +27,7 @@ export {
     getRegisterOperatingDaysUpdateResponseMock,
     getRegisterOperatingDaysShowResponseMock,
     getRegisterOperatingDaysCurrentResponseMock,
+    getRegisterOperatingDaysPreviousUnclosedResponseMock,
 } from './operating-day.faker'
 
 export const getRegisterOperatingDaysStoreMockHandler = (
@@ -130,9 +133,36 @@ export const getRegisterOperatingDaysCurrentMockHandler = (
         options
     )
 }
+
+export const getRegisterOperatingDaysPreviousUnclosedMockHandler = (
+    overrideResponse?:
+        | RegisterOperatingDaysPreviousUnclosed200
+        | ((
+              info: Parameters<Parameters<typeof http.get>[1]>[0]
+          ) =>
+              | Promise<RegisterOperatingDaysPreviousUnclosed200>
+              | RegisterOperatingDaysPreviousUnclosed200),
+    options?: RequestHandlerOptions
+) => {
+    return http.get(
+        '*/register/days/previous-unclosed',
+        async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+            return HttpResponse.json(
+                overrideResponse !== undefined
+                    ? typeof overrideResponse === 'function'
+                        ? await overrideResponse(info)
+                        : overrideResponse
+                    : getRegisterOperatingDaysPreviousUnclosedResponseMock(),
+                { status: 200 }
+            )
+        },
+        options
+    )
+}
 export const getOperatingDayMock = () => [
     getRegisterOperatingDaysStoreMockHandler(),
     getRegisterOperatingDaysUpdateMockHandler(),
     getRegisterOperatingDaysShowMockHandler(),
     getRegisterOperatingDaysCurrentMockHandler(),
+    getRegisterOperatingDaysPreviousUnclosedMockHandler(),
 ]

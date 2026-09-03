@@ -25,6 +25,8 @@ import type {
     ModelNotFoundExceptionResponse,
     RegisterOperatingDaysCurrent200,
     RegisterOperatingDaysCurrent404,
+    RegisterOperatingDaysPreviousUnclosed200,
+    RegisterOperatingDaysPreviousUnclosed404,
     RegisterOperatingDaysShow200,
     RegisterOperatingDaysStore201,
     RegisterOperatingDaysUpdate200,
@@ -631,6 +633,145 @@ export function useRegisterOperatingDaysCurrent<
     queryKey: DataTag<QueryKey, TData, TError>
 } {
     const queryOptions = getRegisterOperatingDaysCurrentQueryOptions(options)
+
+    const query = useQuery(queryOptions, queryClient) as UseQueryReturnType<
+        TData,
+        TError
+    > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+    query.queryKey = unref(queryOptions).queryKey as DataTag<
+        QueryKey,
+        TData,
+        TError
+    >
+
+    return query
+}
+
+export type registerOperatingDaysPreviousUnclosedResponse200 = {
+    data: RegisterOperatingDaysPreviousUnclosed200
+    status: 200
+}
+
+export type registerOperatingDaysPreviousUnclosedResponse401 = {
+    data: AuthenticationExceptionResponse
+    status: 401
+}
+
+export type registerOperatingDaysPreviousUnclosedResponse404 = {
+    data: RegisterOperatingDaysPreviousUnclosed404
+    status: 404
+}
+
+export type registerOperatingDaysPreviousUnclosedResponseSuccess =
+    registerOperatingDaysPreviousUnclosedResponse200 & {
+        headers: Headers
+    }
+export type registerOperatingDaysPreviousUnclosedResponseError = (
+    | registerOperatingDaysPreviousUnclosedResponse401
+    | registerOperatingDaysPreviousUnclosedResponse404
+) & {
+    headers: Headers
+}
+
+export type registerOperatingDaysPreviousUnclosedResponse =
+    | registerOperatingDaysPreviousUnclosedResponseSuccess
+    | registerOperatingDaysPreviousUnclosedResponseError
+
+export const getRegisterOperatingDaysPreviousUnclosedUrl = () => {
+    return `${import.meta.env.VITE_API_BASE_URL}/register/days/previous-unclosed`
+}
+
+export const registerOperatingDaysPreviousUnclosed = async (
+    options?: RequestInit
+): Promise<registerOperatingDaysPreviousUnclosedResponse> => {
+    const res = await fetch(getRegisterOperatingDaysPreviousUnclosedUrl(), {
+        ...options,
+        method: 'GET',
+    })
+
+    const body = [204, 205, 304].includes(res.status) ? null : await res.text()
+
+    const data: registerOperatingDaysPreviousUnclosedResponse['data'] = body
+        ? JSON.parse(body)
+        : {}
+    return {
+        data,
+        status: res.status,
+        headers: res.headers,
+    } as registerOperatingDaysPreviousUnclosedResponse
+}
+
+export const getRegisterOperatingDaysPreviousUnclosedQueryKey = () => {
+    return [
+        import.meta.env.VITE_API_BASE_URL,
+        'register',
+        'days',
+        'previous-unclosed',
+    ] as const
+}
+
+export const getRegisterOperatingDaysPreviousUnclosedQueryOptions = <
+    TData = Awaited<ReturnType<typeof registerOperatingDaysPreviousUnclosed>>,
+    TError =
+        | AuthenticationExceptionResponse
+        | RegisterOperatingDaysPreviousUnclosed404,
+>(options?: {
+    query?: Partial<
+        UseQueryOptions<
+            Awaited<ReturnType<typeof registerOperatingDaysPreviousUnclosed>>,
+            TError,
+            TData
+        >
+    >
+    fetch?: RequestInit
+}) => {
+    const { query: queryOptions, fetch: fetchOptions } = options ?? {}
+
+    const queryKey = getRegisterOperatingDaysPreviousUnclosedQueryKey()
+
+    const queryFn: QueryFunction<
+        Awaited<ReturnType<typeof registerOperatingDaysPreviousUnclosed>>
+    > = ({ signal }) =>
+        registerOperatingDaysPreviousUnclosed({ signal, ...fetchOptions })
+
+    return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+        Awaited<ReturnType<typeof registerOperatingDaysPreviousUnclosed>>,
+        TError,
+        TData
+    >
+}
+
+export type RegisterOperatingDaysPreviousUnclosedQueryResult = NonNullable<
+    Awaited<ReturnType<typeof registerOperatingDaysPreviousUnclosed>>
+>
+export type RegisterOperatingDaysPreviousUnclosedQueryError =
+    AuthenticationExceptionResponse | RegisterOperatingDaysPreviousUnclosed404
+
+export function useRegisterOperatingDaysPreviousUnclosed<
+    TData = Awaited<ReturnType<typeof registerOperatingDaysPreviousUnclosed>>,
+    TError =
+        | AuthenticationExceptionResponse
+        | RegisterOperatingDaysPreviousUnclosed404,
+>(
+    options?: {
+        query?: Partial<
+            UseQueryOptions<
+                Awaited<
+                    ReturnType<typeof registerOperatingDaysPreviousUnclosed>
+                >,
+                TError,
+                TData
+            >
+        >
+        fetch?: RequestInit
+    },
+    queryClient?: QueryClient
+): UseQueryReturnType<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+} {
+    const queryOptions =
+        getRegisterOperatingDaysPreviousUnclosedQueryOptions(options)
 
     const query = useQuery(queryOptions, queryClient) as UseQueryReturnType<
         TData,

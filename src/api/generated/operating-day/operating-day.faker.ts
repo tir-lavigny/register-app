@@ -8,6 +8,7 @@ import { faker } from '@faker-js/faker'
 
 import type {
     RegisterOperatingDaysCurrent200,
+    RegisterOperatingDaysPreviousUnclosed200,
     RegisterOperatingDaysShow200,
     RegisterOperatingDaysStore201,
     RegisterOperatingDaysUpdate200,
@@ -527,6 +528,175 @@ export const getRegisterOperatingDaysCurrentResponseMock = (
         Extract<RegisterOperatingDaysCurrent200, object>
     > = {}
 ): RegisterOperatingDaysCurrent200 => ({
+    data: {
+        ...{
+            id: faker.number.int(),
+            date: faker.date.past().toISOString().slice(0, 19) + 'Z',
+            started_at: faker.date.past().toISOString().slice(0, 19) + 'Z',
+            closed_at: faker.helpers.arrayElement([
+                faker.date.past().toISOString().slice(0, 19) + 'Z',
+                null,
+            ]),
+            season_id: faker.number.int(),
+            cash_remark: faker.helpers.arrayElement([
+                faker.string.alpha({ length: { min: 10, max: 20 } }),
+                null,
+            ]),
+            closing_balance: faker.helpers.arrayElement([
+                faker.string.alpha({ length: { min: 10, max: 20 } }),
+                null,
+            ]),
+            total_cash: faker.string.alpha({ length: { min: 10, max: 20 } }),
+            total_twint: faker.string.alpha({ length: { min: 10, max: 20 } }),
+            created_at: faker.helpers.arrayElement([
+                faker.date.past().toISOString().slice(0, 19) + 'Z',
+                null,
+            ]),
+            updated_at: faker.helpers.arrayElement([
+                faker.date.past().toISOString().slice(0, 19) + 'Z',
+                null,
+            ]),
+            tickets: Array.from(
+                { length: faker.number.int({ min: 1, max: 10 }) },
+                (_, i) => i + 1
+            ).map(() => ({
+                id: faker.number.int(),
+                total: faker.string.alpha({ length: { min: 10, max: 20 } }),
+                payment_method: faker.string.alpha({
+                    length: { min: 10, max: 20 },
+                }),
+                operating_day_id: faker.number.int(),
+                member_id: faker.helpers.arrayElement([
+                    faker.number.int(),
+                    null,
+                ]),
+                sold_at: faker.date.past().toISOString().slice(0, 19) + 'Z',
+                deleted_at: faker.helpers.arrayElement([
+                    faker.date.past().toISOString().slice(0, 19) + 'Z',
+                    null,
+                ]),
+                created_at: faker.helpers.arrayElement([
+                    faker.date.past().toISOString().slice(0, 19) + 'Z',
+                    null,
+                ]),
+                updated_at: faker.helpers.arrayElement([
+                    faker.date.past().toISOString().slice(0, 19) + 'Z',
+                    null,
+                ]),
+                ticketItems: faker.helpers.arrayElement([
+                    Array.from(
+                        { length: faker.number.int({ min: 1, max: 10 }) },
+                        (_, i) => i + 1
+                    ).map(() => ({
+                        id: faker.number.int(),
+                        product_id: faker.number.int(),
+                        ticket_id: faker.number.int(),
+                        voucher_id: faker.helpers.arrayElement([
+                            faker.number.int(),
+                            null,
+                        ]),
+                        quantity: faker.number.int(),
+                        unit_price: faker.string.alpha({
+                            length: { min: 10, max: 20 },
+                        }),
+                        subtotal: faker.string.alpha({
+                            length: { min: 10, max: 20 },
+                        }),
+                        created_at: faker.helpers.arrayElement([
+                            faker.date.past().toISOString().slice(0, 19) + 'Z',
+                            null,
+                        ]),
+                        updated_at: faker.helpers.arrayElement([
+                            faker.date.past().toISOString().slice(0, 19) + 'Z',
+                            null,
+                        ]),
+                        product: faker.helpers.arrayElement([
+                            {
+                                id: faker.number.int(),
+                                name: faker.string.alpha({
+                                    length: { min: 10, max: 20 },
+                                }),
+                                picture: faker.helpers.arrayElement([
+                                    faker.string.alpha({
+                                        length: { min: 10, max: 20 },
+                                    }),
+                                    null,
+                                ]),
+                                unit_price: faker.string.alpha({
+                                    length: { min: 10, max: 20 },
+                                }),
+                                allows_custom_price: faker.datatype.boolean(),
+                                category_id: faker.number.int(),
+                                created_at: faker.helpers.arrayElement([
+                                    faker.date
+                                        .past()
+                                        .toISOString()
+                                        .slice(0, 19) + 'Z',
+                                    null,
+                                ]),
+                                updated_at: faker.helpers.arrayElement([
+                                    faker.date
+                                        .past()
+                                        .toISOString()
+                                        .slice(0, 19) + 'Z',
+                                    null,
+                                ]),
+                            },
+                            undefined,
+                        ]),
+                        voucher: faker.helpers.arrayElement([
+                            faker.helpers.arrayElement([
+                                {
+                                    id: faker.number.int(),
+                                    discount_percent:
+                                        faker.helpers.arrayElement([
+                                            faker.string.alpha({
+                                                length: { min: 10, max: 20 },
+                                            }),
+                                            null,
+                                        ]),
+                                    discount_fixed: faker.helpers.arrayElement([
+                                        faker.string.alpha({
+                                            length: { min: 10, max: 20 },
+                                        }),
+                                        null,
+                                    ]),
+                                    product_id: faker.number.int(),
+                                    season_id: faker.number.int(),
+                                    member_id: faker.number.int(),
+                                    created_at: faker.helpers.arrayElement([
+                                        faker.date
+                                            .past()
+                                            .toISOString()
+                                            .slice(0, 19) + 'Z',
+                                        null,
+                                    ]),
+                                    updated_at: faker.helpers.arrayElement([
+                                        faker.date
+                                            .past()
+                                            .toISOString()
+                                            .slice(0, 19) + 'Z',
+                                        null,
+                                    ]),
+                                },
+                                null,
+                            ]),
+                            undefined,
+                        ]),
+                    })),
+                    undefined,
+                ]),
+            })),
+        },
+    },
+    ...overrideResponse,
+})
+
+export const getRegisterOperatingDaysPreviousUnclosedResponseMock = (
+    overrideResponse: Partial<
+        Extract<RegisterOperatingDaysPreviousUnclosed200, object>
+    > = {}
+): RegisterOperatingDaysPreviousUnclosed200 => ({
     data: {
         ...{
             id: faker.number.int(),
