@@ -28,6 +28,15 @@ const seasonStore = useSeasonStore()
 const submitting = ref(false)
 const error = ref<string | null>(null)
 
+function formatDate(iso: string): string {
+    const date = new Date(iso)
+    return new Intl.DateTimeFormat('fr-CH', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+    }).format(date)
+}
+
 async function handleConfirm() {
     if (!seasonStore.seasonId) return
 
@@ -39,12 +48,7 @@ async function handleConfirm() {
         emit('confirm')
         emit('update:open', false)
     } else {
-        const apiError = result.error || 'Une erreur est survenue'
-        error.value =
-            apiError ===
-            'An operating day with this date already exists for this season.'
-                ? "Une journée non cloturée existe déjà pour cette saison. Veuillez la cloturer avant d'en ouvrir une nouvelle."
-                : apiError
+        error.value = result.error
     }
 }
 </script>
@@ -60,6 +64,15 @@ async function handleConfirm() {
             </DialogHeader>
             <template v-if="error">
                 <p class="text-sm text-destructive">{{ error }}</p>
+                <p
+                    v-if="dayStore.previousUnclosedDay"
+                    class="text-sm text-muted-foreground"
+                >
+                    Journée du
+                    <strong>{{
+                        formatDate(dayStore.previousUnclosedDay.date)
+                    }}</strong>
+                </p>
             </template>
             <DialogFooter>
                 <DialogClose as-child>

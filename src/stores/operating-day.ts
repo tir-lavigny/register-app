@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 
 import {
     registerOperatingDaysCurrent,
+    registerOperatingDaysPreviousUnclosed,
     registerOperatingDaysShow,
     registerOperatingDaysStore,
     registerOperatingDaysUpdate,
@@ -11,12 +12,16 @@ import type { OperatingDayResource, UpdateDayRequestStatus } from '@/api/model'
 
 export const useOperatingDayStore = defineStore('operatingDay', () => {
     const currentDay = ref<OperatingDayResource | null>(null)
+    const previousUnclosedDay = ref<OperatingDayResource | null>(null)
     const loading = ref(false)
 
     const isOpen = computed(
         () => currentDay.value !== null && currentDay.value.closed_at === null
     )
     const dayId = computed(() => currentDay.value?.id ?? null)
+    const hasPreviousUnclosedDay = computed(
+        () => previousUnclosedDay.value !== null
+    )
 
     const activeTickets = computed(
         () => currentDay.value?.tickets?.filter((t) => !t.deleted_at) ?? []
@@ -35,6 +40,22 @@ export const useOperatingDayStore = defineStore('operatingDay', () => {
             .filter((t) => t.payment_method === 'twint')
             .reduce((sum, t) => sum + Number.parseFloat(t.total), 0)
     )
+
+    async function fetchPreviousUnclosedDay() {
+        try {
+            const response = await registerOperatingDaysPreviousUnclosed()
+            if (response.status === 200) {
+                previousUnclosedDay.value = response.data.data
+                return
+            }
+            if (response.status === 404) {
+                previousUnclosedDay.value = null
+                return
+            }
+        } catch {
+            previousUnclosedDay.value = null
+        }
+    }
 
     async function fetchCurrentDay() {
         loading.value = true
@@ -71,10 +92,18 @@ export const useOperatingDayStore = defineStore('operatingDay', () => {
 
             if (response.status === 201) {
                 currentDay.value = response.data.data
+                previousUnclosedDay.value = null
                 return { success: true }
             }
 
             if (response.status === 422) {
+                await fetchPreviousUnclosedDay()
+                if (previousUnclosedDay.value) {
+                    return {
+                        success: false,
+                        error: 'Une journée non cloturée existe déjà. Veuillez la cloturer avant d\'en ouvrir une nouvelle.',
+                    }
+                }
                 return {
                     success: false,
                     error: response.data.message,
@@ -97,18 +126,20 @@ export const useOperatingDayStore = defineStore('operatingDay', () => {
     }
 
     async function closeDay(
+        targetDayId?: number,
         remark?: string
     ): Promise<
         | { success: true; data: OperatingDayResource }
         | { success: false; error: string }
     > {
-        if (!isOpen.value || !dayId.value) {
-            return { success: false, error: 'Aucune journée ouverte.' }
+        const idToClose = targetDayId ?? dayId.value
+        if (!idToClose) {
+            return { success: false, error: 'Aucune journée à fermer.' }
         }
 
         loading.value = true
         try {
-            const response = await registerOperatingDaysUpdate(dayId.value, {
+            const response = await registerOperatingDaysUpdate(idToClose, {
                 status: 'closed' as UpdateDayRequestStatus,
                 cash_remark: remark ?? null,
             })
@@ -116,7 +147,9 @@ export const useOperatingDayStore = defineStore('operatingDay', () => {
             if (response.status === 200 && response.data.data) {
                 const closedDay = response.data.data
                 currentDay.value = null
-                void fetchCurrentDay() // Refresh the current day after closing
+                if (targetDayId && previousUnclosedDay.value?.id === targetDayId) {
+                    previousUnclosedDay.value = null
+                }
                 return { success: true, data: closedDay }
             }
 
@@ -181,14 +214,17 @@ export const useOperatingDayStore = defineStore('operatingDay', () => {
 
     return {
         currentDay,
+        previousUnclosedDay,
         loading,
         isOpen,
         dayId,
+        hasPreviousUnclosedDay,
         activeTickets,
         canceledTickets,
         cashTotal,
         twintTotal,
         fetchCurrentDay,
+        fetchPreviousUnclosedDay,
         createDay,
         closeDay,
         reopenDay,

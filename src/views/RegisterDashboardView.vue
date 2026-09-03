@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Receipt, Ticket, XCircle } from '@lucide/vue'
-import { onMounted, ref } from 'vue'
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import CloseDayDialog from '@/components/register/CloseDayDialog.vue'
@@ -22,6 +21,7 @@ const dayStore = useOperatingDayStore()
 
 const showOpenDialog = ref(false)
 const showCloseDialog = ref(false)
+const showClosePreviousDialog = ref(false)
 const showReopenDialog = ref(false)
 
 const canCreateTicket = computed(() => hasPermission(Permissions.CREATE_TICKET))
@@ -32,10 +32,32 @@ const initialRemark = computed(
     () => dayStore.currentDay?.cash_remark ?? undefined
 )
 
+const previousUnclosedDayId = computed(
+    () => dayStore.previousUnclosedDay?.id
+)
+const previousUnclosedDayDate = computed(
+    () => dayStore.previousUnclosedDay?.date
+)
+
+const previousUnclosedTickets = computed(
+    () => dayStore.previousUnclosedDay?.tickets?.filter((t) => !t.deleted_at) ?? []
+)
+const previousUnclosedCashTotal = computed(() =>
+    previousUnclosedTickets.value
+        .filter((t) => t.payment_method === 'cash')
+        .reduce((sum, t) => sum + Number.parseFloat(t.total), 0)
+)
+const previousUnclosedTwintTotal = computed(() =>
+    previousUnclosedTickets.value
+        .filter((t) => t.payment_method === 'twint')
+        .reduce((sum, t) => sum + Number.parseFloat(t.total), 0)
+)
+
 onMounted(async () => {
     await seasonStore.fetchCurrentSeason()
     if (seasonStore.seasonId) {
         await dayStore.fetchCurrentDay()
+        await dayStore.fetchPreviousUnclosedDay()
     }
 })
 </script>
@@ -50,6 +72,7 @@ onMounted(async () => {
                 :loading="dayStore.loading"
                 @open="showOpenDialog = true"
                 @close="showCloseDialog = true"
+                @close-previous="showClosePreviousDialog = true"
                 @reopen="showReopenDialog = true"
             />
 
@@ -110,6 +133,14 @@ onMounted(async () => {
                 :twint-total="dayStore.twintTotal"
                 :ticket-count="dayStore.activeTickets.length"
                 :initial-remark="initialRemark"
+            />
+            <CloseDayDialog
+                v-model:open="showClosePreviousDialog"
+                :cash-total="previousUnclosedCashTotal"
+                :twint-total="previousUnclosedTwintTotal"
+                :ticket-count="previousUnclosedTickets.length"
+                :target-day-id="previousUnclosedDayId"
+                :target-day-date="previousUnclosedDayDate"
             />
             <ReopenDayDialog v-model:open="showReopenDialog" />
         </div>

@@ -349,7 +349,7 @@ describe('operatingDay store', () => {
                 headers: new Headers(),
             })
 
-            const result = await store.closeDay('Extra CHF 5 found')
+            const result = await store.closeDay(undefined, 'Extra CHF 5 found')
 
             expect(result.success).toBe(true)
             expect(store.currentDay).toBeNull()
@@ -375,7 +375,7 @@ describe('operatingDay store', () => {
                 headers: new Headers(),
             })
 
-            await store.closeDay('Missing CHF 2')
+            await store.closeDay(undefined, 'Missing CHF 2')
 
             expect(mockUpdate).toHaveBeenCalledWith(1, {
                 status: 'closed',
@@ -412,7 +412,7 @@ describe('operatingDay store', () => {
 
             expect(result).toEqual({
                 success: false,
-                error: 'Aucune journée ouverte.',
+                error: 'Aucune journée à fermer.',
             })
         })
 

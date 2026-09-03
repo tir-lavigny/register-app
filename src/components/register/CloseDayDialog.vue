@@ -20,6 +20,8 @@ const props = defineProps<{
     twintTotal: number
     ticketCount: number
     initialRemark?: string
+    targetDayId?: number
+    targetDayDate?: string
 }>()
 
 const emit = defineEmits<{
@@ -41,9 +43,19 @@ watch(
     }
 )
 
+function formatDate(iso: string): string {
+    const date = new Date(iso)
+    return new Intl.DateTimeFormat('fr-CH', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+    }).format(date)
+}
+
 async function handleConfirm() {
     submitting.value = true
     const result = await dayStore.closeDay(
+        props.targetDayId,
         canAddRemark.value ? remark.value || undefined : undefined
     )
     submitting.value = false
@@ -59,7 +71,13 @@ async function handleConfirm() {
         <DialogContent>
             <DialogHeader>
                 <DialogTitle>Fermer la journée</DialogTitle>
-                <DialogDescription> Résumé de la journée </DialogDescription>
+                <DialogDescription>
+                    <template v-if="targetDayDate">
+                        Fermer la journée du
+                        <strong>{{ formatDate(targetDayDate) }}</strong>
+                    </template>
+                    <template v-else> Résumé de la journée </template>
+                </DialogDescription>
             </DialogHeader>
             <div class="flex flex-col gap-3">
                 <div class="flex items-center justify-between">
