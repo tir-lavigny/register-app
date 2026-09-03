@@ -20,7 +20,7 @@ const props = defineProps<{
     twintTotal: number
     ticketCount: number
     initialRemark?: string
-    closingBalance?: string | null
+    closingBalance?: number | string | null
     targetDayId?: number
     targetDayDate?: string
 }>()
@@ -37,7 +37,10 @@ const canAddRemark = computed(() => hasPermission(Permissions.ADD_CASH_REMARK))
 
 const parsedClosingBalance = computed(() => {
     if (!props.closingBalance) return null
-    const value = Number.parseFloat(props.closingBalance)
+    const value =
+        typeof props.closingBalance === 'number'
+            ? props.closingBalance
+            : Number.parseFloat(props.closingBalance)
     return isNaN(value) ? null : value
 })
 
