@@ -23,11 +23,13 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar'
 import { Permissions, hasPermission } from '@/lib/permissions'
+import { useAuthStore } from '@/stores/auth'
 
 import AppLogoIcon from './AppLogoIcon.vue'
 
 const props = defineProps<SidebarProps>()
 const route = useRoute()
+const authStore = useAuthStore()
 
 const canViewRegister = computed(() => hasPermission(Permissions.VIEW_REGISTER))
 const canCreateTicket = computed(() => hasPermission(Permissions.CREATE_TICKET))
@@ -111,7 +113,8 @@ const navMain = computed<NavItem[]>(() => [
                     <DropdownMenu>
                         <DropdownMenuTrigger as-child>
                             <SidebarMenuButton>
-                                <User2 /> Username
+                                <User2 />
+                                {{ authStore.user?.name || 'Utilisateur' }}
                                 <ChevronUp class="ml-auto" />
                             </SidebarMenuButton>
                         </DropdownMenuTrigger>
@@ -120,13 +123,9 @@ const navMain = computed<NavItem[]>(() => [
                             class="w-(--reka-popper-anchor-width)"
                         >
                             <DropdownMenuItem>
-                                <span>Account</span>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <span>Billing</span>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <span>Sign out</span>
+                                <span @click="authStore.logout()"
+                                    >Se déconnecter</span
+                                >
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>

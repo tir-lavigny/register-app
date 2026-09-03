@@ -8,6 +8,7 @@ import {
     refresh as apiRefresh,
 } from '@/api/generated/auth/auth'
 import type { UserResource } from '@/api/model'
+import { router } from '@/router'
 
 export const AUTH_STORAGE_KEY = 'access_token'
 
@@ -67,6 +68,7 @@ export const useAuthStore = defineStore('auth', () => {
             // Clear state regardless of API success
         } finally {
             clearAuth()
+            router.push({ path: '/login' })
         }
     }
 

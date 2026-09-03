@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 import { useAuthStore } from '@/stores/auth'
-import HomeView from '@/views/HomeView.vue'
 import LoginView from '@/views/LoginView.vue'
 import RegisterDashboardView from '@/views/RegisterDashboardView.vue'
 import TicketCreateView from '@/views/TicketCreateView.vue'
@@ -10,7 +9,7 @@ import TicketPaymentView from '@/views/TicketPaymentView.vue'
 import TicketSummaryView from '@/views/TicketSummaryView.vue'
 
 const routes = [
-    { path: '/', component: HomeView, meta: { requiresAuth: true } },
+    { path: '/', redirect: '/register' },
     { path: '/login', component: LoginView, meta: { requiresAuth: false } },
     {
         path: '/register',
