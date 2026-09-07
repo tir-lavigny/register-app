@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 import { useRegisterCategoriesIndex } from '@/api/generated/category/category'
 import { useRegisterProductsIndex } from '@/api/generated/product/product'
@@ -24,7 +24,7 @@ const categories = computed(() =>
 const products = computed(() => extractData<Product>(productsData.value))
 
 const activeTab = ref(
-    categories.value.at(0)?.id ? String(categories.value.at(0)?.id) : '0'
+    categories.value.at(0)?.id ? String(categories.value.at(0)?.id) : '-1'
 )
 
 const filteredProducts = computed(() => {
@@ -35,6 +35,21 @@ const filteredProducts = computed(() => {
 function handleSelectProduct(product: Product) {
     emit('select-product', product)
 }
+
+watch(
+    () => categories.value,
+    (newCategories) => {
+        if (
+            newCategories.length > 0 &&
+            !newCategories.some((c) => String(c.id) === activeTab.value)
+        ) {
+            activeTab.value = String(newCategories[0].id)
+        }
+    },
+    {
+        once: true,
+    }
+)
 </script>
 
 <template>
