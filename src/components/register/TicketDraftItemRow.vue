@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Tag, X } from '@lucide/vue'
+import { Minus, Plus, Tag, X } from '@lucide/vue'
 
 import { Button } from '@/components/ui/button'
 import type { TicketDraftItem } from '@/stores/ticket'
@@ -27,7 +27,9 @@ function decrementQty(index: number, qty: number) {
 </script>
 
 <template>
-    <div class="flex items-center gap-3 rounded-lg border px-3 py-2">
+    <div
+        class="flex flex-col sm:flex-row items-center gap-3 rounded-lg border px-3 py-2"
+    >
         <div class="flex-1 min-w-0">
             <span class="block truncate text-sm font-medium text-foreground">{{
                 item.productName
@@ -39,43 +41,48 @@ function decrementQty(index: number, qty: number) {
                 </span>
             </span>
         </div>
-        <div class="flex items-center gap-1">
-            <Button
-                variant="outline"
-                size="icon"
-                class="min-h-11 min-w-11"
-                @click="decrementQty(index, item.quantity)"
-                >-</Button
-            >
-            <span class="min-w-8 text-center text-sm font-bold">{{
-                item.quantity
-            }}</span>
-            <Button
-                variant="outline"
-                size="icon"
-                class="min-h-11 min-w-11"
-                @click="incrementQty(index, item.quantity)"
-                >+</Button
-            >
+        <div class="flex flex-col sm:flex-row items-center gap-2">
+            <div class="flex items-center gap-1">
+                <Button
+                    variant="outline"
+                    size="icon"
+                    class=""
+                    @click="decrementQty(index, item.quantity)"
+                    ><Minus class="size-4"
+                /></Button>
+                <span class="min-w-8 text-center text-sm font-bold">{{
+                    item.quantity
+                }}</span>
+                <Button
+                    variant="outline"
+                    size="icon"
+                    class=""
+                    @click="incrementQty(index, item.quantity)"
+                >
+                    <Plus class="size-4" />
+                </Button>
+            </div>
+            <div class="flex items-center gap-1">
+                <span class="min-w-16 text-right text-sm font-medium"
+                    >{{ item.lineTotal.toFixed(2) }} CHF</span
+                >
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    class=""
+                    @click="emit('apply-voucher', index)"
+                >
+                    <Tag v-if="item.voucherId" class="size-4 text-green-600" />
+                    <Tag v-else class="size-4 text-muted-foreground" />
+                </Button>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    class="text-destructive"
+                    @click="emit('remove', index)"
+                    ><X class="size-4"
+                /></Button>
+            </div>
         </div>
-        <span class="min-w-16 text-right text-sm font-medium"
-            >{{ item.lineTotal.toFixed(2) }} CHF</span
-        >
-        <Button
-            variant="ghost"
-            size="icon"
-            class="min-h-11 min-w-11"
-            @click="emit('apply-voucher', index)"
-        >
-            <Tag v-if="item.voucherId" class="size-4 text-green-600" />
-            <Tag v-else class="size-4 text-muted-foreground" />
-        </Button>
-        <Button
-            variant="ghost"
-            size="icon"
-            class="min-h-11 min-w-11 text-destructive"
-            @click="emit('remove', index)"
-            ><X class="size-4"
-        /></Button>
     </div>
 </template>

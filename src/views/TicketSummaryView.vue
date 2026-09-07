@@ -150,8 +150,8 @@ function goToPayment() {
                 </span>
             </div>
 
-            <div class="flex flex-1 flex-col gap-4 md:flex-row">
-                <div class="flex flex-1 flex-col gap-4 md:w-1/2">
+            <div class="flex flex-1 flex-col gap-4 lg:flex-row">
+                <div class="flex flex-1 flex-col gap-4 lg:w-1/2">
                     <Card>
                         <CardHeader>
                             <CardTitle class="text-lg">Articles</CardTitle>
@@ -178,7 +178,7 @@ function goToPayment() {
                     </Card>
                 </div>
 
-                <div class="flex flex-col gap-4 md:w-1/2">
+                <div class="flex flex-col gap-4 lg:w-1/2">
                     <Card v-if="memberId > 0">
                         <CardHeader>
                             <CardTitle class="text-lg">Bons</CardTitle>
