@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Delete, Diff } from '@lucide/vue'
 import { computed, ref, watch } from 'vue'
 
 import type { Product } from '@/api/model'
@@ -101,6 +102,14 @@ function handleBackspacePrice() {
     }
 }
 
+function handleToggleCustomPrice() {
+    if (customPrice.value.startsWith('-')) {
+        customPrice.value = customPrice.value.slice(1)
+    } else {
+        customPrice.value = '-' + customPrice.value
+    }
+}
+
 function handleConfirm() {
     emit('confirm', {
         quantity: quantity.value,
@@ -176,7 +185,7 @@ function handleCancel() {
                             class="min-h-11 text-lg font-bold"
                             @click="handleBackspace"
                         >
-                            ⌫
+                            <Delete class="size-4" />
                         </Button>
                         <div></div>
                     </div>
@@ -226,7 +235,14 @@ function handleCancel() {
                             class="min-h-11 text-lg font-bold"
                             @click="handleBackspacePrice"
                         >
-                            ⌫
+                            <Delete class="size-4" />
+                        </Button>
+                        <Button
+                            variant="outline"
+                            class="min-h-11 text-lg font-bold"
+                            @click="handleToggleCustomPrice"
+                        >
+                            <Diff class="size-4" />
                         </Button>
                         <div></div>
                     </div>
