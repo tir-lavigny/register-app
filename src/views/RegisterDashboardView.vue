@@ -32,15 +32,15 @@ const initialRemark = computed(
     () => dayStore.currentDay?.cash_remark ?? undefined
 )
 
-const previousUnclosedDayId = computed(
-    () => dayStore.previousUnclosedDay?.id
-)
+const previousUnclosedDayId = computed(() => dayStore.previousUnclosedDay?.id)
 const previousUnclosedDayDate = computed(
     () => dayStore.previousUnclosedDay?.date
 )
 
 const previousUnclosedTickets = computed(
-    () => dayStore.previousUnclosedDay?.tickets?.filter((t) => !t.deleted_at) ?? []
+    () =>
+        dayStore.previousUnclosedDay?.tickets?.filter((t) => !t.deleted_at) ??
+        []
 )
 const previousUnclosedCashTotal = computed(() =>
     previousUnclosedTickets.value

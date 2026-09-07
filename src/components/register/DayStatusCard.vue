@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import { AlertTriangle } from '@lucide/vue'
+import { computed } from 'vue'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -114,7 +114,8 @@ const previousUnclosedDate = computed(() =>
                         v-if="dayStore.isOpen"
                         class="text-sm text-muted-foreground"
                     >
-                        Ouvert à {{ formatTime(dayStore.currentDay.started_at) }}
+                        Ouvert à
+                        {{ formatTime(dayStore.currentDay.started_at) }}
                     </p>
                     <p
                         v-else-if="dayStore.currentDay.closed_at"

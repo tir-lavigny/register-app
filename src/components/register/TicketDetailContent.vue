@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import type { TicketResource } from '@/api/model'
 import { useRegisterTicketsRefund } from '@/api/generated/ticket/ticket'
-import { Button } from '@/components/ui/button'
+import type { TicketResource } from '@/api/model'
 import {
     AlertDialog,
     AlertDialogAction,
@@ -15,6 +14,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import { Button } from '@/components/ui/button'
 import { Permissions, hasPermission } from '@/lib/permissions'
 
 const props = defineProps<{
@@ -134,7 +134,11 @@ async function handleRefund() {
                         class="w-full"
                         :disabled="isRefunding"
                     >
-                        {{ isRefunding ? 'Remboursement...' : 'Rembourser le ticket' }}
+                        {{
+                            isRefunding
+                                ? 'Remboursement...'
+                                : 'Rembourser le ticket'
+                        }}
                     </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
@@ -149,7 +153,9 @@ async function handleRefund() {
                             ?
                             <br />
                             <strong
-                                >{{ Number.parseFloat(ticket.total).toFixed(2) }}
+                                >{{
+                                    Number.parseFloat(ticket.total).toFixed(2)
+                                }}
                                 CHF</strong
                             >
                             - {{ formatPayment(ticket.payment_method) }}
@@ -166,7 +172,9 @@ async function handleRefund() {
                             :disabled="isRefunding"
                             @click="handleRefund"
                         >
-                            {{ isRefunding ? 'Remboursement...' : 'Rembourser' }}
+                            {{
+                                isRefunding ? 'Remboursement...' : 'Rembourser'
+                            }}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

@@ -101,7 +101,7 @@ export const useOperatingDayStore = defineStore('operatingDay', () => {
                 if (previousUnclosedDay.value) {
                     return {
                         success: false,
-                        error: 'Une journée non cloturée existe déjà. Veuillez la cloturer avant d\'en ouvrir une nouvelle.',
+                        error: "Une journée non cloturée existe déjà. Veuillez la cloturer avant d'en ouvrir une nouvelle.",
                     }
                 }
                 return {
@@ -147,7 +147,10 @@ export const useOperatingDayStore = defineStore('operatingDay', () => {
             if (response.status === 200 && response.data.data) {
                 const closedDay = response.data.data
                 currentDay.value = null
-                if (targetDayId && previousUnclosedDay.value?.id === targetDayId) {
+                if (
+                    targetDayId &&
+                    previousUnclosedDay.value?.id === targetDayId
+                ) {
                     previousUnclosedDay.value = null
                 }
                 return { success: true, data: closedDay }
