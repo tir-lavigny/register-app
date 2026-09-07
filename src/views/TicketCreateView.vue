@@ -174,12 +174,19 @@ function goToSummary() {
             <Button
                 v-if="itemCount > 0"
                 size="lg"
-                class="fixed bottom-6 left-1/2 z-50 min-h-14 -translate-x-1/2 rounded-full px-6 shadow-lg"
+                class="fixed bottom-6 left-1/2 z-50 min-h-14 -translate-x-1/2 px-6 shadow-lg"
                 @click="goToSummary"
             >
-                <ShoppingCart class="mr-2 size-5" />
-                {{ itemCount }} article{{ itemCount > 1 ? 's' : '' }} —
-                {{ draftTotal.toFixed(2) }} CHF
+                <div class="mr-2 size-5 relative">
+                    <ShoppingCart class="size-4" />
+                    <span
+                        v-if="itemCount > 0"
+                        class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground"
+                    >
+                        {{ itemCount }}
+                    </span>
+                </div>
+                <span> {{ draftTotal.toFixed(2) }} CHF </span>
             </Button>
         </div>
     </AppLayout>
