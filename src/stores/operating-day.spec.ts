@@ -6,6 +6,7 @@ import type { OperatingDayResource, TicketResource } from '@/api/model'
 import { useOperatingDayStore } from './operating-day'
 
 const mockFetchCurrent = vi.fn()
+const mockFetchPreviousUnclosed = vi.fn()
 const mockStore = vi.fn()
 const mockUpdate = vi.fn()
 const mockShow = vi.fn()
@@ -13,6 +14,8 @@ const mockShow = vi.fn()
 vi.mock('@/api/generated/operating-day/operating-day', () => ({
     registerOperatingDaysCurrent: (...args: unknown[]) =>
         mockFetchCurrent(...args),
+    registerOperatingDaysPreviousUnclosed: (...args: unknown[]) =>
+        mockFetchPreviousUnclosed(...args),
     registerOperatingDaysStore: (...args: unknown[]) => mockStore(...args),
     registerOperatingDaysUpdate: (...args: unknown[]) => mockUpdate(...args),
     registerOperatingDaysShow: (...args: unknown[]) => mockShow(...args),
@@ -539,6 +542,189 @@ describe('operatingDay store', () => {
         it('does nothing if no dayId', async () => {
             await store.refreshDay()
             expect(mockShow).not.toHaveBeenCalled()
+        })
+    })
+
+    describe('fetchPreviousUnclosedDay', () => {
+        it('sets previousUnclosedDay on 200', async () => {
+            const previousDay = makeDay({ id: 2, closed_at: null })
+            mockFetchPreviousUnclosed.mockResolvedValue({
+                data: { data: previousDay },
+                status: 200,
+                headers: new Headers(),
+            })
+
+            await store.fetchPreviousUnclosedDay()
+
+            expect(store.previousUnclosedDay).toEqual(previousDay)
+        })
+
+        it('clears previousUnclosedDay on 404', async () => {
+            mockFetchPreviousUnclosed.mockResolvedValue({
+                data: { message: 'No previous unclosed day.' },
+                status: 404,
+                headers: new Headers(),
+            })
+
+            await store.fetchPreviousUnclosedDay()
+
+            expect(store.previousUnclosedDay).toBeNull()
+        })
+
+        it('clears previousUnclosedDay on network error', async () => {
+            mockFetchPreviousUnclosed.mockRejectedValue(
+                new Error('Network error')
+            )
+
+            await store.fetchPreviousUnclosedDay()
+
+            expect(store.previousUnclosedDay).toBeNull()
+        })
+
+        it('hasPreviousUnclosedDay is true when previousUnclosedDay set', async () => {
+            mockFetchPreviousUnclosed.mockResolvedValue({
+                data: { data: makeDay({ id: 2 }) },
+                status: 200,
+                headers: new Headers(),
+            })
+
+            await store.fetchPreviousUnclosedDay()
+
+            expect(store.hasPreviousUnclosedDay).toBe(true)
+        })
+    })
+
+    describe('closeDay with targetDayId', () => {
+        it('clears previousUnclosedDay when closing a previous unclosed day', async () => {
+            const previousDay = makeDay({ id: 2 })
+            store.previousUnclosedDay = previousDay
+
+            mockFetchCurrent.mockResolvedValue({
+                data: { data: makeDay({ id: 1 }) },
+                status: 200,
+                headers: new Headers(),
+            })
+            await store.fetchCurrentDay()
+
+            const closedDay = makeDay({
+                id: 2,
+                closed_at: '2026-09-02T18:00:00Z',
+            })
+            mockUpdate.mockResolvedValue({
+                data: { data: closedDay },
+                status: 200,
+                headers: new Headers(),
+            })
+
+            const result = await store.closeDay(2)
+
+            expect(result.success).toBe(true)
+            expect(store.previousUnclosedDay).toBeNull()
+        })
+
+        it('does not clear previousUnclosedDay when closing current day', async () => {
+            const previousDay = makeDay({ id: 2 })
+            store.previousUnclosedDay = previousDay
+
+            mockFetchCurrent.mockResolvedValue({
+                data: { data: makeDay({ id: 1 }) },
+                status: 200,
+                headers: new Headers(),
+            })
+            await store.fetchCurrentDay()
+
+            mockUpdate.mockResolvedValue({
+                data: {
+                    data: makeDay({
+                        id: 1,
+                        closed_at: '2026-09-02T18:00:00Z',
+                    }),
+                },
+                status: 200,
+                headers: new Headers(),
+            })
+
+            await store.closeDay(1)
+
+            expect(store.previousUnclosedDay).toEqual(previousDay)
+        })
+    })
+
+    describe('closeDay non-200 path', () => {
+        it('returns error on non-200 response', async () => {
+            mockFetchCurrent.mockResolvedValue({
+                data: { data: makeDay({ id: 1 }) },
+                status: 200,
+                headers: new Headers(),
+            })
+            await store.fetchCurrentDay()
+
+            mockUpdate.mockResolvedValue({
+                data: { message: 'Bad request' },
+                status: 400,
+                headers: new Headers(),
+            })
+
+            const result = await store.closeDay()
+
+            expect(result).toEqual({
+                success: false,
+                error: 'Une erreur inattendue est survenue.',
+            })
+        })
+    })
+
+    describe('reopenDay non-200 path', () => {
+        it('returns error on non-200 response', async () => {
+            mockFetchCurrent.mockResolvedValue({
+                data: {
+                    data: makeDay({ id: 1, closed_at: '2026-09-02T18:00:00Z' }),
+                },
+                status: 200,
+                headers: new Headers(),
+            })
+            await store.fetchCurrentDay()
+
+            mockUpdate.mockResolvedValue({
+                data: { message: 'Bad request' },
+                status: 400,
+                headers: new Headers(),
+            })
+
+            const result = await store.reopenDay()
+
+            expect(result).toEqual({
+                success: false,
+                error: 'Une erreur inattendue est survenue.',
+            })
+        })
+    })
+
+    describe('createDay with previous unclosed day', () => {
+        it('returns error when 422 and previous unclosed day exists', async () => {
+            const previousDay = makeDay({ id: 99 })
+            mockFetchPreviousUnclosed.mockResolvedValue({
+                data: { data: previousDay },
+                status: 200,
+                headers: new Headers(),
+            })
+            mockStore.mockResolvedValue({
+                data: {
+                    message: 'Validation failed',
+                    errors: { season_id: ['The season id field is required.'] },
+                },
+                status: 422,
+                headers: new Headers(),
+            })
+
+            const result = await store.createDay(42)
+
+            expect(result.success).toBe(false)
+            if (!result.success) {
+                expect(result.error).toBe(
+                    "Une journée non cloturée existe déjà. Veuillez la cloturer avant d'en ouvrir une nouvelle."
+                )
+            }
         })
     })
 })

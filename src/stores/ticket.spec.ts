@@ -366,5 +366,238 @@ describe('ticket store', () => {
             })
             expect(store.draft).not.toBeNull()
         })
+
+        it('returns generic error on unexpected status', async () => {
+            mockStore.mockResolvedValue({
+                data: { message: 'Server error' },
+                status: 500,
+                headers: new Headers(),
+            })
+
+            const result = await store.finalizeTicket(1)
+
+            expect(result).toEqual({
+                success: false,
+                error: 'Une erreur inattendue est survenue.',
+            })
+        })
+    })
+
+    describe('applyVoucher', () => {
+        beforeEach(() => {
+            store.startDraft()
+        })
+
+        it('applies percent discount voucher', () => {
+            store.addItem(makeProduct(), 2)
+            const voucher = makeVoucher({
+                discount_percent: '20',
+                discount_fixed: null,
+            })
+
+            store.applyVoucher(0, voucher)
+
+            expect(store.draft!.items[0].voucherId).toBe(100)
+            expect(store.draft!.items[0].voucherDiscount).toBe(1.4)
+            expect(store.draft!.items[0].lineTotal).toBe(5.6)
+        })
+
+        it('applies fixed discount voucher', () => {
+            store.addItem(makeProduct(), 2)
+            const voucher = makeVoucher({
+                discount_fixed: '1.00',
+                discount_percent: null,
+            })
+
+            store.applyVoucher(0, voucher)
+
+            expect(store.draft!.items[0].voucherId).toBe(100)
+            expect(store.draft!.items[0].voucherDiscount).toBe(1.0)
+            expect(store.draft!.items[0].lineTotal).toBe(6.0)
+        })
+
+        it('clamps discount to 0 when exceeds subtotal', () => {
+            store.addItem(makeProduct(), 1)
+            const voucher = makeVoucher({
+                discount_fixed: '100.00',
+                discount_percent: null,
+            })
+
+            store.applyVoucher(0, voucher)
+
+            expect(store.draft!.items[0].lineTotal).toBe(0)
+        })
+
+        it('does nothing when no draft', () => {
+            const freshPinia = createPinia()
+            setActivePinia(freshPinia)
+            const freshStore = useTicketStore()
+            const voucher = makeVoucher()
+            freshStore.applyVoucher(0, voucher)
+            expect(freshStore.draft).toBeNull()
+        })
+
+        it('does nothing when index is out of range', () => {
+            store.addItem(makeProduct(), 1)
+            const voucher = makeVoucher()
+            store.applyVoucher(99, voucher)
+            expect(store.draft!.items[0].voucherId).toBeNull()
+        })
+    })
+
+    describe('storage methods', () => {
+        beforeEach(() => {
+            localStorage.clear()
+        })
+
+        it('saveDraftToStorage saves draft to localStorage', () => {
+            store.startDraft()
+            store.addItem(makeProduct(), 1)
+
+            store.saveDraftToStorage(1)
+
+            const raw = localStorage.getItem('register_draft_1')
+            expect(raw).not.toBeNull()
+            const parsed = JSON.parse(raw!)
+            expect(parsed.items).toHaveLength(1)
+        })
+
+        it('loadDraftFromStorage returns parsed draft', () => {
+            store.startDraft()
+            store.addItem(makeProduct(), 1)
+            store.saveDraftToStorage(1)
+
+            const loaded = store.loadDraftFromStorage(1)
+
+            expect(loaded).not.toBeNull()
+            expect(loaded!.items).toHaveLength(1)
+        })
+
+        it('loadDraftFromStorage returns null for missing key', () => {
+            const loaded = store.loadDraftFromStorage(999)
+
+            expect(loaded).toBeNull()
+        })
+
+        it('loadDraftFromStorage returns null for invalid JSON', () => {
+            localStorage.setItem('register_draft_1', 'not-json')
+
+            const loaded = store.loadDraftFromStorage(1)
+
+            expect(loaded).toBeNull()
+        })
+
+        it('clearDraftStorage removes draft from localStorage', () => {
+            store.startDraft()
+            store.saveDraftToStorage(1)
+
+            store.clearDraftStorage(1)
+
+            expect(localStorage.getItem('register_draft_1')).toBeNull()
+        })
+
+        it('hasDraftInStorage returns true when draft exists', () => {
+            store.startDraft()
+            store.saveDraftToStorage(1)
+
+            expect(store.hasDraftInStorage(1)).toBe(true)
+        })
+
+        it('hasDraftInStorage returns false when no draft', () => {
+            localStorage.clear()
+            expect(store.hasDraftInStorage(1)).toBe(false)
+        })
+    })
+
+    describe('dayId storage integration', () => {
+        it('startDraft with dayId saves to storage', () => {
+            store.startDraft(1)
+
+            expect(localStorage.getItem('register_draft_1')).not.toBeNull()
+        })
+
+        it('addItem with dayId saves to storage', () => {
+            store.startDraft(1)
+            store.addItem(makeProduct(), 2, null, null, 1)
+
+            const raw = localStorage.getItem('register_draft_1')
+            expect(raw).not.toBeNull()
+            const parsed = JSON.parse(raw!)
+            expect(parsed.items).toHaveLength(1)
+        })
+
+        it('removeItem with dayId saves to storage', () => {
+            store.startDraft(1)
+            store.addItem(makeProduct(), 1, null, null, 1)
+            store.removeItem(0, 1)
+
+            const raw = localStorage.getItem('register_draft_1')
+            const parsed = JSON.parse(raw!)
+            expect(parsed.items).toHaveLength(0)
+        })
+
+        it('updateItemQuantity with dayId saves to storage', () => {
+            store.startDraft(1)
+            store.addItem(makeProduct(), 1, null, null, 1)
+            store.updateItemQuantity(0, 5, 1)
+
+            const raw = localStorage.getItem('register_draft_1')
+            const parsed = JSON.parse(raw!)
+            expect(parsed.items[0].quantity).toBe(5)
+        })
+
+        it('setPaymentMethod with dayId saves to storage', () => {
+            store.startDraft(1)
+            store.setPaymentMethod('cash', 1)
+
+            const raw = localStorage.getItem('register_draft_1')
+            const parsed = JSON.parse(raw!)
+            expect(parsed.paymentMethod).toBe('cash')
+        })
+
+        it('setMember with dayId saves to storage', () => {
+            store.startDraft(1)
+            store.setMember(42, 'John', 1)
+
+            const raw = localStorage.getItem('register_draft_1')
+            const parsed = JSON.parse(raw!)
+            expect(parsed.memberId).toBe(42)
+        })
+
+        it('applyVoucher with dayId saves to storage', () => {
+            store.startDraft(1)
+            store.addItem(makeProduct(), 1, null, null, 1)
+            store.applyVoucher(0, makeVoucher(), 1)
+
+            const raw = localStorage.getItem('register_draft_1')
+            const parsed = JSON.parse(raw!)
+            expect(parsed.items[0].voucherId).toBe(100)
+        })
+
+        it('clearVoucherForItem with dayId saves to storage', () => {
+            store.startDraft(1)
+            store.addItem(makeProduct(), 1, null, makeVoucher(), 1)
+            store.clearVoucherForItem(0, 1)
+
+            const raw = localStorage.getItem('register_draft_1')
+            const parsed = JSON.parse(raw!)
+            expect(parsed.items[0].voucherId).toBeNull()
+        })
+
+        it('finalizeTicket clears storage', async () => {
+            store.startDraft(1)
+            store.addItem(makeProduct(), 1, null, null, 1)
+            store.setPaymentMethod('cash', 1)
+
+            mockStore.mockResolvedValue({
+                data: { data: { id: 1, total: '3.50' } },
+                status: 201,
+                headers: new Headers(),
+            })
+
+            await store.finalizeTicket(1)
+
+            expect(localStorage.getItem('register_draft_1')).toBeNull()
+        })
     })
 })

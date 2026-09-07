@@ -276,4 +276,51 @@ describe('auth store', () => {
             expect(store.hasPermission('manage_users')).toBe(false)
         })
     })
+
+    describe('fetchMe', () => {
+        it('sets user and returns true on 200', async () => {
+            store.accessToken = 'some-token'
+
+            mockMe.mockResolvedValue({
+                data: { data: fakeUser },
+                status: 200,
+                headers: new Headers(),
+            })
+
+            const result = await store.fetchMe()
+
+            expect(result).toBe(true)
+            expect(store.user).toEqual(fakeUser)
+        })
+
+        it('clears auth and returns false on non-200', async () => {
+            store.accessToken = 'some-token'
+            store.user = { ...fakeUser }
+
+            mockMe.mockResolvedValue({
+                data: { message: 'Unauthorized' },
+                status: 401,
+                headers: new Headers(),
+            })
+
+            const result = await store.fetchMe()
+
+            expect(result).toBe(false)
+            expect(store.user).toBeNull()
+            expect(store.accessToken).toBeNull()
+        })
+
+        it('clears auth and returns false on network error', async () => {
+            store.accessToken = 'some-token'
+            store.user = { ...fakeUser }
+
+            mockMe.mockRejectedValue(new Error('Network error'))
+
+            const result = await store.fetchMe()
+
+            expect(result).toBe(false)
+            expect(store.user).toBeNull()
+            expect(store.accessToken).toBeNull()
+        })
+    })
 })

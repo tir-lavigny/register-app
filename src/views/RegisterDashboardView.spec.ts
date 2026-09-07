@@ -35,6 +35,7 @@ vi.mock('@/stores/season', () => ({
 vi.mock('@/stores/operating-day', () => ({
     useOperatingDayStore: vi.fn(() => ({
         currentDay: null,
+        previousUnclosedDay: null,
         loading: false,
         isOpen: false,
         dayId: null,
@@ -43,6 +44,7 @@ vi.mock('@/stores/operating-day', () => ({
         cashTotal: 0,
         twintTotal: 0,
         fetchCurrentDay: mockFetchCurrentDay,
+        fetchPreviousUnclosedDay: vi.fn(),
         createDay: vi.fn(),
         closeDay: vi.fn(),
         reopenDay: vi.fn(),
@@ -118,6 +120,7 @@ describe('RegisterDashboardView', () => {
                 updated_at: null,
                 tickets: [],
             },
+            previousUnclosedDay: null,
             loading: false,
             isOpen: true,
             dayId: 1,
@@ -126,6 +129,7 @@ describe('RegisterDashboardView', () => {
             cashTotal: 0,
             twintTotal: 0,
             fetchCurrentDay: mockFetchCurrentDay,
+            fetchPreviousUnclosedDay: vi.fn(),
             createDay: vi.fn(),
             closeDay: vi.fn(),
             reopenDay: vi.fn(),
