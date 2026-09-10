@@ -5,6 +5,10 @@ on:
         tags:
             - 'v*'
 
+concurrency:
+    group: register-deploy
+    cancel-in-progress: false
+
 jobs:
     deploy:
         name: Build & Deploy to server
@@ -14,6 +18,17 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v7.0.1
 
+            - name: Determine environment
+              id: env
+              run: |
+                  if [[ "${{ github.ref_name }}" == *"-dev"* ]]; then
+                    echo "api_url=${{ secrets.STAGING_VITE_API_BASE_URL }}" >> $GITHUB_OUTPUT
+                    echo "target_path=${{ secrets.SSH_STAGING_TARGET_PATH }}" >> $GITHUB_OUTPUT
+                  else
+                    echo "api_url=${{ secrets.VITE_API_BASE_URL }}" >> $GITHUB_OUTPUT
+                    echo "target_path=${{ secrets.SSH_TARGET_PATH }}" >> $GITHUB_OUTPUT
+                  fi
+
             - name: Setup Node.js
               uses: actions/setup-node@v7.0.0
               with:
@@ -21,8 +36,7 @@ jobs:
                   cache: npm
 
             - name: Setup .env file
-              run: |
-                  echo "VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}" >> .env
+              run: echo "VITE_API_BASE_URL=${{ steps.env.outputs.api_url }}" >> .env
 
             - name: Install dependencies
               run: npm ci
@@ -42,4 +56,4 @@ jobs:
             - name: Deploy dist/ via rsync
               run: |
                   rsync -avz --delete dist/ \
-                    ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_TARGET_PATH }}
+                    ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ steps.env.outputs.target_path }}
