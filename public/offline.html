@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8" />
+        <link rel="icon" type="image/icon" href="/favicon.ico" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Caisse - Hors ligne</title>
+        <style>
+            body {
+                margin: 0;
+                font-family: Inter, system-ui, -apple-system, sans-serif;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 100vh;
+                background: hsl(210 40% 98%);
+                color: hsl(222.2 84% 4.9%);
+            }
+            .container {
+                text-align: center;
+                padding: 2rem;
+            }
+            h1 {
+                font-size: 1.5rem;
+                font-weight: 600;
+                margin-bottom: 0.5rem;
+            }
+            p {
+                color: hsl(215.4 16.3% 46.9%);
+                margin-bottom: 1.5rem;
+            }
+            button {
+                background: hsl(221.2 83.2% 53.3%);
+                color: white;
+                border: none;
+                padding: 0.5rem 1.5rem;
+                border-radius: 0.5rem;
+                font-size: 0.875rem;
+                font-weight: 500;
+                cursor: pointer;
+            }
+            button:hover {
+                background: hsl(221.2 83.2% 48%);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Pas de connexion internet</h1>
+            <p>Vérifiez votre connexion et réessayez.</p>
+            <button onclick="location.reload()">Réessayer</button>
+        </div>
+    </body>
+</html>

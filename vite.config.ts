@@ -15,6 +15,8 @@ export default defineConfig({
             devOptions: { enabled: true },
             workbox: {
                 globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+                navigateFallback: '/offline.html',
+                navigateFallbackDenylist: [/^\/api\//],
                 runtimeCaching: [
                     {
                         urlPattern: /\/api\/register\/(categories|products|seasons)(\?.*)?$/,
@@ -29,15 +31,22 @@ export default defineConfig({
                         handler: 'CacheFirst',
                         options: {
                             cacheName: 'reference-data',
-                            expiration: { maxEntries: 50, maxAgeSeconds: 3600 },
+                            expiration: { maxEntries: 50, maxAgeSeconds: 900 },
                         },
                     },
                     {
-                        urlPattern: /\/api\/auth\/me(\?.*)?$/,
+                        urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+                        handler: 'StaleWhileRevalidate',
+                        options: {
+                            cacheName: 'google-fonts-stylesheets',
+                        },
+                    },
+                    {
+                        urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
                         handler: 'CacheFirst',
                         options: {
-                            cacheName: 'reference-data',
-                            expiration: { maxEntries: 50, maxAgeSeconds: 3600 },
+                            cacheName: 'google-fonts-webfonts',
+                            expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 * 365 },
                         },
                     },
                 ],

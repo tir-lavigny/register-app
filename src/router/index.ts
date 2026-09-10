@@ -2,6 +2,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 
 import { useAuthStore } from '@/stores/auth'
 import LoginView from '@/views/LoginView.vue'
+import OfflineView from '@/views/OfflineView.vue'
 import RegisterDashboardView from '@/views/RegisterDashboardView.vue'
 import TicketCreateView from '@/views/TicketCreateView.vue'
 import TicketListView from '@/views/TicketListView.vue'
@@ -11,6 +12,7 @@ import TicketSummaryView from '@/views/TicketSummaryView.vue'
 const routes = [
     { path: '/', redirect: '/register' },
     { path: '/login', component: LoginView, meta: { requiresAuth: false } },
+    { path: '/offline', component: OfflineView, meta: { requiresAuth: false } },
     {
         path: '/register',
         component: RegisterDashboardView,
@@ -47,6 +49,10 @@ router.beforeEach(async (to) => {
     const authStore = useAuthStore()
 
     if (to.meta.requiresAuth) {
+        if (!navigator.onLine) {
+            return { path: '/offline' }
+        }
+
         if (!authStore.isLoggedIn()) {
             return {
                 path: '/login',
