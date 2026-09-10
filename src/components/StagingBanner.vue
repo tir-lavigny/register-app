@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const env = import.meta.env.VITE_APP_ENV;
+const env = import.meta.env.VITE_APP_ENV
 </script>
 
 <template>
