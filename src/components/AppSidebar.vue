@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ChevronUp, User2 } from '@lucide/vue'
+import { ChevronUp, Download, Trash2, User2 } from '@lucide/vue'
 import { computed } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 
@@ -24,12 +24,15 @@ import {
 } from '@/components/ui/sidebar'
 import { Permissions, hasPermission } from '@/lib/permissions'
 import { useAuthStore } from '@/stores/auth'
+import { usePwaInstall } from '@/composables/usePwaInstall'
+import { clearReferenceDataCache } from '@/lib/pwa-cache'
 
 import AppLogoIcon from './AppLogoIcon.vue'
 
 const props = defineProps<SidebarProps>()
 const route = useRoute()
 const authStore = useAuthStore()
+const { canInstall, isInstalled, install } = usePwaInstall()
 
 const canViewRegister = computed(() => hasPermission(Permissions.VIEW_REGISTER))
 const canCreateTicket = computed(() => hasPermission(Permissions.CREATE_TICKET))
@@ -109,6 +112,18 @@ const navMain = computed<NavItem[]>(() => [
         </SidebarContent>
         <SidebarFooter>
             <SidebarMenu>
+                <SidebarMenuItem v-if="canInstall && !isInstalled">
+                    <SidebarMenuButton @click="install">
+                        <Download />
+                        Installer l'app
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                    <SidebarMenuButton @click="clearReferenceDataCache">
+                        <Trash2 />
+                        Vider le cache
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
                 <SidebarMenuItem>
                     <DropdownMenu>
                         <DropdownMenuTrigger as-child>
