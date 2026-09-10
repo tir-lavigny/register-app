@@ -19,6 +19,9 @@ jobs:
     deploy:
         name: Build & Deploy to server
         runs-on: ubuntu-latest
+        environment:
+            name: ${{ contains(github.event.inputs.version || github.ref_name, '-dev') && 'staging' || 'production' }}
+            url: ${{ contains(github.event.inputs.version || github.ref_name, '-dev') && 'https://staging.register.tir-lavigny.ch' || 'https://register.tir-lavigny.ch' }}
 
         steps:
             - name: Checkout
