@@ -16,15 +16,15 @@ const fakeUser = {
     roles: [{ name: 'admin', permissions: [{ name: 'manage_users' }] }],
 }
 
-const HomeView = { template: '<div>Home</div>' }
 const DashboardView = { template: '<div>Dashboard</div>' }
+const RegisterView = { template: '<div>Register</div>' }
 
 function createTestRouter() {
     return createRouter({
         history: createMemoryHistory(),
         routes: [
             { path: '/login', component: LoginForm },
-            { path: '/', component: HomeView },
+            { path: '/register', component: RegisterView },
             { path: '/dashboard', component: DashboardView },
         ],
     })
