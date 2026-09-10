@@ -2,6 +2,7 @@
 import { WifiOff } from '@lucide/vue'
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+
 import AppLayout from '@/layouts/AppLayout.vue'
 
 const router = useRouter()
@@ -30,7 +31,9 @@ onUnmounted(() => {
 
 <template>
     <AppLayout>
-        <div class="flex flex-col items-center justify-center gap-4 p-8 text-center">
+        <div
+            class="flex flex-col items-center justify-center gap-4 p-8 text-center"
+        >
             <WifiOff class="size-12 text-muted-foreground" />
             <div>
                 <h1 class="text-xl font-semibold">Pas de connexion internet</h1>

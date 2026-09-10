@@ -1,4 +1,4 @@
-import { ref, onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 
 const deferredPrompt = ref<BeforeInstallPromptEvent | null>(null)
 const isInstalled = ref(false)
@@ -14,7 +14,8 @@ export function usePwaInstall() {
     onMounted(() => {
         isInstalled.value =
             window.matchMedia('(display-mode: standalone)').matches ||
-            (navigator as Navigator & { standalone?: boolean }).standalone === true
+            (navigator as Navigator & { standalone?: boolean }).standalone ===
+                true
 
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault()

@@ -22,10 +22,10 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar'
-import { Permissions, hasPermission } from '@/lib/permissions'
-import { useAuthStore } from '@/stores/auth'
 import { usePwaInstall } from '@/composables/usePwaInstall'
+import { Permissions, hasPermission } from '@/lib/permissions'
 import { clearReferenceDataCache } from '@/lib/pwa-cache'
+import { useAuthStore } from '@/stores/auth'
 
 import AppLogoIcon from './AppLogoIcon.vue'
 
