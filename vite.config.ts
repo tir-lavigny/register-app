@@ -3,10 +3,62 @@ import path from 'node:path'
 import tailwindcss from '@tailwindcss/vite'
 import vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'vite'
+import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
 export default defineConfig({
-    plugins: [vue(), tailwindcss()],
+    plugins: [
+        vue(),
+        tailwindcss(),
+        VitePWA({
+            registerType: 'autoUpdate',
+            devOptions: { enabled: true },
+            workbox: {
+                globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+                runtimeCaching: [
+                    {
+                        urlPattern: /\/api\/register\/(categories|products|seasons)(\?.*)?$/,
+                        handler: 'CacheFirst',
+                        options: {
+                            cacheName: 'reference-data',
+                            expiration: { maxEntries: 50, maxAgeSeconds: 86400 },
+                        },
+                    },
+                    {
+                        urlPattern: /\/api\/register\/members(\?.*)?$/,
+                        handler: 'CacheFirst',
+                        options: {
+                            cacheName: 'reference-data',
+                            expiration: { maxEntries: 50, maxAgeSeconds: 3600 },
+                        },
+                    },
+                    {
+                        urlPattern: /\/api\/auth\/me(\?.*)?$/,
+                        handler: 'CacheFirst',
+                        options: {
+                            cacheName: 'reference-data',
+                            expiration: { maxEntries: 50, maxAgeSeconds: 3600 },
+                        },
+                    },
+                ],
+            },
+            manifest: {
+                name: 'Tir Lavigny - Caisse',
+                short_name: 'Caisse',
+                description: 'Application de caisse pour Tir Lavigny',
+                theme_color: '#3b82f6',
+                background_color: '#ffffff',
+                display: 'standalone',
+                start_url: '/',
+                icons: [
+                    { src: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+                    { src: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
+                    { src: '/icons/icon-192x192-maskable.png', sizes: '192x192', type: 'image/png', purpose: 'maskable' },
+                    { src: '/icons/icon-512x512-maskable.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+                ],
+            },
+        }),
+    ],
     resolve: {
         alias: {
             '@': path.resolve(import.meta.dirname, './src'),
