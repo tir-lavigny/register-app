@@ -3,14 +3,14 @@ import { computed, ref, watch } from 'vue'
 
 import { useRegisterCategoriesIndex } from '@/api/generated/category/category'
 import { useRegisterProductsIndex } from '@/api/generated/product/product'
-import type { Product } from '@/api/model'
+import type { ProductResource } from '@/api/model'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { extractData } from '@/lib/utils'
 
 import ProductCard from './ProductCard.vue'
 
 const emit = defineEmits<{
-    'select-product': [product: Product]
+    'select-product': [product: ProductResource]
 }>()
 
 const { data: categoriesData, isLoading: categoriesLoading } =
@@ -21,7 +21,9 @@ const { data: productsData, isLoading: productsLoading } =
 const categories = computed(() =>
     extractData<{ id: number; name: string }>(categoriesData.value)
 )
-const products = computed(() => extractData<Product>(productsData.value))
+const products = computed(() =>
+    extractData<ProductResource>(productsData.value)
+)
 
 const activeTab = ref(
     categories.value.at(0)?.id ? String(categories.value.at(0)?.id) : '-1'
@@ -32,7 +34,7 @@ const filteredProducts = computed(() => {
     return products.value.filter((p) => p.category_id === catId)
 })
 
-function handleSelectProduct(product: Product) {
+function handleSelectProduct(product: ProductResource) {
     emit('select-product', product)
 }
 

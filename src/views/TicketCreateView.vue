@@ -4,7 +4,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'
 
-import type { Product } from '@/api/model'
+import type { ProductResource } from '@/api/model'
 import ProductGrid from '@/components/register/ProductGrid.vue'
 import QuantityDialog from '@/components/register/QuantityDialog.vue'
 import {
@@ -29,7 +29,7 @@ const dayStore = useOperatingDayStore()
 const ticketStore = useTicketStore()
 
 const showQuantityDialog = ref(false)
-const selectedProduct = ref<Product | null>(null)
+const selectedProduct = ref<ProductResource | null>(null)
 const showRestoreDialog = ref(false)
 const hasRestoredDraft = ref(false)
 const savedDraft = ref<TicketDraft | null>(null)
@@ -94,7 +94,7 @@ function handleDiscardDraft() {
     savedDraft.value = null
 }
 
-function handleSelectProduct(product: Product) {
+function handleSelectProduct(product: ProductResource) {
     selectedProduct.value = product
     showQuantityDialog.value = true
 }

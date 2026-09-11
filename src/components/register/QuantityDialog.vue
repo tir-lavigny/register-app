@@ -2,7 +2,7 @@
 import { Delete, Diff } from '@lucide/vue'
 import { computed, ref, watch } from 'vue'
 
-import type { Product } from '@/api/model'
+import type { ProductResource } from '@/api/model'
 import { Button } from '@/components/ui/button'
 import {
     Dialog,
@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input'
 
 const props = defineProps<{
     open: boolean
-    product: Product | null
+    product: ProductResource | null
 }>()
 
 const emit = defineEmits<{

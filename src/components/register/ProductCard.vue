@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { Product } from '@/api/model'
+import type { ProductResource } from '@/api/model'
 
 defineProps<{
-    product: Product
+    product: ProductResource
 }>()
 
 const emit = defineEmits<{
-    click: [product: Product]
+    click: [product: ProductResource]
 }>()
 
 function formatPrice(price: string): string {

@@ -6,7 +6,7 @@ import {
     registerTicketsStore,
 } from '@/api/generated/ticket/ticket'
 import type {
-    Product,
+    ProductResource,
     RegisterTicketsPreview200,
     StoreTicketRequestPaymentMethod,
     Voucher,
@@ -38,7 +38,7 @@ function computeLineTotal(item: TicketDraftItem): number {
 }
 
 function computeVoucherDiscount(
-    product: Product,
+    product: ProductResource,
     voucher: Voucher,
     effectivePrice: number,
     quantity: number
@@ -134,7 +134,7 @@ export const useTicketStore = defineStore('ticket', () => {
     }
 
     function addItem(
-        product: Product,
+        product: ProductResource,
         quantity: number,
         customPrice: number | null = null,
         voucher: Voucher | null = null,

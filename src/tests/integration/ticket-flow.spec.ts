@@ -4,12 +4,14 @@ import { beforeEach, describe, expect, it } from 'vitest'
 
 import { getRegisterTicketsPreviewMockHandler } from '@/api/generated/ticket/ticket.msw'
 import { getRegisterTicketsStoreMockHandler } from '@/api/generated/ticket/ticket.msw'
-import type { Product } from '@/api/model'
+import type { ProductResource } from '@/api/model'
 import { useTicketStore } from '@/stores/ticket'
 
 import { server } from '../setup'
 
-function makeProduct(overrides: Partial<Product> = {}): Product {
+function makeProduct(
+    overrides: Partial<ProductResource> = {}
+): ProductResource {
     return {
         id: 1,
         name: 'Cola',

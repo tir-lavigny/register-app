@@ -111,13 +111,13 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     function hasRole(name: string): boolean {
-        return user.value?.roles.some((r) => r.name === name) ?? false
+        return user.value?.roles?.some((r) => r.name === name) ?? false
     }
 
     function hasPermission(name: string): boolean {
         return (
-            user.value?.roles.some((r) =>
-                r.permissions.some((p) => p.name === name)
+            user.value?.roles?.some((r) =>
+                r.permissions?.some((p) => p.name === name)
             ) ?? false
         )
     }

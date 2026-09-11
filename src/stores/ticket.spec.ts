@@ -1,7 +1,7 @@
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { Product, Voucher } from '@/api/model'
+import type { ProductResource, Voucher } from '@/api/model'
 
 import { useTicketStore } from './ticket'
 
@@ -13,7 +13,9 @@ vi.mock('@/api/generated/ticket/ticket', () => ({
     registerTicketsStore: (...args: unknown[]) => mockStore(...args),
 }))
 
-function makeProduct(overrides: Partial<Product> = {}): Product {
+function makeProduct(
+    overrides: Partial<ProductResource> = {}
+): ProductResource {
     return {
         id: 1,
         name: 'Cola',
