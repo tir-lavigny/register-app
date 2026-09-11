@@ -4,8 +4,8 @@
  * Tir Lavigny
  * OpenAPI spec version: 0.0.1
  */
-import type { Product } from './product'
+import type { RegisterProductsIndex200DataItem } from './registerProductsIndex200DataItem'
 
 export type RegisterProductsIndex200 = {
-    data: Product[]
+    data: RegisterProductsIndex200DataItem[]
 }

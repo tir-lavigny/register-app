@@ -4,6 +4,7 @@
  * Tir Lavigny
  * OpenAPI spec version: 0.0.1
  */
+import type { CategoryResource } from './categoryResource'
 
 export interface ProductResource {
     id: number
@@ -14,7 +15,11 @@ export interface ProductResource {
     allows_custom_price: boolean
     category_id: number
     /** @nullable */
+    deleted_at: string | null
+    /** @nullable */
     created_at: string | null
     /** @nullable */
     updated_at: string | null
+    category?: CategoryResource
+    child_products?: ProductResource[]
 }

@@ -4,8 +4,8 @@
  * Tir Lavigny
  * OpenAPI spec version: 0.0.1
  */
-import type { Category } from './category'
+import type { CategoryResource } from './categoryResource'
 
 export type RegisterCategoriesIndex200 = {
-    data: Category[]
+    data: CategoryResource[]
 }

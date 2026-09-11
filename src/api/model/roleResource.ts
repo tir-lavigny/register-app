@@ -8,5 +8,5 @@ import type { PermissionResource } from './permissionResource'
 
 export interface RoleResource {
     name: string
-    permissions: PermissionResource[]
+    permissions?: PermissionResource[]
 }

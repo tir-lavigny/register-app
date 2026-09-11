@@ -17,18 +17,26 @@ export const getLoginResponseMock = (
             id: faker.number.int(),
             name: faker.string.alpha({ length: { min: 10, max: 20 } }),
             email: faker.string.alpha({ length: { min: 10, max: 20 } }),
-            roles: Array.from(
-                { length: faker.number.int({ min: 1, max: 10 }) },
-                (_, i) => i + 1
-            ).map(() => ({
-                name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-                permissions: Array.from(
+            roles: faker.helpers.arrayElement([
+                Array.from(
                     { length: faker.number.int({ min: 1, max: 10 }) },
                     (_, i) => i + 1
                 ).map(() => ({
                     name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+                    permissions: faker.helpers.arrayElement([
+                        Array.from(
+                            { length: faker.number.int({ min: 1, max: 10 }) },
+                            (_, i) => i + 1
+                        ).map(() => ({
+                            name: faker.string.alpha({
+                                length: { min: 10, max: 20 },
+                            }),
+                        })),
+                        undefined,
+                    ]),
                 })),
-            })),
+                undefined,
+            ]),
         },
         null,
     ]),
@@ -44,18 +52,26 @@ export const getRefreshResponseMock = (
             id: faker.number.int(),
             name: faker.string.alpha({ length: { min: 10, max: 20 } }),
             email: faker.string.alpha({ length: { min: 10, max: 20 } }),
-            roles: Array.from(
-                { length: faker.number.int({ min: 1, max: 10 }) },
-                (_, i) => i + 1
-            ).map(() => ({
-                name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-                permissions: Array.from(
+            roles: faker.helpers.arrayElement([
+                Array.from(
                     { length: faker.number.int({ min: 1, max: 10 }) },
                     (_, i) => i + 1
                 ).map(() => ({
                     name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+                    permissions: faker.helpers.arrayElement([
+                        Array.from(
+                            { length: faker.number.int({ min: 1, max: 10 }) },
+                            (_, i) => i + 1
+                        ).map(() => ({
+                            name: faker.string.alpha({
+                                length: { min: 10, max: 20 },
+                            }),
+                        })),
+                        undefined,
+                    ]),
                 })),
-            })),
+                undefined,
+            ]),
         },
         null,
     ]),
@@ -66,21 +82,28 @@ export const getMeResponseMock = (
     overrideResponse: Partial<Extract<Me200, object>> = {}
 ): Me200 => ({
     data: {
-        id: faker.number.int(),
-        name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-        email: faker.string.alpha({ length: { min: 10, max: 20 } }),
-        roles: Array.from(
-            { length: faker.number.int({ min: 1, max: 10 }) },
-            (_, i) => i + 1
-        ).map(() => ({
+        ...{
+            id: faker.number.int(),
             name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-            permissions: Array.from(
+            email: faker.string.alpha({ length: { min: 10, max: 20 } }),
+            roles: Array.from(
                 { length: faker.number.int({ min: 1, max: 10 }) },
                 (_, i) => i + 1
             ).map(() => ({
                 name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+                permissions: faker.helpers.arrayElement([
+                    Array.from(
+                        { length: faker.number.int({ min: 1, max: 10 }) },
+                        (_, i) => i + 1
+                    ).map(() => ({
+                        name: faker.string.alpha({
+                            length: { min: 10, max: 20 },
+                        }),
+                    })),
+                    undefined,
+                ]),
             })),
-        })),
+        },
     },
     ...overrideResponse,
 })

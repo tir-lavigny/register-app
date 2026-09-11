@@ -5,14 +5,10 @@
  * OpenAPI spec version: 0.0.1
  */
 
-export interface Product {
+export interface CategoryResource {
     id: number
     name: string
-    /** @nullable */
-    picture: string | null
-    unit_price: string
-    allows_custom_price: boolean
-    category_id: number
+    is_restricted: boolean
     /** @nullable */
     deleted_at: string | null
     /** @nullable */

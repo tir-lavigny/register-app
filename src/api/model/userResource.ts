@@ -10,5 +10,5 @@ export interface UserResource {
     id: number
     name: string
     email: string
-    roles: RoleResource[]
+    roles?: RoleResource[]
 }

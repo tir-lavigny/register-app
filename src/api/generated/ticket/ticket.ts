@@ -25,6 +25,7 @@ import type {
     ModelNotFoundExceptionResponse,
     RegisterTicketsPreview200,
     RegisterTicketsRefund200,
+    RegisterTicketsRefund422,
     RegisterTicketsShow200,
     RegisterTicketsStore201,
     StoreTicketPreviewRequest,
@@ -503,12 +504,19 @@ export type registerTicketsRefundResponse404 = {
     status: 404
 }
 
+export type registerTicketsRefundResponse422 = {
+    data: RegisterTicketsRefund422
+    status: 422
+}
+
 export type registerTicketsRefundResponseSuccess =
     registerTicketsRefundResponse200 & {
         headers: Headers
     }
 export type registerTicketsRefundResponseError = (
-    registerTicketsRefundResponse401 | registerTicketsRefundResponse404
+    | registerTicketsRefundResponse401
+    | registerTicketsRefundResponse404
+    | registerTicketsRefundResponse422
 ) & {
     headers: Headers
 }
@@ -545,7 +553,10 @@ export const getRegisterTicketsRefundMutationKey = () =>
     ['registerTicketsRefund'] as const
 
 export const getRegisterTicketsRefundMutationOptions = <
-    TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse,
+    TError =
+        | AuthenticationExceptionResponse
+        | ModelNotFoundExceptionResponse
+        | RegisterTicketsRefund422,
     TContext = unknown,
 >(options?: {
     mutation?: UseMutationOptions<
@@ -587,11 +598,16 @@ export type RegisterTicketsRefundMutationResult = NonNullable<
 >
 
 export type RegisterTicketsRefundMutationError =
-    AuthenticationExceptionResponse | ModelNotFoundExceptionResponse
+    | AuthenticationExceptionResponse
+    | ModelNotFoundExceptionResponse
+    | RegisterTicketsRefund422
 export type RegisterTicketsRefundMutationVariables = { ticket: number }
 
 export const useRegisterTicketsRefund = <
-    TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse,
+    TError =
+        | AuthenticationExceptionResponse
+        | ModelNotFoundExceptionResponse
+        | RegisterTicketsRefund422,
     TContext = unknown,
 >(
     options?: {

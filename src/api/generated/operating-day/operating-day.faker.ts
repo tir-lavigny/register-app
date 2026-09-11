@@ -118,6 +118,13 @@ export const getRegisterOperatingDaysStoreResponseMock = (
                                 }),
                                 allows_custom_price: faker.datatype.boolean(),
                                 category_id: faker.number.int(),
+                                deleted_at: faker.helpers.arrayElement([
+                                    faker.date
+                                        .past()
+                                        .toISOString()
+                                        .slice(0, 19) + 'Z',
+                                    null,
+                                ]),
                                 created_at: faker.helpers.arrayElement([
                                     faker.date
                                         .past()
@@ -131,6 +138,41 @@ export const getRegisterOperatingDaysStoreResponseMock = (
                                         .toISOString()
                                         .slice(0, 19) + 'Z',
                                     null,
+                                ]),
+                                category: faker.helpers.arrayElement([
+                                    {
+                                        id: faker.number.int(),
+                                        name: faker.string.alpha({
+                                            length: { min: 10, max: 20 },
+                                        }),
+                                        is_restricted: faker.datatype.boolean(),
+                                        deleted_at: faker.helpers.arrayElement([
+                                            faker.date
+                                                .past()
+                                                .toISOString()
+                                                .slice(0, 19) + 'Z',
+                                            null,
+                                        ]),
+                                        created_at: faker.helpers.arrayElement([
+                                            faker.date
+                                                .past()
+                                                .toISOString()
+                                                .slice(0, 19) + 'Z',
+                                            null,
+                                        ]),
+                                        updated_at: faker.helpers.arrayElement([
+                                            faker.date
+                                                .past()
+                                                .toISOString()
+                                                .slice(0, 19) + 'Z',
+                                            null,
+                                        ]),
+                                    },
+                                    undefined,
+                                ]),
+                                child_products: faker.helpers.arrayElement([
+                                    [],
+                                    undefined,
                                 ]),
                             },
                             undefined,
@@ -288,6 +330,13 @@ export const getRegisterOperatingDaysUpdateResponseMock = (
                                 }),
                                 allows_custom_price: faker.datatype.boolean(),
                                 category_id: faker.number.int(),
+                                deleted_at: faker.helpers.arrayElement([
+                                    faker.date
+                                        .past()
+                                        .toISOString()
+                                        .slice(0, 19) + 'Z',
+                                    null,
+                                ]),
                                 created_at: faker.helpers.arrayElement([
                                     faker.date
                                         .past()
@@ -301,6 +350,41 @@ export const getRegisterOperatingDaysUpdateResponseMock = (
                                         .toISOString()
                                         .slice(0, 19) + 'Z',
                                     null,
+                                ]),
+                                category: faker.helpers.arrayElement([
+                                    {
+                                        id: faker.number.int(),
+                                        name: faker.string.alpha({
+                                            length: { min: 10, max: 20 },
+                                        }),
+                                        is_restricted: faker.datatype.boolean(),
+                                        deleted_at: faker.helpers.arrayElement([
+                                            faker.date
+                                                .past()
+                                                .toISOString()
+                                                .slice(0, 19) + 'Z',
+                                            null,
+                                        ]),
+                                        created_at: faker.helpers.arrayElement([
+                                            faker.date
+                                                .past()
+                                                .toISOString()
+                                                .slice(0, 19) + 'Z',
+                                            null,
+                                        ]),
+                                        updated_at: faker.helpers.arrayElement([
+                                            faker.date
+                                                .past()
+                                                .toISOString()
+                                                .slice(0, 19) + 'Z',
+                                            null,
+                                        ]),
+                                    },
+                                    undefined,
+                                ]),
+                                child_products: faker.helpers.arrayElement([
+                                    [],
+                                    undefined,
                                 ]),
                             },
                             undefined,
@@ -360,34 +444,34 @@ export const getRegisterOperatingDaysShowResponseMock = (
     > = {}
 ): RegisterOperatingDaysShow200 => ({
     data: {
-        ...{
-            id: faker.number.int(),
-            date: faker.date.past().toISOString().slice(0, 19) + 'Z',
-            started_at: faker.date.past().toISOString().slice(0, 19) + 'Z',
-            closed_at: faker.helpers.arrayElement([
-                faker.date.past().toISOString().slice(0, 19) + 'Z',
-                null,
-            ]),
-            season_id: faker.number.int(),
-            cash_remark: faker.helpers.arrayElement([
-                faker.string.alpha({ length: { min: 10, max: 20 } }),
-                null,
-            ]),
-            closing_balance: faker.helpers.arrayElement([
-                faker.string.alpha({ length: { min: 10, max: 20 } }),
-                null,
-            ]),
-            total_cash: faker.string.alpha({ length: { min: 10, max: 20 } }),
-            total_twint: faker.string.alpha({ length: { min: 10, max: 20 } }),
-            created_at: faker.helpers.arrayElement([
-                faker.date.past().toISOString().slice(0, 19) + 'Z',
-                null,
-            ]),
-            updated_at: faker.helpers.arrayElement([
-                faker.date.past().toISOString().slice(0, 19) + 'Z',
-                null,
-            ]),
-            tickets: Array.from(
+        id: faker.number.int(),
+        date: faker.date.past().toISOString().slice(0, 19) + 'Z',
+        started_at: faker.date.past().toISOString().slice(0, 19) + 'Z',
+        closed_at: faker.helpers.arrayElement([
+            faker.date.past().toISOString().slice(0, 19) + 'Z',
+            null,
+        ]),
+        season_id: faker.number.int(),
+        cash_remark: faker.helpers.arrayElement([
+            faker.string.alpha({ length: { min: 10, max: 20 } }),
+            null,
+        ]),
+        closing_balance: faker.helpers.arrayElement([
+            faker.string.alpha({ length: { min: 10, max: 20 } }),
+            null,
+        ]),
+        total_cash: faker.string.alpha({ length: { min: 10, max: 20 } }),
+        total_twint: faker.string.alpha({ length: { min: 10, max: 20 } }),
+        created_at: faker.helpers.arrayElement([
+            faker.date.past().toISOString().slice(0, 19) + 'Z',
+            null,
+        ]),
+        updated_at: faker.helpers.arrayElement([
+            faker.date.past().toISOString().slice(0, 19) + 'Z',
+            null,
+        ]),
+        tickets: faker.helpers.arrayElement([
+            Array.from(
                 { length: faker.number.int({ min: 1, max: 10 }) },
                 (_, i) => i + 1
             ).map(() => ({
@@ -458,6 +542,13 @@ export const getRegisterOperatingDaysShowResponseMock = (
                                 }),
                                 allows_custom_price: faker.datatype.boolean(),
                                 category_id: faker.number.int(),
+                                deleted_at: faker.helpers.arrayElement([
+                                    faker.date
+                                        .past()
+                                        .toISOString()
+                                        .slice(0, 19) + 'Z',
+                                    null,
+                                ]),
                                 created_at: faker.helpers.arrayElement([
                                     faker.date
                                         .past()
@@ -471,6 +562,41 @@ export const getRegisterOperatingDaysShowResponseMock = (
                                         .toISOString()
                                         .slice(0, 19) + 'Z',
                                     null,
+                                ]),
+                                category: faker.helpers.arrayElement([
+                                    {
+                                        id: faker.number.int(),
+                                        name: faker.string.alpha({
+                                            length: { min: 10, max: 20 },
+                                        }),
+                                        is_restricted: faker.datatype.boolean(),
+                                        deleted_at: faker.helpers.arrayElement([
+                                            faker.date
+                                                .past()
+                                                .toISOString()
+                                                .slice(0, 19) + 'Z',
+                                            null,
+                                        ]),
+                                        created_at: faker.helpers.arrayElement([
+                                            faker.date
+                                                .past()
+                                                .toISOString()
+                                                .slice(0, 19) + 'Z',
+                                            null,
+                                        ]),
+                                        updated_at: faker.helpers.arrayElement([
+                                            faker.date
+                                                .past()
+                                                .toISOString()
+                                                .slice(0, 19) + 'Z',
+                                            null,
+                                        ]),
+                                    },
+                                    undefined,
+                                ]),
+                                child_products: faker.helpers.arrayElement([
+                                    [],
+                                    undefined,
                                 ]),
                             },
                             undefined,
@@ -518,7 +644,8 @@ export const getRegisterOperatingDaysShowResponseMock = (
                     undefined,
                 ]),
             })),
-        },
+            undefined,
+        ]),
     },
     ...overrideResponse,
 })
@@ -627,6 +754,13 @@ export const getRegisterOperatingDaysCurrentResponseMock = (
                                 }),
                                 allows_custom_price: faker.datatype.boolean(),
                                 category_id: faker.number.int(),
+                                deleted_at: faker.helpers.arrayElement([
+                                    faker.date
+                                        .past()
+                                        .toISOString()
+                                        .slice(0, 19) + 'Z',
+                                    null,
+                                ]),
                                 created_at: faker.helpers.arrayElement([
                                     faker.date
                                         .past()
@@ -640,6 +774,41 @@ export const getRegisterOperatingDaysCurrentResponseMock = (
                                         .toISOString()
                                         .slice(0, 19) + 'Z',
                                     null,
+                                ]),
+                                category: faker.helpers.arrayElement([
+                                    {
+                                        id: faker.number.int(),
+                                        name: faker.string.alpha({
+                                            length: { min: 10, max: 20 },
+                                        }),
+                                        is_restricted: faker.datatype.boolean(),
+                                        deleted_at: faker.helpers.arrayElement([
+                                            faker.date
+                                                .past()
+                                                .toISOString()
+                                                .slice(0, 19) + 'Z',
+                                            null,
+                                        ]),
+                                        created_at: faker.helpers.arrayElement([
+                                            faker.date
+                                                .past()
+                                                .toISOString()
+                                                .slice(0, 19) + 'Z',
+                                            null,
+                                        ]),
+                                        updated_at: faker.helpers.arrayElement([
+                                            faker.date
+                                                .past()
+                                                .toISOString()
+                                                .slice(0, 19) + 'Z',
+                                            null,
+                                        ]),
+                                    },
+                                    undefined,
+                                ]),
+                                child_products: faker.helpers.arrayElement([
+                                    [],
+                                    undefined,
                                 ]),
                             },
                             undefined,
@@ -796,6 +965,13 @@ export const getRegisterOperatingDaysPreviousUnclosedResponseMock = (
                                 }),
                                 allows_custom_price: faker.datatype.boolean(),
                                 category_id: faker.number.int(),
+                                deleted_at: faker.helpers.arrayElement([
+                                    faker.date
+                                        .past()
+                                        .toISOString()
+                                        .slice(0, 19) + 'Z',
+                                    null,
+                                ]),
                                 created_at: faker.helpers.arrayElement([
                                     faker.date
                                         .past()
@@ -809,6 +985,41 @@ export const getRegisterOperatingDaysPreviousUnclosedResponseMock = (
                                         .toISOString()
                                         .slice(0, 19) + 'Z',
                                     null,
+                                ]),
+                                category: faker.helpers.arrayElement([
+                                    {
+                                        id: faker.number.int(),
+                                        name: faker.string.alpha({
+                                            length: { min: 10, max: 20 },
+                                        }),
+                                        is_restricted: faker.datatype.boolean(),
+                                        deleted_at: faker.helpers.arrayElement([
+                                            faker.date
+                                                .past()
+                                                .toISOString()
+                                                .slice(0, 19) + 'Z',
+                                            null,
+                                        ]),
+                                        created_at: faker.helpers.arrayElement([
+                                            faker.date
+                                                .past()
+                                                .toISOString()
+                                                .slice(0, 19) + 'Z',
+                                            null,
+                                        ]),
+                                        updated_at: faker.helpers.arrayElement([
+                                            faker.date
+                                                .past()
+                                                .toISOString()
+                                                .slice(0, 19) + 'Z',
+                                            null,
+                                        ]),
+                                    },
+                                    undefined,
+                                ]),
+                                child_products: faker.helpers.arrayElement([
+                                    [],
+                                    undefined,
                                 ]),
                             },
                             undefined,

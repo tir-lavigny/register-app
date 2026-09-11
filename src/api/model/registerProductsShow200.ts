@@ -4,8 +4,8 @@
  * Tir Lavigny
  * OpenAPI spec version: 0.0.1
  */
-import type { Product } from './product'
+import type { RegisterProductsShow200Data } from './registerProductsShow200Data'
 
 export type RegisterProductsShow200 = {
-    data: Product
+    data: RegisterProductsShow200Data
 }

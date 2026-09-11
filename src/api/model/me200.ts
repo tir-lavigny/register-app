@@ -4,8 +4,8 @@
  * Tir Lavigny
  * OpenAPI spec version: 0.0.1
  */
-import type { UserResource } from './userResource'
+import type { Me200Data } from './me200Data'
 
 export type Me200 = {
-    data: UserResource
+    data: Me200Data
 }
