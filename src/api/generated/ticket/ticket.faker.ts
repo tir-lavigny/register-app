@@ -51,7 +51,7 @@ export const getRegisterTicketsPreviewResponseMock = (
         voucher_id: faker.number.int(),
         quantity: faker.string.alpha({ length: { min: 10, max: 20 } }),
         unit_price: faker.string.alpha({ length: { min: 10, max: 20 } }),
-        subtotal: faker.string.alpha({ length: { min: 10, max: 20 } }),
+        subtotal: faker.number.float({ fractionDigits: 2 }),
     })),
     ...overrideResponse,
 })
