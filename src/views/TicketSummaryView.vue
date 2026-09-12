@@ -28,7 +28,7 @@ const total = computed(() => ticketStore.preview?.total ?? 0)
 const memberId = computed(() => ticketStore.draft?.memberId ?? 0)
 const memberName = computed(() => ticketStore.draft?.memberName)
 
-const { data: vouchersData } = useRegisterMembersVouchers(memberId.value, {
+const { data: vouchersData } = useRegisterMembersVouchers(memberId, {
     query: { enabled: computed(() => memberId.value > 0) },
 })
 
