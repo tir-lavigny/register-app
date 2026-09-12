@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Receipt, Ticket, XCircle } from '@lucide/vue'
+import { ReceiptText, Tickets, XCircle } from '@lucide/vue'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -92,7 +92,7 @@ onMounted(async () => {
                     <CardContent
                         class="flex flex-col items-center gap-3 p-6 text-center"
                     >
-                        <Receipt class="size-8 text-primary" />
+                        <ReceiptText class="size-8 text-primary" />
                         <span class="text-lg font-medium">Nouveau ticket</span>
                     </CardContent>
                 </Card>
@@ -105,7 +105,7 @@ onMounted(async () => {
                     <CardContent
                         class="flex flex-col items-center gap-3 p-6 text-center"
                     >
-                        <Ticket class="size-8 text-primary" />
+                        <Tickets class="size-8 text-primary" />
                         <span class="text-lg font-medium">Tickets du jour</span>
                     </CardContent>
                 </Card>
