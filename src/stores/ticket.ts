@@ -22,6 +22,7 @@ export interface TicketDraftItem {
     voucherId: number | null
     voucherDiscount: number | null
     lineTotal: number
+    product?: ProductResource
 }
 
 export interface TicketDraft {
@@ -162,6 +163,7 @@ export const useTicketStore = defineStore('ticket', () => {
             voucherId: voucherDiscount !== null ? (voucher?.id ?? null) : null,
             voucherDiscount,
             lineTotal: 0,
+            product,
         }
         newItem.lineTotal = computeLineTotal(newItem)
 
@@ -291,7 +293,7 @@ export const useTicketStore = defineStore('ticket', () => {
     async function finalizeTicket(
         operatingDayId: number
     ): Promise<
-        | { success: true }
+        | { success: true; items: TicketDraftItem[] }
         | { success: false; error: string; errors?: Record<string, string[]> }
     > {
         if (!draft.value || !canFinalize.value) {
@@ -303,10 +305,11 @@ export const useTicketStore = defineStore('ticket', () => {
             const response = await registerTicketsStore(payload)
 
             if (response.status === 201) {
+                const finalizedItems = [...(draft.value.items ?? [])]
                 draft.value = null
                 preview.value = null
                 clearDraftStorage(operatingDayId)
-                return { success: true }
+                return { success: true, items: finalizedItems }
             }
 
             if (response.status === 422) {

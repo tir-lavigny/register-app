@@ -310,7 +310,7 @@ describe('ticket store', () => {
 
             const result = await store.finalizeTicket(1)
 
-            expect(result).toEqual({ success: true })
+            expect(result).toEqual({ success: true, items: expect.any(Array) })
             expect(store.draft).toBeNull()
             expect(store.preview).toBeNull()
         })

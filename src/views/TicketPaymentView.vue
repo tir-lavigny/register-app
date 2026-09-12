@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ArrowLeft, Check } from '@lucide/vue'
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'
 
@@ -30,6 +30,11 @@ const totalDiscount = computed(() =>
     )
 )
 
+const finalizedItems = ref<
+    { productId: number; productName: string; quantity: number; product?: import('@/api/model').ProductResource }[]
+>([])
+const showHandoff = ref(false)
+
 onMounted(async () => {
     if (!dayStore.currentDay) {
         await dayStore.fetchCurrentDay()
@@ -49,20 +54,25 @@ async function handleFinalize() {
     if (!dayStore.dayId) return
     const result = await ticketStore.finalizeTicket(dayStore.dayId)
     if (result.success) {
-        toast.success('Ticket créé avec succès!')
-        await dayStore.refreshDay()
-        ticketStore.startDraft(dayStore.dayId)
-        router.push('/register')
+        finalizedItems.value = result.items
+        showHandoff.value = true
     } else {
         toast.error(result.error)
     }
+}
+
+function handleHandoffDone() {
+    showHandoff.value = false
+    toast.success('Ticket créé avec succès!')
+    ticketStore.startDraft(dayStore.dayId!)
+    router.push('/register')
 }
 </script>
 
 <template>
     <AppLayout>
         <div class="flex flex-1 flex-col gap-4 p-4">
-            <div class="flex items-center gap-3">
+            <div v-if="!showHandoff" class="flex items-center gap-3">
                 <Button
                     variant="ghost"
                     size="icon"
@@ -73,7 +83,7 @@ async function handleFinalize() {
                 <h1 class="flex-1 text-xl font-bold">Paiement</h1>
             </div>
 
-            <div class="flex flex-1 flex-col items-center justify-center gap-6">
+            <div v-if="!showHandoff" class="flex flex-1 flex-col items-center justify-center gap-6">
                 <Card class="w-full max-w-sm">
                     <CardHeader>
                         <CardTitle class="text-center text-3xl font-bold">
@@ -126,6 +136,62 @@ async function handleFinalize() {
                         >
                             <Check class="mr-2 size-5" />
                             Valider — {{ total.toFixed(2) }} CHF
+                        </Button>
+                    </CardContent>
+                </Card>
+            </div>
+
+            <div v-else class="flex flex-1 flex-col items-center justify-center gap-6">
+                <Card class="w-full max-w-sm">
+                    <CardHeader>
+                        <CardTitle class="text-center text-xl font-bold">
+                            Articles à remettre
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent class="flex flex-col gap-3">
+                        <template v-for="item in finalizedItems" :key="item.productId">
+                            <div
+                                v-if="item.product?.child_products?.length"
+                                class="flex flex-col gap-1"
+                            >
+                                <span
+                                    class="text-xs font-medium text-muted-foreground uppercase tracking-wide"
+                                >
+                                    {{ item.productName }}
+                                </span>
+                                <div
+                                    v-for="child in item.product.child_products"
+                                    :key="child.id"
+                                    class="flex items-center justify-between rounded-md border px-3 py-2"
+                                >
+                                    <span class="text-sm font-medium">
+                                        {{ child.name }}
+                                    </span>
+                                    <span class="text-sm font-bold">
+                                        {{ Number(child.quantity) * item.quantity }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div
+                                v-else
+                                class="flex items-center justify-between rounded-md border px-3 py-2"
+                            >
+                                <span class="text-sm font-medium">
+                                    {{ item.productName }}
+                                </span>
+                                <span class="text-sm font-bold">
+                                    {{ item.quantity }}
+                                </span>
+                            </div>
+                        </template>
+
+                        <Button
+                            size="lg"
+                            class="mt-2 min-h-14 w-full text-base font-bold"
+                            @click="handleHandoffDone"
+                        >
+                            <Check class="mr-2 size-5" />
+                            Terminé
                         </Button>
                     </CardContent>
                 </Card>

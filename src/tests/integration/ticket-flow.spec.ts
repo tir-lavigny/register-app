@@ -117,7 +117,7 @@ describe('ticket flow integration', () => {
 
             const result = await store.finalizeTicket(1)
 
-            expect(result).toEqual({ success: true })
+            expect(result).toEqual({ success: true, items: expect.any(Array) })
             expect(store.draft).toBeNull()
             expect(store.preview).toBeNull()
 
@@ -226,7 +226,7 @@ describe('ticket flow integration', () => {
             expect(store.canFinalize).toBe(true)
 
             const result = await store.finalizeTicket(1)
-            expect(result).toEqual({ success: true })
+            expect(result).toEqual({ success: true, items: expect.any(Array) })
             expect(store.draft).toBeNull()
             expect(store.preview).toBeNull()
         })
@@ -262,7 +262,7 @@ describe('ticket flow integration', () => {
 
             const result = await store.finalizeTicket(1)
 
-            expect(result).toEqual({ success: true })
+            expect(result).toEqual({ success: true, items: expect.any(Array) })
             expect(store.draft).toBeNull()
         })
     })
