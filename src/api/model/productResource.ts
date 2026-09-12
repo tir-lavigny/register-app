@@ -5,6 +5,7 @@
  * OpenAPI spec version: 0.0.1
  */
 import type { CategoryResource } from './categoryResource'
+import type { ChildProductResource } from './childProductResource'
 
 export interface ProductResource {
     id: number
@@ -21,5 +22,5 @@ export interface ProductResource {
     /** @nullable */
     updated_at: string | null
     category?: CategoryResource
-    child_products?: ProductResource[]
+    child_products?: ChildProductResource[]
 }

@@ -57,7 +57,57 @@ export const getRegisterProductsIndexResponseMock = (
                     null,
                 ]),
             },
-            child_products: [],
+            child_products: Array.from(
+                { length: faker.number.int({ min: 1, max: 10 }) },
+                (_, i) => i + 1
+            ).map(() => ({
+                id: faker.number.int(),
+                name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+                picture: faker.helpers.arrayElement([
+                    faker.string.alpha({ length: { min: 10, max: 20 } }),
+                    null,
+                ]),
+                unit_price: faker.string.alpha({
+                    length: { min: 10, max: 20 },
+                }),
+                allows_custom_price: faker.datatype.boolean(),
+                category_id: faker.number.int(),
+                deleted_at: faker.helpers.arrayElement([
+                    faker.date.past().toISOString().slice(0, 19) + 'Z',
+                    null,
+                ]),
+                created_at: faker.helpers.arrayElement([
+                    faker.date.past().toISOString().slice(0, 19) + 'Z',
+                    null,
+                ]),
+                updated_at: faker.helpers.arrayElement([
+                    faker.date.past().toISOString().slice(0, 19) + 'Z',
+                    null,
+                ]),
+                category: faker.helpers.arrayElement([
+                    {
+                        id: faker.number.int(),
+                        name: faker.string.alpha({
+                            length: { min: 10, max: 20 },
+                        }),
+                        is_restricted: faker.datatype.boolean(),
+                        deleted_at: faker.helpers.arrayElement([
+                            faker.date.past().toISOString().slice(0, 19) + 'Z',
+                            null,
+                        ]),
+                        created_at: faker.helpers.arrayElement([
+                            faker.date.past().toISOString().slice(0, 19) + 'Z',
+                            null,
+                        ]),
+                        updated_at: faker.helpers.arrayElement([
+                            faker.date.past().toISOString().slice(0, 19) + 'Z',
+                            null,
+                        ]),
+                    },
+                    undefined,
+                ]),
+                quantity: faker.string.alpha({ length: { min: 10, max: 20 } }),
+            })),
         },
     })),
     ...overrideResponse,
@@ -106,7 +156,57 @@ export const getRegisterProductsShowResponseMock = (
                     null,
                 ]),
             },
-            child_products: [],
+            child_products: Array.from(
+                { length: faker.number.int({ min: 1, max: 10 }) },
+                (_, i) => i + 1
+            ).map(() => ({
+                id: faker.number.int(),
+                name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+                picture: faker.helpers.arrayElement([
+                    faker.string.alpha({ length: { min: 10, max: 20 } }),
+                    null,
+                ]),
+                unit_price: faker.string.alpha({
+                    length: { min: 10, max: 20 },
+                }),
+                allows_custom_price: faker.datatype.boolean(),
+                category_id: faker.number.int(),
+                deleted_at: faker.helpers.arrayElement([
+                    faker.date.past().toISOString().slice(0, 19) + 'Z',
+                    null,
+                ]),
+                created_at: faker.helpers.arrayElement([
+                    faker.date.past().toISOString().slice(0, 19) + 'Z',
+                    null,
+                ]),
+                updated_at: faker.helpers.arrayElement([
+                    faker.date.past().toISOString().slice(0, 19) + 'Z',
+                    null,
+                ]),
+                category: faker.helpers.arrayElement([
+                    {
+                        id: faker.number.int(),
+                        name: faker.string.alpha({
+                            length: { min: 10, max: 20 },
+                        }),
+                        is_restricted: faker.datatype.boolean(),
+                        deleted_at: faker.helpers.arrayElement([
+                            faker.date.past().toISOString().slice(0, 19) + 'Z',
+                            null,
+                        ]),
+                        created_at: faker.helpers.arrayElement([
+                            faker.date.past().toISOString().slice(0, 19) + 'Z',
+                            null,
+                        ]),
+                        updated_at: faker.helpers.arrayElement([
+                            faker.date.past().toISOString().slice(0, 19) + 'Z',
+                            null,
+                        ]),
+                    },
+                    undefined,
+                ]),
+                quantity: faker.string.alpha({ length: { min: 10, max: 20 } }),
+            })),
         },
     },
     ...overrideResponse,

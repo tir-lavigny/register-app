@@ -8,6 +8,7 @@
 export * from './authenticationExceptionResponse'
 export * from './authorizationExceptionResponse'
 export * from './categoryResource'
+export * from './childProductResource'
 export * from './getHealth200'
 export * from './login401'
 export * from './loginRequest'
