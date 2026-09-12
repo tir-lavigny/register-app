@@ -215,6 +215,12 @@ function goToPayment() {
                                         {{ item.productName }} — Bon appliqué
                                         (retirer)
                                     </button>
+                                    <span
+                                        v-else
+                                        class="block px-3 py-2 text-sm text-muted-foreground"
+                                    >
+                                        Aucun bon pour {{ item.productName }}
+                                    </span>
                                 </div>
                             </template>
                         </CardContent>
