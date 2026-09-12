@@ -4,6 +4,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'
 
+import type { ProductResource } from '@/api/model'
 import PaymentSelector from '@/components/register/PaymentSelector.vue'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -31,7 +32,12 @@ const totalDiscount = computed(() =>
 )
 
 const finalizedItems = ref<
-    { productId: number; productName: string; quantity: number; product?: import('@/api/model').ProductResource }[]
+    {
+        productId: number
+        productName: string
+        quantity: number
+        product?: ProductResource
+    }[]
 >([])
 const showHandoff = ref(false)
 
@@ -83,7 +89,10 @@ function handleHandoffDone() {
                 <h1 class="flex-1 text-xl font-bold">Paiement</h1>
             </div>
 
-            <div v-if="!showHandoff" class="flex flex-1 flex-col items-center justify-center gap-6">
+            <div
+                v-if="!showHandoff"
+                class="flex flex-1 flex-col items-center justify-center gap-6"
+            >
                 <Card class="w-full max-w-sm">
                     <CardHeader>
                         <CardTitle class="text-center text-3xl font-bold">
@@ -141,7 +150,10 @@ function handleHandoffDone() {
                 </Card>
             </div>
 
-            <div v-else class="flex flex-1 flex-col items-center justify-center gap-6">
+            <div
+                v-else
+                class="flex flex-1 flex-col items-center justify-center gap-6"
+            >
                 <Card class="w-full max-w-sm">
                     <CardHeader>
                         <CardTitle class="text-center text-xl font-bold">
@@ -149,7 +161,10 @@ function handleHandoffDone() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent class="flex flex-col gap-3">
-                        <template v-for="item in finalizedItems" :key="item.productId">
+                        <template
+                            v-for="item in finalizedItems"
+                            :key="item.productId"
+                        >
                             <div
                                 v-if="item.product?.child_products?.length"
                                 class="flex flex-col gap-1"
@@ -168,7 +183,10 @@ function handleHandoffDone() {
                                         {{ child.name }}
                                     </span>
                                     <span class="text-sm font-bold">
-                                        {{ Number(child.quantity) * item.quantity }}
+                                        {{
+                                            Number(child.quantity) *
+                                            item.quantity
+                                        }}
                                     </span>
                                 </div>
                             </div>

@@ -3,6 +3,7 @@ import { flushPromises, mount } from '@vue/test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createRouter, createWebHistory } from 'vue-router'
 
+import { useOperatingDayStore } from '@/stores/operating-day'
 import RegisterDashboardView from './RegisterDashboardView.vue'
 
 vi.mock('@/lib/permissions', () => ({
@@ -104,7 +105,6 @@ describe('RegisterDashboardView', () => {
     })
 
     it('shows close card when day is open', async () => {
-        const { useOperatingDayStore } = await import('@/stores/operating-day')
         vi.mocked(useOperatingDayStore).mockReturnValue({
             currentDay: {
                 id: 1,

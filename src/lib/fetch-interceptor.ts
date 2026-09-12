@@ -1,4 +1,4 @@
-import { AUTH_STORAGE_KEY } from '@/stores/auth'
+import { AUTH_STORAGE_KEY, useAuthStore } from '@/stores/auth'
 
 const originalFetch = window.fetch
 
@@ -23,7 +23,6 @@ async function tryRefreshToken(): Promise<boolean> {
 
 async function fetchMeAfterRefresh() {
     try {
-        const { useAuthStore } = await import('@/stores/auth')
         const authStore = useAuthStore()
         await authStore.fetchMe()
     } catch {
