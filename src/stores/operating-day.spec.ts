@@ -351,11 +351,17 @@ describe('operatingDay store', () => {
                 status: 200,
                 headers: new Headers(),
             })
+            // After close, fetchCurrentDay returns the closed day from server
+            mockFetchCurrent.mockResolvedValue({
+                data: { data: closedDay },
+                status: 200,
+                headers: new Headers(),
+            })
 
             const result = await store.closeDay(undefined, 'Extra CHF 5 found')
 
             expect(result.success).toBe(true)
-            expect(store.currentDay).toBeNull()
+            expect(store.currentDay).toEqual(closedDay)
             expect(store.isOpen).toBe(false)
             if (result.success) {
                 expect(result.data.total_cash).toBe('245.00')
@@ -459,11 +465,17 @@ describe('operatingDay store', () => {
                 status: 200,
                 headers: new Headers(),
             })
+            // After reopen, fetchCurrentDay returns the reopened day from server
+            mockFetchCurrent.mockResolvedValue({
+                data: { data: reopenedDay },
+                status: 200,
+                headers: new Headers(),
+            })
 
             const result = await store.reopenDay()
 
             expect(result).toEqual({ success: true })
-            expect(store.currentDay?.closed_at).toBeNull()
+            expect(store.currentDay).toEqual(reopenedDay)
             expect(store.isOpen).toBe(true)
         })
 

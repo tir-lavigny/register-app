@@ -286,11 +286,17 @@ describe('operating day flow integration', () => {
                     HttpResponse.json({ data: closedDay }, { status: 200 })
                 )
             )
+            // After close, fetchCurrentDay returns the closed day
+            server.use(
+                getRegisterOperatingDaysCurrentMockHandler({
+                    data: closedDay as never,
+                })
+            )
 
             const result = await store.closeDay(undefined, 'Extra CHF 5')
 
             expect(result.success).toBe(true)
-            expect(store.currentDay).toBeNull()
+            expect(store.currentDay).toEqual(closedDay)
             expect(store.isOpen).toBe(false)
         })
 
@@ -383,6 +389,12 @@ describe('operating day flow integration', () => {
                 http.patch('*/register/days/:operatingDay', () =>
                     HttpResponse.json({ data: reopenedDay }, { status: 200 })
                 )
+            )
+            // After reopen, fetchCurrentDay returns the reopened day
+            server.use(
+                getRegisterOperatingDaysCurrentMockHandler({
+                    data: reopenedDay as never,
+                })
             )
 
             const result = await store.reopenDay()
@@ -497,36 +509,37 @@ describe('operating day flow integration', () => {
             expect(createResult).toEqual({ success: true })
             expect(store.isOpen).toBe(true)
 
+            const closedDay = makeDay({
+                id: 10,
+                closed_at: '2026-09-02T18:00:00Z',
+            })
             server.use(
                 http.patch('*/register/days/:operatingDay', () =>
-                    HttpResponse.json(
-                        {
-                            data: makeDay({
-                                id: 10,
-                                closed_at: '2026-09-02T18:00:00Z',
-                            }),
-                        },
-                        { status: 200 }
-                    )
+                    HttpResponse.json({ data: closedDay }, { status: 200 })
                 )
+            )
+            // After close, fetchCurrentDay returns the closed day
+            server.use(
+                getRegisterOperatingDaysCurrentMockHandler({
+                    data: closedDay as never,
+                })
             )
 
             const closeResult = await store.closeDay()
             expect(closeResult.success).toBe(true)
-            expect(store.currentDay).toBeNull()
+            expect(store.currentDay).toEqual(closedDay)
 
-            store.currentDay = makeDay({
-                id: 10,
-                closed_at: '2026-09-02T18:00:00Z',
-            }) as never
-
+            const reopenedDay = makeDay({ id: 10, closed_at: null })
             server.use(
                 http.patch('*/register/days/:operatingDay', () =>
-                    HttpResponse.json(
-                        { data: makeDay({ id: 10 }) },
-                        { status: 200 }
-                    )
+                    HttpResponse.json({ data: reopenedDay }, { status: 200 })
                 )
+            )
+            // After reopen, fetchCurrentDay returns the reopened day
+            server.use(
+                getRegisterOperatingDaysCurrentMockHandler({
+                    data: reopenedDay as never,
+                })
             )
 
             const reopenResult = await store.reopenDay()

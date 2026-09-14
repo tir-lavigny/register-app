@@ -153,6 +153,7 @@ export const useOperatingDayStore = defineStore('operatingDay', () => {
                 ) {
                     previousUnclosedDay.value = null
                 }
+                await fetchCurrentDay()
                 return { success: true, data: closedDay }
             }
 
@@ -185,6 +186,7 @@ export const useOperatingDayStore = defineStore('operatingDay', () => {
 
             if (response.status === 200 && response.data.data) {
                 currentDay.value = response.data.data
+                await fetchCurrentDay()
                 return { success: true }
             }
 
