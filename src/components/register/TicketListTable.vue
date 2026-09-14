@@ -86,12 +86,12 @@ function hasVoucher(ticket: TicketResource): boolean {
                 @click="emit('select', ticket)"
             >
                 <div class="flex-1 min-w-0">
-                    <span class="block text-sm font-medium"
-                        >Ticket #{{ ticket.id }}</span
-                    >
-                    <span class="text-xs text-muted-foreground">{{
+                    <span class="block text-sm font-medium">{{
                         formatTime(ticket.sold_at)
                     }}</span>
+                    <span class="text-xs text-muted-foreground">
+                        Ticket #{{ ticket.id }}
+                    </span>
                 </div>
                 <span class="text-xs text-muted-foreground">{{
                     formatPayment(ticket.payment_method)

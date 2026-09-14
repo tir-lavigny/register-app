@@ -33,11 +33,6 @@ const isAlreadyRefunded = !!props.ticket.deleted_at
 
 const refundMutation = useRegisterTicketsRefund()
 
-function formatTime(iso: string): string {
-    const d = new Date(iso)
-    return d.toLocaleTimeString('fr-CH', { hour: '2-digit', minute: '2-digit' })
-}
-
 function formatPayment(method: string): string {
     if (method === 'cash') return 'Espèces'
     if (method === 'twint') return 'Twint'
@@ -70,13 +65,6 @@ async function handleRefund() {
             >
                 Annulé
             </span>
-        </div>
-
-        <div class="flex items-center justify-between">
-            <span class="text-sm text-muted-foreground">Heure</span>
-            <span class="text-sm font-medium">{{
-                formatTime(ticket.sold_at)
-            }}</span>
         </div>
 
         <div class="flex items-center justify-between">

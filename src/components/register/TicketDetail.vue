@@ -34,8 +34,16 @@ const [DefineContent, ReuseContent] = createReusableTemplate<{
     ticket: TicketResource
 }>()
 
+function formatTime(iso: string): string {
+    const date = new Date(iso)
+    return new Intl.DateTimeFormat('fr-CH', {
+        hour: '2-digit',
+        minute: '2-digit',
+    }).format(date)
+}
+
 const title = computed(() =>
-    props.ticket ? `Ticket #${props.ticket.id}` : 'Ticket'
+    props.ticket ? formatTime(props.ticket.sold_at) : 'Ticket'
 )
 
 function handleClose() {
