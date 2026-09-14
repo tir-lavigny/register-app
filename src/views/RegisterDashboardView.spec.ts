@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createRouter, createWebHistory } from 'vue-router'
 
 import { useOperatingDayStore } from '@/stores/operating-day'
+
 import RegisterDashboardView from './RegisterDashboardView.vue'
 
 vi.mock('@/lib/permissions', () => ({
