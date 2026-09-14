@@ -5,14 +5,17 @@ import { reactiveOmit } from "@vueuse/core"
 import { AlertDialogAction } from "reka-ui"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from '@/components/ui/button'
+import type { VariantProps } from "class-variance-authority"
 
-const props = defineProps<AlertDialogActionProps & { class?: HTMLAttributes["class"] }>()
+type ButtonVariant = VariantProps<typeof buttonVariants>["variant"]
 
-const delegatedProps = reactiveOmit(props, "class")
+const props = defineProps<AlertDialogActionProps & { class?: HTMLAttributes["class"]; variant?: ButtonVariant }>()
+
+const delegatedProps = reactiveOmit(props, "class", "variant")
 </script>
 
 <template>
-  <AlertDialogAction v-bind="delegatedProps" :class="cn(buttonVariants(), props.class)">
+  <AlertDialogAction v-bind="delegatedProps" :class="cn(buttonVariants({ variant }), props.class)">
     <slot />
   </AlertDialogAction>
 </template>
