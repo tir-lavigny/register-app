@@ -36,11 +36,24 @@ vi.mock('@/stores/season', () => ({
 
 vi.mock('@/stores/operating-day', () => ({
     useOperatingDayStore: vi.fn(() => ({
-        currentDay: null,
+        currentDay: {
+            id: 1,
+            date: '2026-09-02',
+            started_at: '2026-09-02T08:00:00Z',
+            closed_at: null,
+            season_id: 1,
+            cash_remark: null,
+            closing_balance: null,
+            total_cash: '0',
+            total_twint: '0',
+            tickets: [],
+            created_at: null,
+            updated_at: null,
+        },
         previousUnclosedDay: null,
         loading: false,
-        isOpen: false,
-        dayId: null,
+        isOpen: true,
+        dayId: 1,
         activeTickets: [],
         canceledTickets: [],
         cashTotal: 0,

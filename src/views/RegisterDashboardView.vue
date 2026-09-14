@@ -24,9 +24,14 @@ const showCloseDialog = ref(false)
 const showClosePreviousDialog = ref(false)
 const showReopenDialog = ref(false)
 
-const canCreateTicket = computed(() => hasPermission(Permissions.CREATE_TICKET))
+const canCreateTicket = computed(
+    () => hasPermission(Permissions.CREATE_TICKET) && dayStore.isOpen
+)
 const canCloseDay = computed(() => hasPermission(Permissions.CLOSE_DAY))
-const canViewTickets = computed(() => hasPermission(Permissions.VIEW_TICKETS))
+const canViewTickets = computed(
+    () =>
+        hasPermission(Permissions.VIEW_TICKETS) && dayStore.currentDay !== null
+)
 
 const initialRemark = computed(
     () => dayStore.currentDay?.cash_remark ?? undefined
