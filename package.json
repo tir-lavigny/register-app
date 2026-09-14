@@ -34,7 +34,7 @@
         "@faker-js/faker": "^10.6.0",
         "@pinia/testing": "^2.0.1",
         "@trivago/prettier-plugin-sort-imports": "^6.0.2",
-        "@types/node": "^26.2.0",
+        "@types/node": "^26.4.1",
         "@vitejs/plugin-vue": "^6.0.8",
         "@vitest/coverage-v8": "^4.1.11",
         "@vue/test-utils": "^2.5.0",
