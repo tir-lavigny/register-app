@@ -144,7 +144,7 @@ function handleHandoffDone() {
                             @click="handleFinalize"
                         >
                             <Check class="mr-2 size-5" />
-                            Valider — {{ total.toFixed(2) }} CHF
+                            Valider, {{ total.toFixed(2) }} CHF
                         </Button>
                     </CardContent>
                 </Card>

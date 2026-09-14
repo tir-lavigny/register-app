@@ -47,7 +47,7 @@ const savedDraftSummary = computed(() => {
     const items = savedDraft.value.items
     const total = items.reduce((sum, i) => sum + i.lineTotal, 0)
     const names = items.map((i) => `${i.productName} ×${i.quantity}`).join(', ')
-    return `${items.length} article${items.length > 1 ? 's' : ''} — ${names} — Total: ${total.toFixed(2)} CHF`
+    return `${items.length} article${items.length > 1 ? 's' : ''}, ${names}, Total: ${total.toFixed(2)} CHF`
 })
 
 onMounted(async () => {

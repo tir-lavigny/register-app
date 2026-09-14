@@ -212,7 +212,7 @@ function goToPayment() {
                                         @click="handleToggleVoucher(index)"
                                     >
                                         <Tag class="size-4" />
-                                        {{ item.productName }} — Bon appliqué
+                                        {{ item.productName }}, Bon appliqué
                                         (retirer)
                                     </button>
                                     <span

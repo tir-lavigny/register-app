@@ -1,4 +1,4 @@
-// @ts-nocheck — ESLint's defineConfig generics don't align perfectly with
+// @ts-nocheck, ESLint's defineConfig generics don't align perfectly with
 // plugin types; the config is correct at runtime.
 import prettierConfig from 'eslint-config-prettier'
 import vue from 'eslint-plugin-vue'
