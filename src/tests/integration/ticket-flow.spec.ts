@@ -194,7 +194,7 @@ describe('ticket flow integration', () => {
                             product_id: 1,
                             voucher_id: 0,
                             quantity: '2',
-                            unit_price: '3.50',
+                            unit_price: 3.5,
                             subtotal: 7.0,
                         },
                     ],

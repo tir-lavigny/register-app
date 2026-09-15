@@ -42,7 +42,7 @@ export const getRegisterTicketsStoreResponseMock = (
 export const getRegisterTicketsPreviewResponseMock = (
     overrideResponse: Partial<Extract<RegisterTicketsPreview200, object>> = {}
 ): RegisterTicketsPreview200 => ({
-    total: faker.number.int(),
+    total: faker.number.float({ fractionDigits: 2 }),
     items: Array.from(
         { length: faker.number.int({ min: 1, max: 10 }) },
         (_, i) => i + 1
@@ -50,7 +50,7 @@ export const getRegisterTicketsPreviewResponseMock = (
         product_id: faker.number.int(),
         voucher_id: faker.number.int(),
         quantity: faker.string.alpha({ length: { min: 10, max: 20 } }),
-        unit_price: faker.string.alpha({ length: { min: 10, max: 20 } }),
+        unit_price: faker.number.float({ fractionDigits: 2 }),
         subtotal: faker.number.float({ fractionDigits: 2 }),
     })),
     ...overrideResponse,
