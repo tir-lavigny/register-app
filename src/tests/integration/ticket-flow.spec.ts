@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { getRegisterTicketsPreviewMockHandler } from '@/api/generated/ticket/ticket.msw'
 import { getRegisterTicketsStoreMockHandler } from '@/api/generated/ticket/ticket.msw'
 import type { ProductResource } from '@/api/model'
+import { useStockLocationStore } from '@/stores/stock-location'
 import { useTicketStore } from '@/stores/ticket'
 
 import { server } from '../setup'
@@ -32,6 +33,11 @@ describe('ticket flow integration', () => {
     beforeEach(() => {
         setActivePinia(createPinia())
         store = useTicketStore()
+        const locationStore = useStockLocationStore()
+        locationStore.locations = [
+            { id: 1, name: 'Main', description: null, active: true },
+        ]
+        locationStore.activeLocationId = 1
         localStorage.clear()
     })
 
@@ -210,6 +216,7 @@ describe('ticket flow integration', () => {
                         updated_at: null,
                         member_id: null,
                         sold_at: '2026-09-02T10:00:00Z',
+                        stock_location_id: 1,
                     },
                 })
             )

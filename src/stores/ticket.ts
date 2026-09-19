@@ -11,6 +11,7 @@ import type {
     StoreTicketRequestPaymentMethod,
     Voucher,
 } from '@/api/model'
+import { useStockLocationStore } from '@/stores/stock-location'
 
 export interface TicketDraftItem {
     productId: number
@@ -62,11 +63,17 @@ function computeVoucherDiscount(
 }
 
 function buildPreviewPayload(draft: TicketDraft, operatingDayId: number) {
+    const locationStore = useStockLocationStore()
+    const stockLocationId = locationStore.activeLocationId
+    if (stockLocationId === null) {
+        throw new Error('Aucun emplacement sélectionné.')
+    }
     return {
         payment_method: draft.paymentMethod as StoreTicketRequestPaymentMethod,
         operating_day_id: operatingDayId,
         member_id: draft.memberId,
         sold_at: new Date().toISOString(),
+        stock_location_id: stockLocationId,
         items: draft.items.map((item) => ({
             product_id: item.productId,
             quantity: item.quantity,

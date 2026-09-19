@@ -31,6 +31,17 @@ export default defineConfig({
                         },
                     },
                     {
+                        urlPattern: /\/api\/stock\/locations(\?.*)?$/,
+                        handler: 'CacheFirst',
+                        options: {
+                            cacheName: 'reference-data',
+                            expiration: {
+                                maxEntries: 50,
+                                maxAgeSeconds: 86400,
+                            },
+                        },
+                    },
+                    {
                         urlPattern: /\/api\/register\/members(\?.*)?$/,
                         handler: 'CacheFirst',
                         options: {

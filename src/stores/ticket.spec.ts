@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { ProductResource, Voucher } from '@/api/model'
 
+import { useStockLocationStore } from './stock-location'
 import { useTicketStore } from './ticket'
 
 const mockPreview = vi.fn()
@@ -51,6 +52,11 @@ describe('ticket store', () => {
     beforeEach(() => {
         setActivePinia(createPinia())
         vi.clearAllMocks()
+        const locationStore = useStockLocationStore()
+        locationStore.locations = [
+            { id: 1, name: 'Main', description: null, active: true },
+        ]
+        locationStore.activeLocationId = 1
         store = useTicketStore()
     })
 
