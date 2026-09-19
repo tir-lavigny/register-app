@@ -35,6 +35,7 @@ export const getRegisterTicketsStoreResponseMock = (
         ]),
         member_id: faker.helpers.arrayElement([faker.number.int(), null]),
         sold_at: faker.date.past().toISOString().slice(0, 19) + 'Z',
+        stock_location_id: faker.number.int(),
     },
     ...overrideResponse,
 })
@@ -78,6 +79,7 @@ export const getRegisterTicketsShowResponseMock = (
         ]),
         member_id: faker.helpers.arrayElement([faker.number.int(), null]),
         sold_at: faker.date.past().toISOString().slice(0, 19) + 'Z',
+        stock_location_id: faker.number.int(),
     },
     ...overrideResponse,
 })
