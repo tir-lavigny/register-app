@@ -1,68 +1,15 @@
 <script setup lang="ts">
 import { ArrowLeft, PackageX, Plus } from '@lucide/vue'
-import { computed, onMounted, toRef } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { useStockLossesIndex } from '@/api/generated/stock-loss/stock-loss'
-import type { StockMovementResource } from '@/api/model'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import AppLayout from '@/layouts/AppLayout.vue'
-import { Permissions, hasPermission } from '@/lib/permissions'
-import { useOperatingDayStore } from '@/stores/operating-day'
-import { useStockLocationStore } from '@/stores/stock-location'
+import { useStockLosses } from '@/composables/useStockLosses'
+import { formatDateTime } from '@/lib/utils'
 
 const router = useRouter()
-const dayStore = useOperatingDayStore()
-const stockLocationStore = useStockLocationStore()
-
-const canRecordLoss = computed(
-    () =>
-        hasPermission(Permissions.RECORD_STOCK_LOSS) && dayStore.isOpen
-)
-
-const dayId = toRef(computed(() => dayStore.dayId ?? 0))
-const locationId = toRef(
-    computed(() => stockLocationStore.activeLocationId ?? 0)
-)
-
-const { data, isLoading } = useStockLossesIndex(locationId, dayId)
-
-const losses = computed(() => {
-    const response = data.value
-    if (!response || response.status !== 200) return []
-    const payload = response.data
-    if (!('data' in payload)) return []
-    return payload.data as (StockMovementResource & {
-        product: NonNullable<StockMovementResource['product']>
-        stockLocation: NonNullable<StockMovementResource['stockLocation']>
-    })[]
-})
-
-const totalQuantity = computed(() =>
-    losses.value.reduce((sum, item) => sum + item.quantity, 0)
-)
-
-function formatDate(iso: string | null): string {
-    if (!iso) return '—'
-    const d = new Date(iso)
-    return d.toLocaleDateString('fr-CH', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-    })
-}
-
-onMounted(async () => {
-    if (!dayStore.currentDay) {
-        await dayStore.fetchCurrentDay()
-    }
-    if (stockLocationStore.locations.length === 0) {
-        await stockLocationStore.fetchLocations()
-    }
-})
+const { losses, totalQuantity, isLoading, canRecordLoss } = useStockLosses()
 </script>
 
 <template>
@@ -136,7 +83,7 @@ onMounted(async () => {
                         </span>
                     </div>
                     <span class="text-xs text-muted-foreground">{{
-                        formatDate(loss.created_at)
+                        formatDateTime(loss.created_at)
                     }}</span>
                     <span class="min-w-12 text-right text-sm font-medium">
                         {{ loss.quantity }}
