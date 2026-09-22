@@ -13,6 +13,7 @@ export interface StoreTicketRequest {
     /** @nullable */
     member_id?: number | null
     sold_at: string
+    stock_location_id: number
     /** @minItems 1 */
     items: StoreTicketRequestItemsItem[]
 }

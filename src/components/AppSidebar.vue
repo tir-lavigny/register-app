@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ChevronUp, Download, Trash2, User2 } from '@lucide/vue'
-import { computed } from 'vue'
+import { ChevronUp, Download, MapPin, Trash2, User2 } from '@lucide/vue'
+import { computed, onMounted } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 
 import {
@@ -26,17 +26,26 @@ import { usePwaInstall } from '@/composables/usePwaInstall'
 import { Permissions, hasPermission } from '@/lib/permissions'
 import { clearReferenceDataCache } from '@/lib/pwa-cache'
 import { useAuthStore } from '@/stores/auth'
+import { useStockLocationStore } from '@/stores/stock-location'
 
 import AppLogoIcon from './AppLogoIcon.vue'
 
 const props = defineProps<SidebarProps>()
 const route = useRoute()
 const authStore = useAuthStore()
+const locationStore = useStockLocationStore()
 const { canInstall, isInstalled, install } = usePwaInstall()
 
 const canViewRegister = computed(() => hasPermission(Permissions.VIEW_REGISTER))
 const canCreateTicket = computed(() => hasPermission(Permissions.CREATE_TICKET))
 const canViewTickets = computed(() => hasPermission(Permissions.VIEW_TICKETS))
+
+onMounted(async () => {
+    locationStore.loadFromStorage()
+    if (locationStore.locations.length === 0) {
+        await locationStore.fetchLocations()
+    }
+})
 
 interface NavItem {
     title: string
@@ -112,6 +121,32 @@ const navMain = computed<NavItem[]>(() => [
         </SidebarContent>
         <SidebarFooter>
             <SidebarMenu>
+                <SidebarMenuItem>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger as-child>
+                            <SidebarMenuButton>
+                                <MapPin />
+                                {{
+                                    locationStore.activeLocation?.name ??
+                                    'Aucun'
+                                }}
+                                <ChevronUp class="ml-auto" />
+                            </SidebarMenuButton>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                            side="bottom"
+                            class="w-(--reka-popper-anchor-width)"
+                        >
+                            <DropdownMenuItem
+                                v-for="loc in locationStore.locations"
+                                :key="loc.id"
+                                @click="locationStore.setActiveLocation(loc.id)"
+                            >
+                                {{ loc.name }}
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </SidebarMenuItem>
                 <SidebarMenuItem v-if="canInstall && !isInstalled">
                     <SidebarMenuButton @click="install">
                         <Download />

@@ -19,4 +19,5 @@ export interface Ticket {
     /** @nullable */
     member_id: number | null
     sold_at: string
+    stock_location_id: number
 }
