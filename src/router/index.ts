@@ -4,6 +4,7 @@ import { useAuthStore } from '@/stores/auth'
 import LoginView from '@/views/LoginView.vue'
 import OfflineView from '@/views/OfflineView.vue'
 import RegisterDashboardView from '@/views/RegisterDashboardView.vue'
+import StockLossCreateView from '@/views/StockLossCreateView.vue'
 import StockLossesView from '@/views/StockLossesView.vue'
 import TicketCreateView from '@/views/TicketCreateView.vue'
 import TicketListView from '@/views/TicketListView.vue'
@@ -42,6 +43,11 @@ const routes = [
     {
         path: '/register/stock-losses',
         component: StockLossesView,
+        meta: { requiresAuth: true },
+    },
+    {
+        path: '/register/stock-losses/new',
+        component: StockLossCreateView,
         meta: { requiresAuth: true },
     },
 ]

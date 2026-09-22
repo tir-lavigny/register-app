@@ -9,6 +9,7 @@ export const Permissions = {
     CREATE_TICKET: 'create ticket',
     VIEW_TICKETS: 'view tickets',
     REFUND_TICKET: 'refund ticket',
+    RECORD_STOCK_LOSS: 'record stock loss',
 } as const
 
 export type Permission = (typeof Permissions)[keyof typeof Permissions]

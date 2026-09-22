@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowLeft, PackageX } from '@lucide/vue'
+import { ArrowLeft, PackageX, Plus } from '@lucide/vue'
 import { computed, onMounted, toRef } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -8,12 +8,18 @@ import type { StockMovementResource } from '@/api/model'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import AppLayout from '@/layouts/AppLayout.vue'
+import { Permissions, hasPermission } from '@/lib/permissions'
 import { useOperatingDayStore } from '@/stores/operating-day'
 import { useStockLocationStore } from '@/stores/stock-location'
 
 const router = useRouter()
 const dayStore = useOperatingDayStore()
 const stockLocationStore = useStockLocationStore()
+
+const canRecordLoss = computed(
+    () =>
+        hasPermission(Permissions.RECORD_STOCK_LOSS) && dayStore.isOpen
+)
 
 const dayId = toRef(computed(() => dayStore.dayId ?? 0))
 const locationId = toRef(
@@ -71,6 +77,13 @@ onMounted(async () => {
                     <ArrowLeft class="size-5" />
                 </Button>
                 <h1 class="flex-1 text-xl font-bold">Pertes de stock</h1>
+                <Button
+                    v-if="canRecordLoss"
+                    @click="router.push('/register/stock-losses/new')"
+                >
+                    <Plus class="size-4 mr-1" />
+                    Nouvelle perte
+                </Button>
             </div>
 
             <Card v-if="losses.length > 0">
