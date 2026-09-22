@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ReceiptText, Tickets, XCircle } from '@lucide/vue'
+import { PackageX, ReceiptText, Tickets, XCircle } from '@lucide/vue'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -112,6 +112,19 @@ onMounted(async () => {
                     >
                         <Tickets class="size-8 text-primary" />
                         <span class="text-lg font-medium">Tickets du jour</span>
+                    </CardContent>
+                </Card>
+
+                <Card
+                    v-if="canViewTickets"
+                    class="cursor-pointer transition-colors hover:bg-accent"
+                    @click="router.push('/register/stock-losses')"
+                >
+                    <CardContent
+                        class="flex flex-col items-center gap-3 p-6 text-center"
+                    >
+                        <PackageX class="size-8 text-primary" />
+                        <span class="text-lg font-medium">Pertes de stock</span>
                     </CardContent>
                 </Card>
 
