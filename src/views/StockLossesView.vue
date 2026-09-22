@@ -4,8 +4,8 @@ import { useRouter } from 'vue-router'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import AppLayout from '@/layouts/AppLayout.vue'
 import { useStockLosses } from '@/composables/useStockLosses'
+import AppLayout from '@/layouts/AppLayout.vue'
 import { formatDateTime } from '@/lib/utils'
 
 const router = useRouter()

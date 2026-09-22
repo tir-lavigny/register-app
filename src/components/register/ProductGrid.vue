@@ -60,7 +60,10 @@ function handleSelectProduct(product: ProductResource) {
 
 watchEffect(() => {
     const cats = filteredCategories.value
-    if (cats.length > 0 && !cats.some((c) => String(c.id) === activeTab.value)) {
+    if (
+        cats.length > 0 &&
+        !cats.some((c) => String(c.id) === activeTab.value)
+    ) {
         activeTab.value = String(cats[0].id)
     }
 })

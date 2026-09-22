@@ -13,8 +13,8 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import AppLayout from '@/layouts/AppLayout.vue'
 import { useStockLossForm } from '@/composables/useStockLossForm'
+import AppLayout from '@/layouts/AppLayout.vue'
 import { Permissions, hasPermission } from '@/lib/permissions'
 import { useOperatingDayStore } from '@/stores/operating-day'
 import { useStockLocationStore } from '@/stores/stock-location'
