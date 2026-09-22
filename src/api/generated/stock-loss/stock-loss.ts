@@ -4,12 +4,15 @@
  * Tir Lavigny
  * OpenAPI spec version: 0.0.1
  */
-import { useQuery } from '@tanstack/vue-query'
+import { useMutation, useQuery } from '@tanstack/vue-query'
 import type {
     DataTag,
+    MutationFunction,
     QueryClient,
     QueryFunction,
     QueryKey,
+    UseMutationOptions,
+    UseMutationReturnType,
     UseQueryOptions,
     UseQueryReturnType,
 } from '@tanstack/vue-query'
@@ -18,8 +21,13 @@ import type { MaybeRefOrGetter } from 'vue'
 
 import type {
     AuthenticationExceptionResponse,
+    AuthorizationExceptionResponse,
     ModelNotFoundExceptionResponse,
     StockLossesIndex200,
+    StockLossesStore201,
+    StockLossesStore400,
+    StoreStockLossRequest,
+    ValidationExceptionResponse,
 } from '../../model'
 
 export type stockLossesIndexResponse200 = {
@@ -183,4 +191,163 @@ export function useStockLossesIndex<
     >
 
     return query
+}
+
+export type stockLossesStoreResponse201 = {
+    data: StockLossesStore201
+    status: 201
+}
+
+export type stockLossesStoreResponse400 = {
+    data: StockLossesStore400
+    status: 400
+}
+
+export type stockLossesStoreResponse401 = {
+    data: AuthenticationExceptionResponse
+    status: 401
+}
+
+export type stockLossesStoreResponse403 = {
+    data: AuthorizationExceptionResponse
+    status: 403
+}
+
+export type stockLossesStoreResponse422 = {
+    data: ValidationExceptionResponse
+    status: 422
+}
+
+export type stockLossesStoreResponseSuccess = stockLossesStoreResponse201 & {
+    headers: Headers
+}
+export type stockLossesStoreResponseError = (
+    | stockLossesStoreResponse400
+    | stockLossesStoreResponse401
+    | stockLossesStoreResponse403
+    | stockLossesStoreResponse422
+) & {
+    headers: Headers
+}
+
+export type stockLossesStoreResponse =
+    stockLossesStoreResponseSuccess | stockLossesStoreResponseError
+
+export const getStockLossesStoreUrl = () => {
+    return `${import.meta.env.VITE_API_BASE_URL}/stock/losses`
+}
+
+export const stockLossesStore = async (
+    storeStockLossRequest: StoreStockLossRequest,
+    options?: RequestInit
+): Promise<stockLossesStoreResponse> => {
+    const getHeaders = (
+        h?: NonNullable<RequestInit['headers']>
+    ): Record<string, string | readonly string[]> => {
+        if (!h) return {}
+        if (h instanceof Headers) return Object.fromEntries(h.entries())
+        if (Array.isArray(h)) return Object.fromEntries(h)
+        return h
+    }
+    const res = await fetch(getStockLossesStoreUrl(), {
+        ...options,
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            ...getHeaders(options?.headers),
+        },
+        body: JSON.stringify(storeStockLossRequest),
+    })
+
+    const body = [204, 205, 304].includes(res.status) ? null : await res.text()
+
+    const data: stockLossesStoreResponse['data'] = body ? JSON.parse(body) : {}
+    return {
+        data,
+        status: res.status,
+        headers: res.headers,
+    } as stockLossesStoreResponse
+}
+
+export const getStockLossesStoreMutationKey = () =>
+    ['stockLossesStore'] as const
+
+export const getStockLossesStoreMutationOptions = <
+    TError =
+        | StockLossesStore400
+        | AuthenticationExceptionResponse
+        | AuthorizationExceptionResponse
+        | ValidationExceptionResponse,
+    TContext = unknown,
+>(options?: {
+    mutation?: UseMutationOptions<
+        Awaited<ReturnType<typeof stockLossesStore>>,
+        TError,
+        StockLossesStoreMutationVariables,
+        TContext
+    >
+    fetch?: RequestInit
+}): UseMutationOptions<
+    Awaited<ReturnType<typeof stockLossesStore>>,
+    TError,
+    StockLossesStoreMutationVariables,
+    TContext
+> => {
+    const mutationKey = getStockLossesStoreMutationKey()
+    const { mutation: mutationOptions, fetch: fetchOptions } = options
+        ? options.mutation &&
+          'mutationKey' in options.mutation &&
+          options.mutation.mutationKey
+            ? options
+            : { ...options, mutation: { ...options.mutation, mutationKey } }
+        : { mutation: { mutationKey }, fetch: undefined }
+
+    const mutationFn: MutationFunction<
+        Awaited<ReturnType<typeof stockLossesStore>>,
+        StockLossesStoreMutationVariables
+    > = (props) => {
+        const { data } = props ?? {}
+
+        return stockLossesStore(data, fetchOptions)
+    }
+
+    return { mutationFn, ...mutationOptions }
+}
+
+export type StockLossesStoreMutationResult = NonNullable<
+    Awaited<ReturnType<typeof stockLossesStore>>
+>
+export type StockLossesStoreMutationBody = StoreStockLossRequest
+export type StockLossesStoreMutationError =
+    | StockLossesStore400
+    | AuthenticationExceptionResponse
+    | AuthorizationExceptionResponse
+    | ValidationExceptionResponse
+export type StockLossesStoreMutationVariables = { data: StoreStockLossRequest }
+
+export const useStockLossesStore = <
+    TError =
+        | StockLossesStore400
+        | AuthenticationExceptionResponse
+        | AuthorizationExceptionResponse
+        | ValidationExceptionResponse,
+    TContext = unknown,
+>(
+    options?: {
+        mutation?: UseMutationOptions<
+            Awaited<ReturnType<typeof stockLossesStore>>,
+            TError,
+            StockLossesStoreMutationVariables,
+            TContext
+        >
+        fetch?: RequestInit
+    },
+    queryClient?: QueryClient
+): UseMutationReturnType<
+    Awaited<ReturnType<typeof stockLossesStore>>,
+    TError,
+    StockLossesStoreMutationVariables,
+    TContext
+> => {
+    return useMutation(getStockLossesStoreMutationOptions(options), queryClient)
 }

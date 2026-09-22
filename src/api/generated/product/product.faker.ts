@@ -27,6 +27,7 @@ export const getRegisterProductsIndexResponseMock = (
             ]),
             unit_price: faker.string.alpha({ length: { min: 10, max: 20 } }),
             allows_custom_price: faker.datatype.boolean(),
+            is_stockable: faker.datatype.boolean(),
             category_id: faker.number.int(),
             deleted_at: faker.helpers.arrayElement([
                 faker.date.past().toISOString().slice(0, 19) + 'Z',
@@ -126,6 +127,7 @@ export const getRegisterProductsShowResponseMock = (
             ]),
             unit_price: faker.string.alpha({ length: { min: 10, max: 20 } }),
             allows_custom_price: faker.datatype.boolean(),
+            is_stockable: faker.datatype.boolean(),
             category_id: faker.number.int(),
             deleted_at: faker.helpers.arrayElement([
                 faker.date.past().toISOString().slice(0, 19) + 'Z',

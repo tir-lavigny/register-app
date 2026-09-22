@@ -7,7 +7,7 @@
 import { faker } from '@faker-js/faker'
 
 import { StockMovementType } from '../../model'
-import type { StockLossesIndex200 } from '../../model'
+import type { StockLossesIndex200, StockLossesStore201 } from '../../model'
 
 export const getStockLossesIndexResponseMock = (): StockLossesIndex200 =>
     faker.helpers.arrayElement([
@@ -93,3 +93,73 @@ export const getStockLossesIndexResponseMock = (): StockLossesIndex200 =>
             ).map(() => faker.string.alpha({ length: { min: 10, max: 20 } })),
         },
     ])
+
+export const getStockLossesStoreResponseMock = (
+    overrideResponse: Partial<Extract<StockLossesStore201, object>> = {}
+): StockLossesStore201 => ({
+    data: {
+        id: faker.number.int(),
+        type: faker.helpers.arrayElement(Object.values(StockMovementType)),
+        quantity: faker.number.int(),
+        stock_location_id: faker.number.int(),
+        product_id: faker.number.int(),
+        created_at: faker.helpers.arrayElement([
+            faker.date.past().toISOString().slice(0, 19) + 'Z',
+            null,
+        ]),
+        updated_at: faker.helpers.arrayElement([
+            faker.date.past().toISOString().slice(0, 19) + 'Z',
+            null,
+        ]),
+        stockLocation: faker.helpers.arrayElement([
+            {
+                id: faker.number.int(),
+                name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+                description: faker.helpers.arrayElement([
+                    faker.string.alpha({ length: { min: 10, max: 20 } }),
+                    null,
+                ]),
+                active: faker.datatype.boolean(),
+                created_at: faker.helpers.arrayElement([
+                    faker.date.past().toISOString().slice(0, 19) + 'Z',
+                    null,
+                ]),
+                updated_at: faker.helpers.arrayElement([
+                    faker.date.past().toISOString().slice(0, 19) + 'Z',
+                    null,
+                ]),
+            },
+            undefined,
+        ]),
+        product: faker.helpers.arrayElement([
+            {
+                id: faker.number.int(),
+                name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+                picture: faker.helpers.arrayElement([
+                    faker.string.alpha({ length: { min: 10, max: 20 } }),
+                    null,
+                ]),
+                unit_price: faker.string.alpha({
+                    length: { min: 10, max: 20 },
+                }),
+                allows_custom_price: faker.datatype.boolean(),
+                category_id: faker.number.int(),
+                deleted_at: faker.helpers.arrayElement([
+                    faker.date.past().toISOString().slice(0, 19) + 'Z',
+                    null,
+                ]),
+                created_at: faker.helpers.arrayElement([
+                    faker.date.past().toISOString().slice(0, 19) + 'Z',
+                    null,
+                ]),
+                updated_at: faker.helpers.arrayElement([
+                    faker.date.past().toISOString().slice(0, 19) + 'Z',
+                    null,
+                ]),
+                is_stockable: faker.datatype.boolean(),
+            },
+            undefined,
+        ]),
+    },
+    ...overrideResponse,
+})

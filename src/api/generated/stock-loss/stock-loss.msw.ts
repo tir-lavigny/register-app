@@ -7,10 +7,16 @@
 import { HttpResponse, http } from 'msw'
 import type { RequestHandlerOptions } from 'msw'
 
-import type { StockLossesIndex200 } from '../../model'
-import { getStockLossesIndexResponseMock } from './stock-loss.faker'
+import type { StockLossesIndex200, StockLossesStore201 } from '../../model'
+import {
+    getStockLossesIndexResponseMock,
+    getStockLossesStoreResponseMock,
+} from './stock-loss.faker'
 
-export { getStockLossesIndexResponseMock } from './stock-loss.faker'
+export {
+    getStockLossesIndexResponseMock,
+    getStockLossesStoreResponseMock,
+} from './stock-loss.faker'
 
 export const getStockLossesIndexMockHandler = (
     overrideResponse?:
@@ -35,4 +41,31 @@ export const getStockLossesIndexMockHandler = (
         options
     )
 }
-export const getStockLossMock = () => [getStockLossesIndexMockHandler()]
+
+export const getStockLossesStoreMockHandler = (
+    overrideResponse?:
+        | StockLossesStore201
+        | ((
+              info: Parameters<Parameters<typeof http.post>[1]>[0]
+          ) => Promise<StockLossesStore201> | StockLossesStore201),
+    options?: RequestHandlerOptions
+) => {
+    return http.post(
+        '*/stock/losses',
+        async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
+            return HttpResponse.json(
+                overrideResponse !== undefined
+                    ? typeof overrideResponse === 'function'
+                        ? await overrideResponse(info)
+                        : overrideResponse
+                    : getStockLossesStoreResponseMock(),
+                { status: 201 }
+            )
+        },
+        options
+    )
+}
+export const getStockLossMock = () => [
+    getStockLossesIndexMockHandler(),
+    getStockLossesStoreMockHandler(),
+]

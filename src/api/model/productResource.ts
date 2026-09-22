@@ -14,6 +14,7 @@ export interface ProductResource {
     picture: string | null
     unit_price: string
     allows_custom_price: boolean
+    is_stockable: boolean
     category_id: number
     /** @nullable */
     deleted_at: string | null

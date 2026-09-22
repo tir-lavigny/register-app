@@ -117,6 +117,7 @@ export const getRegisterOperatingDaysStoreResponseMock = (
                                     length: { min: 10, max: 20 },
                                 }),
                                 allows_custom_price: faker.datatype.boolean(),
+                                is_stockable: faker.datatype.boolean(),
                                 category_id: faker.number.int(),
                                 deleted_at: faker.helpers.arrayElement([
                                     faker.date
@@ -416,6 +417,7 @@ export const getRegisterOperatingDaysUpdateResponseMock = (
                                     length: { min: 10, max: 20 },
                                 }),
                                 allows_custom_price: faker.datatype.boolean(),
+                                is_stockable: faker.datatype.boolean(),
                                 category_id: faker.number.int(),
                                 deleted_at: faker.helpers.arrayElement([
                                     faker.date
@@ -715,6 +717,7 @@ export const getRegisterOperatingDaysShowResponseMock = (
                                     length: { min: 10, max: 20 },
                                 }),
                                 allows_custom_price: faker.datatype.boolean(),
+                                is_stockable: faker.datatype.boolean(),
                                 category_id: faker.number.int(),
                                 deleted_at: faker.helpers.arrayElement([
                                     faker.date
@@ -1014,6 +1017,7 @@ export const getRegisterOperatingDaysCurrentResponseMock = (
                                     length: { min: 10, max: 20 },
                                 }),
                                 allows_custom_price: faker.datatype.boolean(),
+                                is_stockable: faker.datatype.boolean(),
                                 category_id: faker.number.int(),
                                 deleted_at: faker.helpers.arrayElement([
                                     faker.date
@@ -1312,6 +1316,7 @@ export const getRegisterOperatingDaysPreviousUnclosedResponseMock = (
                                     length: { min: 10, max: 20 },
                                 }),
                                 allows_custom_price: faker.datatype.boolean(),
+                                is_stockable: faker.datatype.boolean(),
                                 category_id: faker.number.int(),
                                 deleted_at: faker.helpers.arrayElement([
                                     faker.date

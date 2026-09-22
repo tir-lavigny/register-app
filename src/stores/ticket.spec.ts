@@ -23,6 +23,7 @@ function makeProduct(
         picture: null,
         unit_price: '3.50',
         allows_custom_price: false,
+        is_stockable: true,
         category_id: 1,
         deleted_at: null,
         created_at: null,
