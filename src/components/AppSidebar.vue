@@ -37,7 +37,6 @@ const locationStore = useStockLocationStore()
 const { canInstall, isInstalled, install } = usePwaInstall()
 
 const canViewRegister = computed(() => hasPermission(Permissions.VIEW_REGISTER))
-const canCreateTicket = computed(() => hasPermission(Permissions.CREATE_TICKET))
 const canViewTickets = computed(() => hasPermission(Permissions.VIEW_TICKETS))
 
 onMounted(async () => {
@@ -60,9 +59,6 @@ const navMain = computed<NavItem[]>(() => [
         items: [
             ...(canViewRegister.value
                 ? [{ title: 'Tableau de bord', url: '/register' }]
-                : []),
-            ...(canCreateTicket.value
-                ? [{ title: 'Nouveau ticket', url: '/register/ticket/new' }]
                 : []),
             ...(canViewTickets.value
                 ? [{ title: 'Tickets du jour', url: '/register/tickets' }]
