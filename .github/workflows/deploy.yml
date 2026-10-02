@@ -43,8 +43,8 @@ jobs:
                     echo "app_env=production" >> $GITHUB_OUTPUT
                   fi
 
-            - name: Enable Corepack
-              run: corepack enable
+            - name: Setup pnpm
+              uses: pnpm/action-setup@v6
 
             - name: Setup Node.js
               uses: actions/setup-node@v7.0.0
