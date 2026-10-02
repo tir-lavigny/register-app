@@ -3,7 +3,13 @@
     "private": true,
     "version": "0.0.0",
     "type": "module",
-    "packageManager": "pnpm@12.8.1",
+    "devEngines": {
+        "packageManager": {
+            "name": "pnpm",
+            "version": "12.8.1",
+            "onFail": "download"
+        }
+    },
     "scripts": {
         "dev": "vite",
         "build": "vue-tsc -b && vite build",
