@@ -1,5 +1,13 @@
 import { AUTH_STORAGE_KEY, useAuthStore } from '@/stores/auth'
 
+import {
+    RETRY_CONFIG,
+    computeBackoffDelay,
+    isRetryableMethod,
+    isRetryableStatus,
+    sleep,
+} from './retry'
+
 const originalFetch = window.fetch
 
 let refreshPromise: Promise<boolean> | null = null
@@ -57,7 +65,30 @@ window.fetch = async function (
         headers.set('Authorization', `Bearer ${token}`)
     }
 
-    const response = await originalFetch(input, { ...init, headers })
+    const method =
+        init?.method ?? (input instanceof Request ? input.method : 'GET')
+    const maxAttempts = isRetryableMethod(method) ? RETRY_CONFIG.maxAttempts : 0
+
+    let response: Response
+    for (let attempt = 0; ; attempt++) {
+        if (attempt > 0) {
+            await sleep(computeBackoffDelay(attempt - 1))
+        }
+
+        try {
+            response = await originalFetch(input, { ...init, headers })
+        } catch (error) {
+            const name = (error as { name?: string })?.name
+            if (attempt >= maxAttempts || name === 'AbortError') {
+                throw error
+            }
+            continue
+        }
+
+        if (attempt >= maxAttempts || !isRetryableStatus(response.status)) {
+            break
+        }
+    }
 
     if (response.status === 401) {
         if (!refreshPromise) {
