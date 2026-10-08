@@ -1,131 +1,95 @@
 name: Build and publish Docker image
 
 on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+    push:
+        tags:
+            - 'v*'
+    workflow_dispatch:
+        inputs:
+            version:
+                description: 'Tag to deploy (e.g. v1.2.3 or v1.2.3-dev.5)'
+                required: true
+                type: string
 
 permissions:
-  contents: read
-  packages: write
+    contents: read
+    packages: write
 
 env:
-  REGISTRY: ghcr.io
-  IMAGE_WEB: ghcr.io/tir-lavigny/register-web
+    REGISTRY: ghcr.io
+    IMAGE_WEB: ghcr.io/tir-lavigny/register-web
 
 jobs:
-  staging:
-    if: github.event_name == 'push'
-    runs-on: ubuntu-latest
-    concurrency:
-      group: register-staging-deploy
-      cancel-in-progress: false
+    docker:
+        runs-on: ubuntu-latest
+        environment:
+            name: ${{ contains(github.event.inputs.version || github.ref_name, '-dev') && 'staging' || 'production' }}
+            url: ${{ contains(github.event.inputs.version || github.ref_name, '-dev') && 'https://staging.register.tir-lavigny.ch' || 'https://register.tir-lavigny.ch' }}
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v7
+        concurrency:
+            group: register-docker-${{ contains(github.event.inputs.version || github.ref_name, '-dev') && 'staging' || 'production' }}
+            cancel-in-progress: false
 
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v7
+              with:
+                  ref: ${{ github.event.inputs.version || github.ref }}
 
-      - name: Set image tag
-        id: meta
-        run: |
-          echo "tag=${GITHUB_SHA::7}-stg" >> "$GITHUB_OUTPUT"
-          echo "tag_full=${GITHUB_SHA}-stg" >> "$GITHUB_OUTPUT"
+            - name: Determine environment
+              id: env
+              run: |
+                  VERSION="${{ github.event.inputs.version || github.ref_name }}"
+                  SHORT_SHA=$(git rev-parse --short=7 HEAD)
+                  echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+                  if [[ "$VERSION" == *"-dev"* ]]; then
+                    echo "app_env=staging" >> "$GITHUB_OUTPUT"
+                    echo "api_url=${{ secrets.STAGING_VITE_API_BASE_URL }}" >> "$GITHUB_OUTPUT"
+                    echo "deploy_cmd=tir-lavigny-deploy-staging" >> "$GITHUB_OUTPUT"
+                    echo "sha_tag=${SHORT_SHA}-stg" >> "$GITHUB_OUTPUT"
+                  else
+                    echo "app_env=production" >> "$GITHUB_OUTPUT"
+                    echo "api_url=${{ secrets.VITE_API_BASE_URL }}" >> "$GITHUB_OUTPUT"
+                    echo "deploy_cmd=tir-lavigny-deploy-production" >> "$GITHUB_OUTPUT"
+                    echo "sha_tag=${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+                  fi
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+            - name: Log in to GHCR
+              uses: docker/login-action@v3
+              with:
+                  registry: ${{ env.REGISTRY }}
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push staging image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: Dockerfile
-          target: production
-          push: true
-          build-args: |
-            VITE_APP_ENV=staging
-            VITE_API_BASE_URL=${{ secrets.STAGING_VITE_API_BASE_URL }}
-          tags: |
-            ${{ env.IMAGE_WEB }}:${{ steps.meta.outputs.tag }}
-            ${{ env.IMAGE_WEB }}:${{ steps.meta.outputs.tag_full }}
-          cache-from: type=gha,scope=register-web-stg
-          cache-to: type=gha,mode=max,scope=register-web-stg
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
 
-      - name: Load SSH private key
-        uses: webfactory/ssh-agent@v0.10.0
-        with:
-          ssh-private-key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
-          log-public-key: false
+            - name: Build and push image
+              uses: docker/build-push-action@v6
+              with:
+                  context: .
+                  file: Dockerfile
+                  target: production
+                  push: true
+                  build-args: |
+                      VITE_APP_ENV=${{ steps.env.outputs.app_env }}
+                      VITE_API_BASE_URL=${{ steps.env.outputs.api_url }}
+                  tags: |
+                      ${{ env.IMAGE_WEB }}:${{ steps.env.outputs.version }}
+                      ${{ env.IMAGE_WEB }}:${{ steps.env.outputs.sha_tag }}
+                  cache-from: type=gha,scope=register-web-${{ steps.env.outputs.app_env }}
+                  cache-to: type=gha,mode=max,scope=register-web-${{ steps.env.outputs.app_env }}
 
-      - name: Add VPS to known_hosts
-        run: ssh-keyscan -H ${{ secrets.VPS_SSH_HOST }} >> ~/.ssh/known_hosts
+            - name: Load SSH private key
+              uses: webfactory/ssh-agent@v0.10.0
+              with:
+                  ssh-private-key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+                  log-public-key: false
 
-      - name: Deploy to VPS (staging)
-        run: |
-          ssh ${{ secrets.VPS_SSH_USER }}@${{ secrets.VPS_SSH_HOST }} \
-            "sudo /usr/local/sbin/tir-lavigny-deploy-staging ${{ steps.meta.outputs.tag }} --register"
+            - name: Add VPS to known_hosts
+              run: ssh-keyscan -H ${{ secrets.VPS_SSH_HOST }} >> ~/.ssh/known_hosts
 
-  production:
-    if: github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    environment: production
-    concurrency:
-      group: register-production-deploy
-      cancel-in-progress: false
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set image tag
-        id: meta
-        run: |
-          echo "tag=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
-          echo "tag_full=${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build and push production image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: Dockerfile
-          target: production
-          push: true
-          build-args: |
-            VITE_APP_ENV=production
-            VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}
-          tags: |
-            ${{ env.IMAGE_WEB }}:${{ steps.meta.outputs.tag }}
-            ${{ env.IMAGE_WEB }}:${{ steps.meta.outputs.tag_full }}
-          cache-from: type=gha,scope=register-web-prd
-          cache-to: type=gha,mode=max,scope=register-web-prd
-
-      - name: Load SSH private key
-        uses: webfactory/ssh-agent@v0.10.0
-        with:
-          ssh-private-key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
-          log-public-key: false
-
-      - name: Add VPS to known_hosts
-        run: ssh-keyscan -H ${{ secrets.VPS_SSH_HOST }} >> ~/.ssh/known_hosts
-
-      - name: Deploy to VPS (production)
-        run: |
-          ssh ${{ secrets.VPS_SSH_USER }}@${{ secrets.VPS_SSH_HOST }} \
-            "sudo /usr/local/sbin/tir-lavigny-deploy-production ${{ steps.meta.outputs.tag }} --register"
+            - name: Deploy to VPS
+              run: |
+                  ssh ${{ secrets.VPS_SSH_USER }}@${{ secrets.VPS_SSH_HOST }} \
+                    "sudo /usr/local/sbin/${{ steps.env.outputs.deploy_cmd }} ${{ steps.env.outputs.version }} --register"
