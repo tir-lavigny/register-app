@@ -29,7 +29,9 @@ import type {
     RegisterOperatingDaysPreviousUnclosed404,
     RegisterOperatingDaysShow200,
     RegisterOperatingDaysStore201,
+    RegisterOperatingDaysStoreHeaders,
     RegisterOperatingDaysUpdate200,
+    RegisterOperatingDaysUpdateHeaders,
     StoreDayRequest,
     UpdateDayRequest,
     ValidationExceptionResponse,
@@ -77,6 +79,7 @@ export const getRegisterOperatingDaysStoreUrl = () => {
 
 export const registerOperatingDaysStore = async (
     storeDayRequest: StoreDayRequest,
+    headers: RegisterOperatingDaysStoreHeaders,
     options?: RequestInit
 ): Promise<registerOperatingDaysStoreResponse> => {
     const getHeaders = (
@@ -84,14 +87,28 @@ export const registerOperatingDaysStore = async (
     ): Record<string, string | readonly string[]> => {
         if (!h) return {}
         if (h instanceof Headers) return Object.fromEntries(h.entries())
-        if (Array.isArray(h)) return Object.fromEntries(h)
-        return h
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string]
+                )
+            )
+        }
+        const headers: Record<string, string | readonly string[]> = {}
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value
+        }
+        return headers
     }
     const res = await fetch(getRegisterOperatingDaysStoreUrl(), {
         ...options,
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            ...headers,
             ...getHeaders(options?.headers),
         },
         body: JSON.stringify(storeDayRequest),
@@ -145,9 +162,9 @@ export const getRegisterOperatingDaysStoreMutationOptions = <
         Awaited<ReturnType<typeof registerOperatingDaysStore>>,
         RegisterOperatingDaysStoreMutationVariables
     > = (props) => {
-        const { data } = props ?? {}
+        const { data, headers } = props ?? {}
 
-        return registerOperatingDaysStore(data, fetchOptions)
+        return registerOperatingDaysStore(data, headers, fetchOptions)
     }
 
     return { mutationFn, ...mutationOptions }
@@ -163,6 +180,7 @@ export type RegisterOperatingDaysStoreMutationError =
     | ValidationExceptionResponse
 export type RegisterOperatingDaysStoreMutationVariables = {
     data: StoreDayRequest
+    headers: RegisterOperatingDaysStoreHeaders
 }
 
 export const useRegisterOperatingDaysStore = <
@@ -241,6 +259,7 @@ export const getRegisterOperatingDaysUpdateUrl = (operatingDay: number) => {
 
 export const registerOperatingDaysUpdate = async (
     operatingDay: number,
+    headers: RegisterOperatingDaysUpdateHeaders,
     updateDayRequest?: UpdateDayRequest,
     options?: RequestInit
 ): Promise<registerOperatingDaysUpdateResponse> => {
@@ -249,14 +268,28 @@ export const registerOperatingDaysUpdate = async (
     ): Record<string, string | readonly string[]> => {
         if (!h) return {}
         if (h instanceof Headers) return Object.fromEntries(h.entries())
-        if (Array.isArray(h)) return Object.fromEntries(h)
-        return h
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string]
+                )
+            )
+        }
+        const headers: Record<string, string | readonly string[]> = {}
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value
+        }
+        return headers
     }
     const res = await fetch(getRegisterOperatingDaysUpdateUrl(operatingDay), {
         ...options,
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
+            ...headers,
             ...getHeaders(options?.headers),
         },
         body: JSON.stringify(updateDayRequest),
@@ -311,9 +344,14 @@ export const getRegisterOperatingDaysUpdateMutationOptions = <
         Awaited<ReturnType<typeof registerOperatingDaysUpdate>>,
         RegisterOperatingDaysUpdateMutationVariables
     > = (props) => {
-        const { operatingDay, data } = props ?? {}
+        const { operatingDay, headers, data } = props ?? {}
 
-        return registerOperatingDaysUpdate(operatingDay, data, fetchOptions)
+        return registerOperatingDaysUpdate(
+            operatingDay,
+            headers,
+            data,
+            fetchOptions
+        )
     }
 
     return { mutationFn, ...mutationOptions }
@@ -331,6 +369,7 @@ export type RegisterOperatingDaysUpdateMutationError =
     | ValidationExceptionResponse
 export type RegisterOperatingDaysUpdateMutationVariables = {
     operatingDay: number
+    headers: RegisterOperatingDaysUpdateHeaders
     data?: UpdateDayRequest
 }
 

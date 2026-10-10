@@ -26,6 +26,7 @@ import type {
     StockLossesIndex200,
     StockLossesStore201,
     StockLossesStore400,
+    StockLossesStoreHeaders,
     StoreStockLossRequest,
     ValidationExceptionResponse,
 } from '../../model'
@@ -239,6 +240,7 @@ export const getStockLossesStoreUrl = () => {
 
 export const stockLossesStore = async (
     storeStockLossRequest: StoreStockLossRequest,
+    headers: StockLossesStoreHeaders,
     options?: RequestInit
 ): Promise<stockLossesStoreResponse> => {
     const getHeaders = (
@@ -246,14 +248,28 @@ export const stockLossesStore = async (
     ): Record<string, string | readonly string[]> => {
         if (!h) return {}
         if (h instanceof Headers) return Object.fromEntries(h.entries())
-        if (Array.isArray(h)) return Object.fromEntries(h)
-        return h
+        if (Symbol.iterator in h) {
+            return Object.fromEntries(
+                Array.from(
+                    h as Iterable<Iterable<string>>,
+                    (entry) => Array.from(entry) as [string, string]
+                )
+            )
+        }
+        const headers: Record<string, string | readonly string[]> = {}
+        for (const [name, value] of Object.entries<
+            string | readonly string[] | undefined
+        >(h)) {
+            if (value !== undefined) headers[name] = value
+        }
+        return headers
     }
     const res = await fetch(getStockLossesStoreUrl(), {
         ...options,
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            ...headers,
             ...getHeaders(options?.headers),
         },
         body: JSON.stringify(storeStockLossRequest),
@@ -306,9 +322,9 @@ export const getStockLossesStoreMutationOptions = <
         Awaited<ReturnType<typeof stockLossesStore>>,
         StockLossesStoreMutationVariables
     > = (props) => {
-        const { data } = props ?? {}
+        const { data, headers } = props ?? {}
 
-        return stockLossesStore(data, fetchOptions)
+        return stockLossesStore(data, headers, fetchOptions)
     }
 
     return { mutationFn, ...mutationOptions }
@@ -323,7 +339,10 @@ export type StockLossesStoreMutationError =
     | AuthenticationExceptionResponse
     | AuthorizationExceptionResponse
     | ValidationExceptionResponse
-export type StockLossesStoreMutationVariables = { data: StoreStockLossRequest }
+export type StockLossesStoreMutationVariables = {
+    data: StoreStockLossRequest
+    headers: StockLossesStoreHeaders
+}
 
 export const useStockLossesStore = <
     TError =
