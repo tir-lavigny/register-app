@@ -16,8 +16,14 @@ export function isRetryableStatus(status: number): boolean {
     return status >= 500
 }
 
-export function isRetryableMethod(method: string): boolean {
-    return method.toUpperCase() === 'GET'
+export function isRetryableMethod(
+    method: string,
+    hasIdempotencyKey: boolean
+): boolean {
+    const upper = method.toUpperCase()
+    if (upper === 'GET') return true
+    // POST is only safe to retry when the server can replay a previous result.
+    return upper === 'POST' && hasIdempotencyKey
 }
 
 export function sleep(ms: number): Promise<void> {

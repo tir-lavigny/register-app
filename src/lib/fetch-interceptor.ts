@@ -67,7 +67,10 @@ window.fetch = async function (
 
     const method =
         init?.method ?? (input instanceof Request ? input.method : 'GET')
-    const maxAttempts = isRetryableMethod(method) ? RETRY_CONFIG.maxAttempts : 0
+    const hasIdempotencyKey = headers.has('Idempotency-Key')
+    const maxAttempts = isRetryableMethod(method, hasIdempotencyKey)
+        ? RETRY_CONFIG.maxAttempts
+        : 0
 
     let response: Response
     for (let attempt = 0; ; attempt++) {

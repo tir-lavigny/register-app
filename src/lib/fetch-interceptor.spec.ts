@@ -87,7 +87,7 @@ describe('fetch interceptor retry', () => {
         expect(mockFetch).toHaveBeenCalledTimes(1)
     })
 
-    it('does not retry POST on 500', async () => {
+    it('does not retry POST on 500 without an idempotency key', async () => {
         mockFetch.mockResolvedValue(new Response(null, { status: 500 }))
 
         const fetch = await loadInterceptor()
@@ -95,6 +95,49 @@ describe('fetch interceptor retry', () => {
 
         expect(mockFetch).toHaveBeenCalledTimes(1)
         expect(res.status).toBe(500)
+    })
+
+    it('retries POST on 500 when an Idempotency-Key header is present', async () => {
+        mockFetch
+            .mockResolvedValueOnce(new Response(null, { status: 500 }))
+            .mockResolvedValueOnce(new Response('ok', { status: 201 }))
+
+        const fetch = await loadInterceptor()
+        const promise = fetch('/api/tickets', {
+            method: 'POST',
+            headers: { 'Idempotency-Key': 'key-1' },
+        })
+        await vi.runAllTimersAsync()
+        const res = await promise
+
+        expect(mockFetch).toHaveBeenCalledTimes(2)
+        expect(res.status).toBe(201)
+
+        const firstHeaders = new Headers(
+            (mockFetch.mock.calls[0][1] as RequestInit).headers
+        )
+        const secondHeaders = new Headers(
+            (mockFetch.mock.calls[1][1] as RequestInit).headers
+        )
+        expect(firstHeaders.get('Idempotency-Key')).toBe('key-1')
+        expect(secondHeaders.get('Idempotency-Key')).toBe('key-1')
+    })
+
+    it('retries POST on network error when an Idempotency-Key header is present', async () => {
+        mockFetch
+            .mockRejectedValueOnce(new TypeError('Failed to fetch'))
+            .mockResolvedValueOnce(new Response('ok', { status: 201 }))
+
+        const fetch = await loadInterceptor()
+        const promise = fetch('/api/tickets', {
+            method: 'POST',
+            headers: { 'Idempotency-Key': 'key-2' },
+        })
+        await vi.runAllTimersAsync()
+        const res = await promise
+
+        expect(mockFetch).toHaveBeenCalledTimes(2)
+        expect(res.status).toBe(201)
     })
 
     it('does not retry GET on 404', async () => {

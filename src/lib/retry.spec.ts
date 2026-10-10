@@ -56,14 +56,23 @@ describe('isRetryableStatus', () => {
 })
 
 describe('isRetryableMethod', () => {
-    it('retries only GET', () => {
-        expect(isRetryableMethod('GET')).toBe(true)
-        expect(isRetryableMethod('get')).toBe(true)
-        expect(isRetryableMethod('POST')).toBe(false)
-        expect(isRetryableMethod('PUT')).toBe(false)
-        expect(isRetryableMethod('DELETE')).toBe(false)
-        expect(isRetryableMethod('HEAD')).toBe(false)
-        expect(isRetryableMethod('PATCH')).toBe(false)
+    it('retries GET regardless of idempotency key', () => {
+        expect(isRetryableMethod('GET', false)).toBe(true)
+        expect(isRetryableMethod('get', false)).toBe(true)
+        expect(isRetryableMethod('GET', true)).toBe(true)
+    })
+
+    it('retries POST only with an idempotency key', () => {
+        expect(isRetryableMethod('POST', true)).toBe(true)
+        expect(isRetryableMethod('post', true)).toBe(true)
+        expect(isRetryableMethod('POST', false)).toBe(false)
+    })
+
+    it('never retries other methods', () => {
+        expect(isRetryableMethod('PUT', true)).toBe(false)
+        expect(isRetryableMethod('DELETE', true)).toBe(false)
+        expect(isRetryableMethod('HEAD', false)).toBe(false)
+        expect(isRetryableMethod('PATCH', true)).toBe(false)
     })
 })
 
