@@ -7,17 +7,17 @@
 import { HttpResponse, http } from 'msw'
 import type { RequestHandlerOptions } from 'msw'
 
-import type { GetHealth200 } from '../../model'
-import { getGetHealthResponseMock } from './default.faker'
+import type { HealthCheckApi200 } from '../../model'
+import { getHealthCheckApiResponseMock } from './default.faker'
 
-export { getGetHealthResponseMock } from './default.faker'
+export { getHealthCheckApiResponseMock } from './default.faker'
 
-export const getGetHealthMockHandler = (
+export const getHealthCheckApiMockHandler = (
     overrideResponse?:
-        | GetHealth200
+        | HealthCheckApi200
         | ((
               info: Parameters<Parameters<typeof http.get>[1]>[0]
-          ) => Promise<GetHealth200> | GetHealth200),
+          ) => Promise<HealthCheckApi200> | HealthCheckApi200),
     options?: RequestHandlerOptions
 ) => {
     return http.get(
@@ -28,11 +28,11 @@ export const getGetHealthMockHandler = (
                     ? typeof overrideResponse === 'function'
                         ? await overrideResponse(info)
                         : overrideResponse
-                    : getGetHealthResponseMock(),
+                    : getHealthCheckApiResponseMock(),
                 { status: 200 }
             )
         },
         options
     )
 }
-export const getDefaultMock = () => [getGetHealthMockHandler()]
+export const getDefaultMock = () => [getHealthCheckApiMockHandler()]

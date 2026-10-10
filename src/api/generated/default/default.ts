@@ -15,81 +15,95 @@ import type {
 } from '@tanstack/vue-query'
 import { unref } from 'vue'
 
-import type { GetHealth200 } from '../../model'
+import type { HealthCheckApi200, HealthCheckApi503 } from '../../model'
 
-export type getHealthResponse200 = {
-    data: GetHealth200
+export type healthCheckApiResponse200 = {
+    data: HealthCheckApi200
     status: 200
 }
 
-export type getHealthResponseSuccess = getHealthResponse200 & {
+export type healthCheckApiResponse503 = {
+    data: HealthCheckApi503
+    status: 503
+}
+
+export type healthCheckApiResponseSuccess = healthCheckApiResponse200 & {
     headers: Headers
 }
-export type getHealthResponse = getHealthResponseSuccess
+export type healthCheckApiResponseError = healthCheckApiResponse503 & {
+    headers: Headers
+}
 
-export const getGetHealthUrl = () => {
+export type healthCheckApiResponse =
+    healthCheckApiResponseSuccess | healthCheckApiResponseError
+
+export const getHealthCheckApiUrl = () => {
     return `${import.meta.env.VITE_API_BASE_URL}/health`
 }
 
-export const getHealth = async (
+export const healthCheckApi = async (
     options?: RequestInit
-): Promise<getHealthResponse> => {
-    const res = await fetch(getGetHealthUrl(), {
+): Promise<healthCheckApiResponse> => {
+    const res = await fetch(getHealthCheckApiUrl(), {
         ...options,
         method: 'GET',
     })
 
     const body = [204, 205, 304].includes(res.status) ? null : await res.text()
 
-    const data: getHealthResponse['data'] = body ? JSON.parse(body) : {}
+    const data: healthCheckApiResponse['data'] = body ? JSON.parse(body) : {}
     return {
         data,
         status: res.status,
         headers: res.headers,
-    } as getHealthResponse
+    } as healthCheckApiResponse
 }
 
-export const getGetHealthQueryKey = () => {
+export const getHealthCheckApiQueryKey = () => {
     return [import.meta.env.VITE_API_BASE_URL, 'health'] as const
 }
 
-export const getGetHealthQueryOptions = <
-    TData = Awaited<ReturnType<typeof getHealth>>,
-    TError = unknown,
+export const getHealthCheckApiQueryOptions = <
+    TData = Awaited<ReturnType<typeof healthCheckApi>>,
+    TError = HealthCheckApi503,
 >(options?: {
     query?: Partial<
-        UseQueryOptions<Awaited<ReturnType<typeof getHealth>>, TError, TData>
+        UseQueryOptions<
+            Awaited<ReturnType<typeof healthCheckApi>>,
+            TError,
+            TData
+        >
     >
     fetch?: RequestInit
 }) => {
     const { query: queryOptions, fetch: fetchOptions } = options ?? {}
 
-    const queryKey = getGetHealthQueryKey()
+    const queryKey = getHealthCheckApiQueryKey()
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getHealth>>> = ({
-        signal,
-    }) => getHealth({ signal, ...fetchOptions })
+    const queryFn: QueryFunction<
+        Awaited<ReturnType<typeof healthCheckApi>>
+    > = ({ signal }) => healthCheckApi({ signal, ...fetchOptions })
 
     return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-        Awaited<ReturnType<typeof getHealth>>,
+        Awaited<ReturnType<typeof healthCheckApi>>,
         TError,
         TData
     >
 }
 
-export type GetHealthQueryResult = NonNullable<
-    Awaited<ReturnType<typeof getHealth>>
+export type HealthCheckApiQueryResult = NonNullable<
+    Awaited<ReturnType<typeof healthCheckApi>>
 >
-export type GetHealthQueryError = unknown
+export type HealthCheckApiQueryError = HealthCheckApi503
 
-export function useGetHealth<
-    TData = Awaited<ReturnType<typeof getHealth>>,
-    TError = unknown,
+export function useHealthCheckApi<
+    TData = Awaited<ReturnType<typeof healthCheckApi>>,
+    TError = HealthCheckApi503,
 >(
     options?: {
         query?: Partial<
             UseQueryOptions<
-                Awaited<ReturnType<typeof getHealth>>,
+                Awaited<ReturnType<typeof healthCheckApi>>,
                 TError,
                 TData
             >
@@ -100,7 +114,7 @@ export function useGetHealth<
 ): UseQueryReturnType<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>
 } {
-    const queryOptions = getGetHealthQueryOptions(options)
+    const queryOptions = getHealthCheckApiQueryOptions(options)
 
     const query = useQuery(queryOptions, queryClient) as UseQueryReturnType<
         TData,

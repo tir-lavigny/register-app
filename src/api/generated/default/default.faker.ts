@@ -4,8 +4,8 @@
  * Tir Lavigny
  * OpenAPI spec version: 0.0.1
  */
-import type { GetHealth200 } from '../../model'
+import type { HealthCheckApi200 } from '../../model'
 
-export const getGetHealthResponseMock = (
-    overrideResponse: Partial<Extract<GetHealth200, object>> = {}
-): GetHealth200 => ({ status: 'ok', ...overrideResponse })
+export const getHealthCheckApiResponseMock = (
+    overrideResponse: Partial<Extract<HealthCheckApi200, object>> = {}
+): HealthCheckApi200 => ({ status: 'ok', ...overrideResponse })
