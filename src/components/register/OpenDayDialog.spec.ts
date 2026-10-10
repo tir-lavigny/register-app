@@ -99,7 +99,10 @@ describe('OpenDayDialog', () => {
         await confirmBtn!.trigger('click')
         await flushPromises()
 
-        expect(mockStore).toHaveBeenCalledWith({ season_id: 1 })
+        expect(mockStore).toHaveBeenCalledWith(
+            { season_id: 1 },
+            { 'Idempotency-Key': expect.any(String) }
+        )
     })
 
     it('emits confirm event on success', async () => {

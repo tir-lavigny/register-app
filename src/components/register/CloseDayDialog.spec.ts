@@ -169,10 +169,14 @@ describe('CloseDayDialog', () => {
         await confirmBtn!.trigger('click')
         await flushPromises()
 
-        expect(mockUpdate).toHaveBeenCalledWith(1, {
-            status: 'closed',
-            cash_remark: 'Missing CHF 5',
-        })
+        expect(mockUpdate).toHaveBeenCalledWith(
+            1,
+            { 'Idempotency-Key': expect.any(String) },
+            {
+                status: 'closed',
+                cash_remark: 'Missing CHF 5',
+            }
+        )
     })
 
     it('calls store.closeDay without remark when empty', async () => {
@@ -219,10 +223,14 @@ describe('CloseDayDialog', () => {
         await confirmBtn!.trigger('click')
         await flushPromises()
 
-        expect(mockUpdate).toHaveBeenCalledWith(1, {
-            status: 'closed',
-            cash_remark: null,
-        })
+        expect(mockUpdate).toHaveBeenCalledWith(
+            1,
+            { 'Idempotency-Key': expect.any(String) },
+            {
+                status: 'closed',
+                cash_remark: null,
+            }
+        )
     })
 
     it('emits update:open false on success', async () => {

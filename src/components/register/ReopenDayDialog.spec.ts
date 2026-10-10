@@ -123,7 +123,11 @@ describe('ReopenDayDialog', () => {
         await confirmBtn!.trigger('click')
         await flushPromises()
 
-        expect(mockUpdate).toHaveBeenCalledWith(1, { status: 'open' })
+        expect(mockUpdate).toHaveBeenCalledWith(
+            1,
+            { 'Idempotency-Key': expect.any(String) },
+            { status: 'open' }
+        )
     })
 
     it('emits update:open false on success', async () => {

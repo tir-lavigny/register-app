@@ -386,10 +386,14 @@ describe('operatingDay store', () => {
 
             await store.closeDay(undefined, 'Missing CHF 2')
 
-            expect(mockUpdate).toHaveBeenCalledWith(1, {
-                status: 'closed',
-                cash_remark: 'Missing CHF 2',
-            })
+            expect(mockUpdate).toHaveBeenCalledWith(
+                1,
+                { 'Idempotency-Key': expect.any(String) },
+                {
+                    status: 'closed',
+                    cash_remark: 'Missing CHF 2',
+                }
+            )
         })
 
         it('sends null cash_remark when no remark', async () => {
@@ -410,10 +414,14 @@ describe('operatingDay store', () => {
 
             await store.closeDay()
 
-            expect(mockUpdate).toHaveBeenCalledWith(1, {
-                status: 'closed',
-                cash_remark: null,
-            })
+            expect(mockUpdate).toHaveBeenCalledWith(
+                1,
+                { 'Idempotency-Key': expect.any(String) },
+                {
+                    status: 'closed',
+                    cash_remark: null,
+                }
+            )
         })
 
         it('returns error if no day open', async () => {
@@ -495,7 +503,11 @@ describe('operatingDay store', () => {
 
             await store.reopenDay()
 
-            expect(mockUpdate).toHaveBeenCalledWith(1, { status: 'open' })
+            expect(mockUpdate).toHaveBeenCalledWith(
+                1,
+                { 'Idempotency-Key': expect.any(String) },
+                { status: 'open' }
+            )
         })
 
         it('returns error if no dayId', async () => {

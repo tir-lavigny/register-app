@@ -9,6 +9,7 @@ import {
     registerOperatingDaysUpdate,
 } from '@/api/generated/operating-day/operating-day'
 import type { OperatingDayResource, UpdateDayRequestStatus } from '@/api/model'
+import { newIdempotencyKey } from '@/lib/idempotency'
 
 export const useOperatingDayStore = defineStore('operatingDay', () => {
     const currentDay = ref<OperatingDayResource | null>(null)
@@ -86,9 +87,14 @@ export const useOperatingDayStore = defineStore('operatingDay', () => {
 
         loading.value = true
         try {
-            const response = await registerOperatingDaysStore({
-                season_id: seasonId,
-            })
+            const response = await registerOperatingDaysStore(
+                {
+                    season_id: seasonId,
+                },
+                {
+                    'Idempotency-Key': newIdempotencyKey(),
+                }
+            )
 
             if (response.status === 201) {
                 currentDay.value = response.data.data
@@ -139,10 +145,16 @@ export const useOperatingDayStore = defineStore('operatingDay', () => {
 
         loading.value = true
         try {
-            const response = await registerOperatingDaysUpdate(idToClose, {
-                status: 'closed' as UpdateDayRequestStatus,
-                cash_remark: remark ?? null,
-            })
+            const response = await registerOperatingDaysUpdate(
+                idToClose,
+                {
+                    'Idempotency-Key': newIdempotencyKey(),
+                },
+                {
+                    status: 'closed' as UpdateDayRequestStatus,
+                    cash_remark: remark ?? null,
+                }
+            )
 
             if (response.status === 200 && response.data.data) {
                 const closedDay = response.data.data
@@ -180,9 +192,15 @@ export const useOperatingDayStore = defineStore('operatingDay', () => {
 
         loading.value = true
         try {
-            const response = await registerOperatingDaysUpdate(dayId.value, {
-                status: 'open' as UpdateDayRequestStatus,
-            })
+            const response = await registerOperatingDaysUpdate(
+                dayId.value,
+                {
+                    'Idempotency-Key': newIdempotencyKey(),
+                },
+                {
+                    status: 'open' as UpdateDayRequestStatus,
+                }
+            )
 
             if (response.status === 200 && response.data.data) {
                 currentDay.value = response.data.data

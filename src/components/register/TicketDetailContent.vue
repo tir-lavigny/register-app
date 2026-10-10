@@ -15,6 +15,7 @@ import {
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
+import { newIdempotencyKey } from '@/lib/idempotency'
 import { Permissions, hasPermission } from '@/lib/permissions'
 
 const props = defineProps<{
@@ -42,7 +43,10 @@ function formatPayment(method: string): string {
 async function handleRefund() {
     isRefunding.value = true
     try {
-        await refundMutation.mutateAsync({ ticket: props.ticket.id })
+        await refundMutation.mutateAsync({
+            ticket: props.ticket.id,
+            headers: { 'Idempotency-Key': newIdempotencyKey() },
+        })
         emit('refunded')
         showRefundDialog.value = false
     } catch (error) {

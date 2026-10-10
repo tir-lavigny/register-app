@@ -11,6 +11,7 @@ import type {
     StoreTicketRequestPaymentMethod,
     Voucher,
 } from '@/api/model'
+import { newIdempotencyKey } from '@/lib/idempotency'
 import { useStockLocationStore } from '@/stores/stock-location'
 
 export interface TicketDraftItem {
@@ -309,7 +310,9 @@ export const useTicketStore = defineStore('ticket', () => {
 
         const payload = buildPreviewPayload(draft.value, operatingDayId)
         try {
-            const response = await registerTicketsStore(payload)
+            const response = await registerTicketsStore(payload, {
+                'Idempotency-Key': newIdempotencyKey(),
+            })
 
             if (response.status === 201) {
                 const finalizedItems = [...(draft.value.items ?? [])]

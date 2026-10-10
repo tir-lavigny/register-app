@@ -4,6 +4,7 @@ import { toast } from 'vue-sonner'
 
 import { stockLossesStore } from '@/api/generated/stock-loss/stock-loss'
 import type { ProductResource } from '@/api/model'
+import { newIdempotencyKey } from '@/lib/idempotency'
 import { useOperatingDayStore } from '@/stores/operating-day'
 import { useStockLocationStore } from '@/stores/stock-location'
 
@@ -57,13 +58,18 @@ export function useStockLossForm() {
 
         submitting.value = true
         try {
-            const response = await stockLossesStore({
-                stock_location_id: stockLocationStore.activeLocationId,
-                operating_day_id: dayStore.dayId,
-                product_id: selectedProduct.value.id,
-                quantity: quantity.value,
-                reason: reason.value.trim(),
-            })
+            const response = await stockLossesStore(
+                {
+                    stock_location_id: stockLocationStore.activeLocationId,
+                    operating_day_id: dayStore.dayId,
+                    product_id: selectedProduct.value.id,
+                    quantity: quantity.value,
+                    reason: reason.value.trim(),
+                },
+                {
+                    'Idempotency-Key': newIdempotencyKey(),
+                }
+            )
 
             if (response.status === 201) {
                 toast.success('Perte de stock enregistrée')
