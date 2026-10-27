@@ -4,10 +4,16 @@ on:
     push:
         tags:
             - 'v*'
+            - '!*-rev.*'
     workflow_dispatch:
         inputs:
             version:
                 description: 'Tag to deploy (e.g. v1.2.3 or v1.2.3-dev.5)'
+                required: true
+                type: string
+    workflow_call:
+        inputs:
+            version:
                 required: true
                 type: string
 
@@ -23,23 +29,23 @@ jobs:
     docker:
         runs-on: ubuntu-latest
         environment:
-            name: ${{ contains(github.event.inputs.version || github.ref_name, '-dev') && 'staging' || 'production' }}
-            url: ${{ contains(github.event.inputs.version || github.ref_name, '-dev') && 'https://staging.register.tir-lavigny.ch' || 'https://register.tir-lavigny.ch' }}
+            name: ${{ contains(inputs.version || github.ref_name, '-dev') && 'staging' || 'production' }}
+            url: ${{ contains(inputs.version || github.ref_name, '-dev') && 'https://staging.register.tir-lavigny.ch' || 'https://register.tir-lavigny.ch' }}
 
         concurrency:
-            group: register-docker-${{ contains(github.event.inputs.version || github.ref_name, '-dev') && 'staging' || 'production' }}
+            group: register-docker-${{ contains(inputs.version || github.ref_name, '-dev') && 'staging' || 'production' }}
             cancel-in-progress: false
 
         steps:
             - name: Checkout
               uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
               with:
-                  ref: ${{ github.event.inputs.version || github.ref }}
+                  ref: ${{ inputs.version || github.ref }}
 
             - name: Determine environment
               id: env
               run: |
-                  VERSION="${{ github.event.inputs.version || github.ref_name }}"
+                  VERSION="${{ inputs.version || github.ref_name }}"
                   SHORT_SHA=$(git rev-parse --short=7 HEAD)
                   echo "version=$VERSION" >> "$GITHUB_OUTPUT"
                   if [[ "$VERSION" == *"-dev"* ]]; then
@@ -79,6 +85,31 @@ jobs:
                   cache-from: type=gha,scope=register-web-${{ steps.env.outputs.app_env }}
                   cache-to: type=gha,mode=max,scope=register-web-${{ steps.env.outputs.app_env }}
 
+            - name: Scan image
+              env:
+                  VERSION: ${{ steps.env.outputs.version }}
+              run: |
+                  set -euo pipefail
+                  TRIVY_VERSION="0.76.1"
+                  TRIVY_SHA256="3350f4fac96ed099590c4a353bddb226f86311a0a2e7a8c626c162790d947f10"
+                  curl -sSLo /tmp/trivy.deb "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.deb"
+                  echo "${TRIVY_SHA256}  /tmp/trivy.deb" | sha256sum -c -
+                  sudo apt-get install -y /tmp/trivy.deb >/dev/null
+
+                  IMG="ghcr.io/tir-lavigny/register-web:${VERSION}"
+                  {
+                    echo "## Trivy scan: ${VERSION}"
+                    echo "### ${IMG}"
+                    trivy image --severity HIGH,CRITICAL --ignore-unfixed --quiet --format table "$IMG" || true
+                  } >> "$GITHUB_STEP_SUMMARY"
+
+                  n="$(trivy image --severity CRITICAL --ignore-unfixed --quiet --format json "$IMG" \
+                      | jq '[.Results[]?.Vulnerabilities[]?] | length')"
+                  if (( n > 0 )); then
+                    echo "::error::${IMG}: ${n} fixable CRITICAL — deploy blocked"
+                    exit 1
+                  fi
+
             - name: Load SSH private key
               uses: webfactory/ssh-agent@e83874834305fe9a4a2997156cb26c5de65a8555 # v0.10.0
               with:
@@ -88,7 +119,10 @@ jobs:
             - name: Add VPS to known_hosts
               run: ssh-keyscan -H ${{ secrets.VPS_SSH_HOST }} >> ~/.ssh/known_hosts
 
+            # -rev tags are rebuilds: staged for manual production pull (rebuild.yml
+            # handles the review issue) — only the -dev staging sibling deploys.
             - name: Deploy to VPS
+              if: ${{ !contains(steps.env.outputs.version, '-rev') || contains(steps.env.outputs.version, '-dev') }}
               run: |
                   ssh ${{ secrets.VPS_SSH_USER }}@${{ secrets.VPS_SSH_HOST }} \
                     "sudo /usr/local/sbin/${{ steps.env.outputs.deploy_cmd }} ${{ steps.env.outputs.version }} --register"
