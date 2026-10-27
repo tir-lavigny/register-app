@@ -1,6 +1,10 @@
 name: Deploy to production
 
 on:
+    push:
+        tags:
+            - 'v*'
+            - '!*-rev.*'
     workflow_dispatch:
         inputs:
             version:
@@ -34,4 +38,4 @@ jobs:
             - name: Deploy to VPS (production)
               run: |
                   ssh ${{ secrets.VPS_SSH_USER }}@${{ secrets.VPS_SSH_HOST }} \
-                    "sudo /usr/local/sbin/tir-lavigny-deploy-production ${{ inputs.version }} --register"
+                    "sudo /usr/local/sbin/tir-lavigny-deploy-production ${{ inputs.version || github.ref_name }} --register --allow-rev"

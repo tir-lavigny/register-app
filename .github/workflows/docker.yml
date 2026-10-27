@@ -28,9 +28,9 @@ env:
 jobs:
     docker:
         runs-on: ubuntu-latest
-        environment:
-            name: ${{ contains(inputs.version || github.ref_name, '-dev') && 'staging' || 'production' }}
-            url: ${{ contains(inputs.version || github.ref_name, '-dev') && 'https://staging.register.tir-lavigny.ch' || 'https://register.tir-lavigny.ch' }}
+        outputs:
+            version: ${{ steps.env.outputs.version }}
+            is_dev: ${{ contains(steps.env.outputs.version, '-dev') && 'true' || 'false' }}
 
         concurrency:
             group: register-docker-${{ contains(inputs.version || github.ref_name, '-dev') && 'staging' || 'production' }}
@@ -110,6 +110,18 @@ jobs:
                     exit 1
                   fi
 
+    deploy-staging:
+        needs: docker
+        if: needs.docker.outputs.is_dev == 'true'
+        runs-on: ubuntu-latest
+        environment:
+            name: staging
+            url: https://staging.register.tir-lavigny.ch
+        concurrency:
+            group: register-staging-deploy
+            cancel-in-progress: false
+
+        steps:
             - name: Load SSH private key
               uses: webfactory/ssh-agent@e83874834305fe9a4a2997156cb26c5de65a8555 # v0.10.0
               with:
@@ -119,10 +131,7 @@ jobs:
             - name: Add VPS to known_hosts
               run: ssh-keyscan -H ${{ secrets.VPS_SSH_HOST }} >> ~/.ssh/known_hosts
 
-            # -rev tags are rebuilds: staged for manual production pull (rebuild.yml
-            # handles the review issue) — only the -dev staging sibling deploys.
-            - name: Deploy to VPS
-              if: ${{ !contains(steps.env.outputs.version, '-rev') || contains(steps.env.outputs.version, '-dev') }}
+            - name: Deploy to VPS (staging)
               run: |
                   ssh ${{ secrets.VPS_SSH_USER }}@${{ secrets.VPS_SSH_HOST }} \
-                    "sudo /usr/local/sbin/${{ steps.env.outputs.deploy_cmd }} ${{ steps.env.outputs.version }} --register"
+                    "sudo /usr/local/sbin/tir-lavigny-deploy-staging ${{ needs.docker.outputs.version }} --register"
