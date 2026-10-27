@@ -1,7 +1,7 @@
 ARG NODE_VERSION=24
 
 
-FROM node:${NODE_VERSION}-bookworm-slim AS build
+FROM node:${NODE_VERSION}-alpine AS build
 
 WORKDIR /app
 
@@ -22,6 +22,8 @@ RUN pnpm build
 
 
 FROM nginx:1.28-alpine AS production
+
+RUN apk upgrade --no-cache
 
 LABEL org.opencontainers.image.source="https://github.com/tir-lavigny/register-app"
 
