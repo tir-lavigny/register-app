@@ -1,11 +1,6 @@
 name: Deploy to production
 
 on:
-    push:
-        tags:
-            - 'v*'
-            - '!v*-dev.*'
-            - '!*-rev.*'
     workflow_dispatch:
         inputs:
             version:
