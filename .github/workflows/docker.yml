@@ -79,6 +79,7 @@ jobs:
                   build-args: |
                       VITE_APP_ENV=${{ steps.env.outputs.app_env }}
                       VITE_API_BASE_URL=${{ steps.env.outputs.api_url }}
+                      VITE_BUILD_TAG=${{ steps.env.outputs.version }}
                   tags: |
                       ${{ env.IMAGE_WEB }}:${{ steps.env.outputs.version }}
                       ${{ env.IMAGE_WEB }}:${{ steps.env.outputs.sha_tag }}

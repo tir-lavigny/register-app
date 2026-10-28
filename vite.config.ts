@@ -1,3 +1,4 @@
+import { execSync } from 'node:child_process'
 import path from 'node:path'
 
 import tailwindcss from '@tailwindcss/vite'
@@ -6,6 +7,16 @@ import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 const isProduction = process.env.VITE_APP_ENV === 'production'
+
+// CI passes the release/dev/rev tag as VITE_BUILD_TAG; local builds fall back
+// to the current commit short sha so the sidebar always shows what it is.
+process.env.VITE_BUILD_TAG ??= (() => {
+    try {
+        return execSync('git rev-parse --short HEAD').toString().trim()
+    } catch {
+        return 'unknown'
+    }
+})()
 
 // https://vite.dev/config/
 export default defineConfig({

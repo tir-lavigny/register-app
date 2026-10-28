@@ -34,6 +34,7 @@ const props = defineProps<SidebarProps>()
 const authStore = useAuthStore()
 const locationStore = useStockLocationStore()
 const { canInstall, isInstalled, install } = usePwaInstall()
+const buildTag = import.meta.env.VITE_BUILD_TAG || 'unknown'
 
 onMounted(async () => {
     locationStore.loadFromStorage()
@@ -70,7 +71,9 @@ const handleCacheClear = async () => {
                                 <span class="truncate font-medium"
                                     >Tir Lavigny</span
                                 >
-                                <span class="truncate text-xs">Caisse</span>
+                                <span class="truncate text-xs"
+                                    >Caisse &middot; {{ buildTag }}</span
+                                >
                             </div>
                         </RouterLink>
                     </SidebarMenuButton>
