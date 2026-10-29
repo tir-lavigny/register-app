@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { Minus, Plus, Tag, X } from '@lucide/vue'
+import { computed } from 'vue'
 
 import { Button } from '@/components/ui/button'
 import type { TicketDraftItem } from '@/stores/ticket'
+import { computeItemSaved } from '@/stores/ticket'
 
-defineProps<{
+const props = defineProps<{
     item: TicketDraftItem
     index: number
 }>()
@@ -14,6 +16,8 @@ const emit = defineEmits<{
     remove: [index: number]
     'apply-voucher': [index: number]
 }>()
+
+const saved = computed(() => computeItemSaved(props.item))
 
 function incrementQty(index: number, qty: number) {
     emit('update-quantity', { index, quantity: qty + 1 })
@@ -36,8 +40,14 @@ function decrementQty(index: number, qty: number) {
             }}</span>
             <span class="text-xs text-muted-foreground">
                 {{ item.effectivePrice.toFixed(2) }} CHF
-                <span v-if="item.voucherDiscount" class="text-green-600">
-                    (-{{ item.voucherDiscount.toFixed(2) }} CHF)
+                <span v-if="saved > 0" class="text-green-600">
+                    (-{{ saved.toFixed(2) }} CHF)
+                </span>
+                <span
+                    v-if="item.appliedVouchers.length > 1"
+                    class="text-muted-foreground"
+                >
+                    · {{ item.appliedVouchers.length }} bon(s)
                 </span>
             </span>
         </div>
@@ -72,7 +82,10 @@ function decrementQty(index: number, qty: number) {
                     class=""
                     @click="emit('apply-voucher', index)"
                 >
-                    <Tag v-if="item.voucherId" class="size-4 text-green-600" />
+                    <Tag
+                        v-if="item.voucherIds.length"
+                        class="size-4 text-green-600"
+                    />
                     <Tag v-else class="size-4 text-muted-foreground" />
                 </Button>
                 <Button

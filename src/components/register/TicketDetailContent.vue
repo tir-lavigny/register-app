@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 import { useRegisterTicketsRefund } from '@/api/generated/ticket/ticket'
-import type { TicketResource } from '@/api/model'
+import type { TicketItemResource, TicketResource } from '@/api/model'
 import {
     AlertDialog,
     AlertDialogAction,
@@ -34,9 +34,67 @@ const isAlreadyRefunded = !!props.ticket.deleted_at
 
 const refundMutation = useRegisterTicketsRefund()
 
+type VoucherLike = NonNullable<TicketItemResource['voucher']>
+
+function voucherLabel(voucher: VoucherLike): string {
+    if (voucher.discount_percent)
+        return `-${Number.parseFloat(voucher.discount_percent)}%`
+    if (voucher.discount_fixed)
+        return `-${Number.parseFloat(voucher.discount_fixed).toFixed(2)} CHF`
+    return 'Bon'
+}
+
+interface ItemGroup {
+    productId: number
+    name: string
+    quantity: number
+    unitPrice: number
+    subtotal: number
+    saved: number
+    vouchers: { id: number; label: string }[]
+}
+
+const groups = computed(() => {
+    const map = new Map<number, ItemGroup>()
+
+    for (const item of props.ticket.ticketItems ?? []) {
+        let group = map.get(item.product_id)
+        if (!group) {
+            group = {
+                productId: item.product_id,
+                name: item.product?.name ?? `Produit #${item.product_id}`,
+                quantity: 0,
+                unitPrice: Number.parseFloat(item.unit_price),
+                subtotal: 0,
+                saved: 0,
+                vouchers: [],
+            }
+            map.set(item.product_id, group)
+        }
+        group.quantity += item.quantity
+        group.subtotal += Number.parseFloat(item.subtotal)
+        if (item.voucher) {
+            group.vouchers.push({
+                id: item.voucher.id,
+                label: voucherLabel(item.voucher),
+            })
+        }
+    }
+
+    return [...map.values()].map((group) => ({
+        ...group,
+        saved: Math.max(
+            0,
+            Math.round(
+                (group.unitPrice * group.quantity - group.subtotal) * 100
+            ) / 100
+        ),
+    }))
+})
+
 function formatPayment(method: string): string {
     if (method === 'cash') return 'Espèces'
-    if (method === 'twint') return 'Twint'
+    if (method === 'twint') return 'TWINT'
     return method
 }
 
@@ -85,35 +143,41 @@ async function handleRefund() {
             >
         </div>
 
-        <div v-if="ticket.ticketItems?.length" class="border-t pt-4">
+        <div v-if="groups.length" class="border-t pt-4">
             <h3 class="mb-2 text-sm font-semibold">Articles</h3>
             <div class="flex flex-col gap-2">
                 <div
-                    v-for="item in ticket.ticketItems"
-                    :key="item.id"
+                    v-for="group in groups"
+                    :key="group.productId"
                     class="flex items-center justify-between"
                 >
                     <div class="flex-1 min-w-0">
                         <span class="block truncate text-sm font-medium">{{
-                            item.product?.name ?? 'Produit #' + item.product_id
+                            group.name
                         }}</span>
                         <span class="text-xs text-muted-foreground">
-                            {{ Number.parseFloat(item.unit_price).toFixed(2) }}
-                            CHF × {{ item.quantity }}
-                        </span>
-                        <span
-                            v-if="item.voucher_id"
-                            class="ml-1 inline-flex items-center rounded-full bg-green-100 px-1.5 py-0.5 text-[10px] font-medium text-green-600"
-                        >
-                            Bon
+                            {{ group.unitPrice.toFixed(2) }} CHF ×
+                            {{ group.quantity }}
+                            <span
+                                v-for="voucher in group.vouchers"
+                                :key="voucher.id"
+                                class="ml-1 inline-flex items-center rounded-full bg-green-100 px-1.5 py-0.5 text-[10px] font-medium text-green-600"
+                            >
+                                Bon {{ voucher.label }}
+                            </span>
                         </span>
                     </div>
-                    <span class="text-sm font-medium"
-                        >{{
-                            Number.parseFloat(item.subtotal).toFixed(2)
-                        }}
-                        CHF</span
-                    >
+                    <div class="text-right">
+                        <span
+                            v-if="group.saved > 0"
+                            class="block text-xs text-green-600"
+                        >
+                            (-{{ group.saved.toFixed(2) }} CHF)
+                        </span>
+                        <span class="text-sm font-medium">
+                            {{ group.subtotal.toFixed(2) }} CHF
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -126,18 +190,14 @@ async function handleRefund() {
                         class="w-full"
                         :disabled="isRefunding"
                     >
-                        {{
-                            isRefunding
-                                ? 'Remboursement...'
-                                : 'Rembourser le ticket'
-                        }}
+                        Rembourser le ticket
                     </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle
-                            >Confirmer le remboursement</AlertDialogTitle
-                        >
+                        <AlertDialogTitle>
+                            Confirmer le remboursement
+                        </AlertDialogTitle>
                         <AlertDialogDescription>
                             Êtes-vous sûr de vouloir rembourser le ticket #{{
                                 ticket.id
@@ -156,17 +216,15 @@ async function handleRefund() {
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel :disabled="isRefunding"
-                            >Annuler</AlertDialogCancel
-                        >
+                        <AlertDialogCancel :disabled="isRefunding">
+                            Annuler
+                        </AlertDialogCancel>
                         <AlertDialogAction
                             variant="destructive"
                             :disabled="isRefunding"
                             @click="handleRefund"
                         >
-                            {{
-                                isRefunding ? 'Remboursement...' : 'Rembourser'
-                            }}
+                            Rembourser
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

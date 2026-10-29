@@ -12,5 +12,5 @@ export type StoreTicketPreviewRequestItemsItem = {
     /** @nullable */
     custom_unit_price?: number | null
     /** @nullable */
-    voucher_id?: number | null
+    voucher_ids?: number[] | null
 }

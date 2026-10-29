@@ -64,6 +64,10 @@ describe('ticket flow integration', () => {
             expect(
                 (capturedPayload as Record<string, unknown>).operating_day_id
             ).toBe(1)
+            expect(
+                (capturedPayload as { items: { voucher_ids: number[] }[] })
+                    .items[0].voucher_ids
+            ).toEqual([])
             expect(store.preview).toEqual({ total: 7.0, items: [] })
         })
 
@@ -199,8 +203,8 @@ describe('ticket flow integration', () => {
                     items: [
                         {
                             product_id: 1,
-                            voucher_id: 0,
-                            quantity: '2',
+                            voucher_id: null,
+                            quantity: 2,
                             unit_price: 3.5,
                             subtotal: 7.0,
                         },
@@ -243,7 +247,7 @@ describe('ticket flow integration', () => {
             server.use(getRegisterTicketsStoreMockHandler())
 
             store.startDraft(1)
-            store.addItem(makeProduct(), 2, null, null, 1)
+            store.addItem(makeProduct(), 2, null, [], 1)
             store.setPaymentMethod('cash', 1)
 
             expect(store.hasDraftInStorage(1)).toBe(true)

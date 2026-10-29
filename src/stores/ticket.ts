@@ -21,8 +21,8 @@ export interface TicketDraftItem {
     unitPrice: number
     customUnitPrice: number | null
     effectivePrice: number
-    voucherId: number | null
-    voucherDiscount: number | null
+    voucherIds: number[]
+    appliedVouchers: Voucher[]
     lineTotal: number
     product?: ProductResource
 }
@@ -34,33 +34,59 @@ export interface TicketDraft {
     memberName: string | null
 }
 
-function computeLineTotal(item: TicketDraftItem): number {
-    const subtotal = item.effectivePrice * item.quantity
-    if (item.voucherDiscount === null) return subtotal
-    return Math.max(0, subtotal - item.voucherDiscount)
+function round2(value: number): number {
+    return Math.round(value * 100) / 100
 }
 
-function computeVoucherDiscount(
-    product: ProductResource,
+function computeVoucherUnitDiscount(
     voucher: Voucher,
-    effectivePrice: number,
-    quantity: number
-): number | null {
-    if (voucher.product_id !== product.id) return null
-    const subtotal = effectivePrice * quantity
-    if (voucher.discount_percent) {
-        return (
-            Math.round(
-                subtotal *
-                    (Number.parseFloat(voucher.discount_percent) / 100) *
-                    100
-            ) / 100
+    effectivePrice: number
+): number {
+    if (
+        voucher.discount_percent !== null &&
+        voucher.discount_percent !== undefined
+    ) {
+        const percent = Number.parseFloat(voucher.discount_percent)
+        return round2(
+            Math.min(effectivePrice, (effectivePrice * percent) / 100)
         )
     }
-    if (voucher.discount_fixed) {
-        return Number.parseFloat(voucher.discount_fixed)
+    if (
+        voucher.discount_fixed !== null &&
+        voucher.discount_fixed !== undefined
+    ) {
+        return round2(
+            Math.min(effectivePrice, Number.parseFloat(voucher.discount_fixed))
+        )
     }
-    return null
+    return 0
+}
+
+export function computeItemSaved(item: {
+    effectivePrice: number
+    quantity: number
+    appliedVouchers: Voucher[]
+}): number {
+    const subtotal = item.effectivePrice * item.quantity
+    const saved = item.appliedVouchers.reduce(
+        (sum, voucher) =>
+            sum + computeVoucherUnitDiscount(voucher, item.effectivePrice),
+        0
+    )
+    return round2(Math.min(saved, subtotal))
+}
+
+function computeLineTotal(item: {
+    effectivePrice: number
+    quantity: number
+    appliedVouchers: Voucher[]
+}): number {
+    return round2(
+        Math.max(
+            0,
+            item.effectivePrice * item.quantity - computeItemSaved(item)
+        )
+    )
 }
 
 function buildPreviewPayload(draft: TicketDraft, operatingDayId: number) {
@@ -79,7 +105,7 @@ function buildPreviewPayload(draft: TicketDraft, operatingDayId: number) {
             product_id: item.productId,
             quantity: item.quantity,
             custom_unit_price: item.customUnitPrice,
-            voucher_id: item.voucherId,
+            voucher_ids: item.voucherIds,
         })),
     }
 }
@@ -88,10 +114,35 @@ function getDraftStorageKey(dayId: number): string {
     return `register_draft_${dayId}`
 }
 
+function normalizeDraftItem(item: Record<string, unknown>): TicketDraftItem {
+    const appliedVouchers = Array.isArray(item.appliedVouchers)
+        ? (item.appliedVouchers as Voucher[])
+        : []
+    const voucherIds = Array.isArray(item.voucherIds)
+        ? (item.voucherIds as number[])
+        : appliedVouchers.map((voucher) => voucher.id)
+
+    const normalized: TicketDraftItem = {
+        productId: Number(item.productId),
+        productName: String(item.productName ?? ''),
+        quantity: Number(item.quantity),
+        unitPrice: Number(item.unitPrice),
+        customUnitPrice: (item.customUnitPrice as number | null) ?? null,
+        effectivePrice: Number(item.effectivePrice),
+        voucherIds,
+        appliedVouchers,
+        lineTotal: 0,
+        product: (item.product as ProductResource | undefined) ?? undefined,
+    }
+    normalized.lineTotal = computeLineTotal(normalized)
+    return normalized
+}
+
 export const useTicketStore = defineStore('ticket', () => {
     const draft = ref<TicketDraft | null>(null)
     const preview = ref<RegisterTicketsPreview200 | null>(null)
     const previewLoading = ref(false)
+    const previewError = ref<string | null>(null)
 
     const canFinalize = computed(
         () =>
@@ -113,7 +164,15 @@ export const useTicketStore = defineStore('ticket', () => {
         const raw = localStorage.getItem(getDraftStorageKey(dayId))
         if (raw) {
             try {
-                return JSON.parse(raw) as TicketDraft
+                const parsed = JSON.parse(raw) as TicketDraft
+                return {
+                    ...parsed,
+                    items: (parsed.items ?? []).map((item) =>
+                        normalizeDraftItem(
+                            item as unknown as Record<string, unknown>
+                        )
+                    ),
+                }
             } catch {
                 return null
             }
@@ -137,6 +196,7 @@ export const useTicketStore = defineStore('ticket', () => {
             memberName: null,
         }
         preview.value = null
+        previewError.value = null
         if (dayId !== undefined) {
             saveDraftToStorage(dayId)
         }
@@ -146,16 +206,13 @@ export const useTicketStore = defineStore('ticket', () => {
         product: ProductResource,
         quantity: number,
         customPrice: number | null = null,
-        voucher: Voucher | null = null,
+        vouchers: Voucher[] = [],
         dayId?: number
     ) {
         if (!draft.value) return
 
         const unitPrice = Number.parseFloat(product.unit_price)
         const effectivePrice = customPrice ?? unitPrice
-        const voucherDiscount = voucher
-            ? computeVoucherDiscount(product, voucher, effectivePrice, quantity)
-            : null
 
         const existingIndex = draft.value.items.findIndex(
             (i) => i.productId === product.id
@@ -168,8 +225,8 @@ export const useTicketStore = defineStore('ticket', () => {
             unitPrice,
             customUnitPrice: customPrice,
             effectivePrice,
-            voucherId: voucherDiscount !== null ? (voucher?.id ?? null) : null,
-            voucherDiscount,
+            voucherIds: vouchers.map((voucher) => voucher.id),
+            appliedVouchers: vouchers,
             lineTotal: 0,
             product,
         }
@@ -177,17 +234,17 @@ export const useTicketStore = defineStore('ticket', () => {
 
         if (existingIndex >= 0) {
             const existing = draft.value.items[existingIndex]
+            const appliedVouchers = existing.appliedVouchers.length
+                ? existing.appliedVouchers
+                : vouchers
             const merged: TicketDraftItem = {
                 ...existing,
                 quantity: existing.quantity + quantity,
                 customUnitPrice: customPrice ?? existing.customUnitPrice,
                 effectivePrice:
                     customPrice ?? existing.effectivePrice ?? unitPrice,
-                voucherId:
-                    voucherDiscount !== null
-                        ? (voucher?.id ?? existing.voucherId)
-                        : existing.voucherId,
-                voucherDiscount: voucherDiscount ?? existing.voucherDiscount,
+                appliedVouchers,
+                voucherIds: appliedVouchers.map((voucher) => voucher.id),
             }
             merged.lineTotal = computeLineTotal(merged)
             draft.value.items[existingIndex] = merged
@@ -212,10 +269,14 @@ export const useTicketStore = defineStore('ticket', () => {
         if (!draft.value) return
         const item = draft.value.items[index]
         if (!item) return
+
+        const appliedVouchers = item.appliedVouchers.slice(0, quantity)
         draft.value.items[index] = {
             ...item,
             quantity,
-            lineTotal: computeLineTotal({ ...item, quantity }),
+            appliedVouchers,
+            voucherIds: appliedVouchers.map((voucher) => voucher.id),
+            lineTotal: computeLineTotal({ ...item, quantity, appliedVouchers }),
         }
         if (dayId !== undefined) saveDraftToStorage(dayId)
     }
@@ -236,45 +297,32 @@ export const useTicketStore = defineStore('ticket', () => {
         if (dayId !== undefined) saveDraftToStorage(dayId)
     }
 
-    function applyVoucher(index: number, voucher: Voucher, dayId?: number) {
+    function applyVouchers(index: number, vouchers: Voucher[], dayId?: number) {
         if (!draft.value) return
         const item = draft.value.items[index]
         if (!item) return
 
-        const subtotal = item.effectivePrice * item.quantity
-        let discount = 0
-        if (voucher.discount_percent) {
-            discount =
-                Math.round(
-                    subtotal *
-                        (Number.parseFloat(voucher.discount_percent) / 100) *
-                        100
-                ) / 100
-        } else if (voucher.discount_fixed) {
-            discount = Number.parseFloat(voucher.discount_fixed)
-        }
-
+        const appliedVouchers = vouchers.slice(0, item.quantity)
         draft.value.items[index] = {
             ...item,
-            voucherId: voucher.id,
-            voucherDiscount: discount,
-            lineTotal: Math.max(0, subtotal - discount),
+            voucherIds: appliedVouchers.map((voucher) => voucher.id),
+            appliedVouchers,
+            lineTotal: computeLineTotal({ ...item, appliedVouchers }),
         }
         if (dayId !== undefined) saveDraftToStorage(dayId)
     }
 
-    function clearVoucherForItem(index: number, dayId?: number) {
+    function clearVouchersForItem(index: number, dayId?: number) {
         if (!draft.value) return
         const item = draft.value.items[index]
         if (!item) return
         draft.value.items[index] = {
             ...item,
-            voucherId: null,
-            voucherDiscount: null,
+            voucherIds: [],
+            appliedVouchers: [],
             lineTotal: computeLineTotal({
                 ...item,
-                voucherId: null,
-                voucherDiscount: null,
+                appliedVouchers: [],
             }),
         }
         if (dayId !== undefined) saveDraftToStorage(dayId)
@@ -283,6 +331,7 @@ export const useTicketStore = defineStore('ticket', () => {
     async function fetchPreview(operatingDayId: number) {
         if (!draft.value || draft.value.items.length === 0) {
             preview.value = null
+            previewError.value = null
             return
         }
 
@@ -292,7 +341,14 @@ export const useTicketStore = defineStore('ticket', () => {
             const response = await registerTicketsPreview(payload)
             if (response.status === 200) {
                 preview.value = response.data
+                previewError.value = null
+            } else {
+                const data = response.data as { message?: string } | undefined
+                previewError.value =
+                    data?.message ?? 'Impossible de calculer le total.'
             }
+        } catch {
+            previewError.value = 'Impossible de calculer le total.'
         } finally {
             previewLoading.value = false
         }
@@ -318,6 +374,7 @@ export const useTicketStore = defineStore('ticket', () => {
                 const finalizedItems = [...(draft.value.items ?? [])]
                 draft.value = null
                 preview.value = null
+                previewError.value = null
                 clearDraftStorage(operatingDayId)
                 return { success: true, items: finalizedItems }
             }
@@ -346,6 +403,7 @@ export const useTicketStore = defineStore('ticket', () => {
         draft,
         preview,
         previewLoading,
+        previewError,
         canFinalize,
         startDraft,
         addItem,
@@ -353,8 +411,8 @@ export const useTicketStore = defineStore('ticket', () => {
         updateItemQuantity,
         setPaymentMethod,
         setMember,
-        applyVoucher,
-        clearVoucherForItem,
+        applyVouchers,
+        clearVouchersForItem,
         fetchPreview,
         finalizeTicket,
         saveDraftToStorage,

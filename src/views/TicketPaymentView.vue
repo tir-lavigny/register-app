@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import AppLayout from '@/layouts/AppLayout.vue'
 import { useOperatingDayStore } from '@/stores/operating-day'
-import { useTicketStore } from '@/stores/ticket'
+import { computeItemSaved, useTicketStore } from '@/stores/ticket'
 
 const router = useRouter()
 const dayStore = useOperatingDayStore()
@@ -22,13 +22,10 @@ const paymentMethod = computed(() => ticketStore.draft?.paymentMethod ?? null)
 const canFinalize = computed(() => ticketStore.canFinalize)
 
 const itemsWithDiscounts = computed(() =>
-    items.value.filter((i) => i.voucherDiscount && i.voucherDiscount > 0)
+    items.value.filter((i) => i.appliedVouchers.length > 0)
 )
 const totalDiscount = computed(() =>
-    itemsWithDiscounts.value.reduce(
-        (sum, i) => sum + (i.voucherDiscount ?? 0),
-        0
-    )
+    itemsWithDiscounts.value.reduce((sum, i) => sum + computeItemSaved(i), 0)
 )
 
 const finalizedItems = ref<
@@ -109,7 +106,7 @@ function handleHandoffDone() {
                                 {{ item.productName }} (bon)
                             </span>
                             <span class="font-medium text-green-600">
-                                -{{ (item.voucherDiscount ?? 0).toFixed(2) }}
+                                -{{ computeItemSaved(item).toFixed(2) }}
                                 CHF
                             </span>
                         </div>

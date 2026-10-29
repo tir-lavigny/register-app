@@ -47,13 +47,26 @@ export const getRegisterTicketsPreviewResponseMock = (
     items: Array.from(
         { length: faker.number.int({ min: 1, max: 10 }) },
         (_, i) => i + 1
-    ).map(() => ({
-        product_id: faker.number.int(),
-        voucher_id: faker.number.int(),
-        quantity: faker.string.alpha({ length: { min: 10, max: 20 } }),
-        unit_price: faker.number.float({ fractionDigits: 2 }),
-        subtotal: faker.number.float({ fractionDigits: 2 }),
-    })),
+    ).map(() =>
+        faker.helpers.arrayElement([
+            {
+                product_id: faker.number.int(),
+                voucher_id: faker.string.alpha({
+                    length: { min: 10, max: 20 },
+                }),
+                quantity: 1,
+                unit_price: faker.number.float({ fractionDigits: 2 }),
+                subtotal: faker.number.float({ fractionDigits: 2 }),
+            },
+            {
+                product_id: faker.number.int(),
+                voucher_id: null,
+                quantity: faker.number.int(),
+                unit_price: faker.number.float({ fractionDigits: 2 }),
+                subtotal: faker.number.float({ fractionDigits: 2 }),
+            },
+        ])
+    ),
     ...overrideResponse,
 })
 

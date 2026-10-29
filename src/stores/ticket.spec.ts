@@ -58,6 +58,7 @@ describe('ticket store', () => {
             { id: 1, name: 'Main', description: null, active: true },
         ]
         locationStore.activeLocationId = 1
+        localStorage.clear()
         store = useTicketStore()
     })
 
@@ -68,6 +69,10 @@ describe('ticket store', () => {
 
         it('has null preview', () => {
             expect(store.preview).toBeNull()
+        })
+
+        it('has null previewError', () => {
+            expect(store.previewError).toBeNull()
         })
 
         it('canFinalize is false', () => {
@@ -86,11 +91,13 @@ describe('ticket store', () => {
             expect(store.draft!.memberName).toBeNull()
         })
 
-        it('clears preview', () => {
+        it('clears preview and previewError', () => {
             store.startDraft()
             store.preview = { total: 10, items: [] }
+            store.previewError = 'error'
             store.startDraft()
             expect(store.preview).toBeNull()
+            expect(store.previewError).toBeNull()
         })
     })
 
@@ -125,35 +132,57 @@ describe('ticket store', () => {
             expect(store.draft!.items[0].lineTotal).toBe(5.0)
         })
 
-        it('applies voucher with fixed discount', () => {
+        it('applies voucher discount to one unit only', () => {
             const voucher = makeVoucher({
                 discount_fixed: '1.00',
                 discount_percent: null,
             })
-            store.addItem(makeProduct(), 2, null, voucher)
+            store.addItem(makeProduct(), 2, null, [voucher])
 
-            expect(store.draft!.items[0].voucherId).toBe(100)
-            expect(store.draft!.items[0].voucherDiscount).toBe(1.0)
+            expect(store.draft!.items[0].voucherIds).toEqual([100])
+            expect(store.draft!.items[0].appliedVouchers).toEqual([voucher])
             expect(store.draft!.items[0].lineTotal).toBe(6.0)
         })
 
-        it('applies voucher with percent discount', () => {
+        it('applies percent voucher discount to one unit only', () => {
             const voucher = makeVoucher({
                 discount_percent: '20',
                 discount_fixed: null,
             })
-            store.addItem(makeProduct(), 2, null, voucher)
+            store.addItem(makeProduct(), 2, null, [voucher])
 
-            expect(store.draft!.items[0].voucherDiscount).toBe(1.4)
-            expect(store.draft!.items[0].lineTotal).toBe(5.6)
+            expect(store.draft!.items[0].lineTotal).toBe(6.3)
         })
 
-        it('ignores voucher for wrong product', () => {
-            const voucher = makeVoucher({ product_id: 999 })
-            store.addItem(makeProduct(), 1, null, voucher)
+        it('applies multiple vouchers up to quantity', () => {
+            const product = makeProduct({ unit_price: '10.00' })
+            const voucher1 = makeVoucher({
+                id: 100,
+                discount_percent: '100',
+                discount_fixed: null,
+            })
+            const voucher2 = makeVoucher({
+                id: 101,
+                discount_percent: '100',
+                discount_fixed: null,
+            })
 
-            expect(store.draft!.items[0].voucherId).toBeNull()
-            expect(store.draft!.items[0].voucherDiscount).toBeNull()
+            store.addItem(product, 3, null, [voucher1, voucher2])
+
+            expect(store.draft!.items[0].voucherIds).toEqual([100, 101])
+            expect(store.draft!.items[0].lineTotal).toBe(10.0)
+        })
+
+        it('keeps existing vouchers when merging same product', () => {
+            const voucher = makeVoucher({
+                discount_percent: '100',
+                discount_fixed: null,
+            })
+            store.addItem(makeProduct(), 1, null, [voucher])
+            store.addItem(makeProduct(), 2)
+
+            expect(store.draft!.items[0].quantity).toBe(3)
+            expect(store.draft!.items[0].voucherIds).toEqual([100])
         })
 
         it('clamps voucher discount to minimum 0', () => {
@@ -161,7 +190,7 @@ describe('ticket store', () => {
                 discount_fixed: '100.00',
                 discount_percent: null,
             })
-            store.addItem(makeProduct(), 1, null, voucher)
+            store.addItem(makeProduct(), 1, null, [voucher])
 
             expect(store.draft!.items[0].lineTotal).toBe(0)
         })
@@ -190,6 +219,31 @@ describe('ticket store', () => {
             expect(store.draft!.items[0].quantity).toBe(5)
             expect(store.draft!.items[0].lineTotal).toBe(17.5)
         })
+
+        it('trims vouchers when quantity drops below applied count', () => {
+            store.startDraft()
+            const voucher1 = makeVoucher({
+                id: 100,
+                discount_percent: '100',
+                discount_fixed: null,
+            })
+            const voucher2 = makeVoucher({
+                id: 101,
+                discount_percent: '100',
+                discount_fixed: null,
+            })
+            store.addItem(makeProduct({ unit_price: '10.00' }), 3, null, [
+                voucher1,
+                voucher2,
+            ])
+
+            store.updateItemQuantity(0, 1)
+
+            expect(store.draft!.items[0].quantity).toBe(1)
+            expect(store.draft!.items[0].voucherIds).toEqual([100])
+            expect(store.draft!.items[0].appliedVouchers).toEqual([voucher1])
+            expect(store.draft!.items[0].lineTotal).toBe(0)
+        })
     })
 
     describe('setPaymentMethod', () => {
@@ -213,21 +267,22 @@ describe('ticket store', () => {
             store.setMember(42, 'John Doe')
             store.setMember(null, null)
             expect(store.draft!.memberId).toBeNull()
+            expect(store.draft!.memberName).toBeNull()
         })
     })
 
-    describe('clearVoucherForItem', () => {
-        it('clears voucher from item', () => {
+    describe('clearVouchersForItem', () => {
+        it('clears vouchers from item', () => {
             store.startDraft()
             const voucher = makeVoucher()
-            store.addItem(makeProduct(), 2, null, voucher)
+            store.addItem(makeProduct(), 2, null, [voucher])
 
-            expect(store.draft!.items[0].voucherId).toBe(100)
+            expect(store.draft!.items[0].voucherIds).toEqual([100])
 
-            store.clearVoucherForItem(0)
+            store.clearVouchersForItem(0)
 
-            expect(store.draft!.items[0].voucherId).toBeNull()
-            expect(store.draft!.items[0].voucherDiscount).toBeNull()
+            expect(store.draft!.items[0].voucherIds).toEqual([])
+            expect(store.draft!.items[0].appliedVouchers).toEqual([])
             expect(store.draft!.items[0].lineTotal).toBe(7.0)
         })
     })
@@ -275,6 +330,21 @@ describe('ticket store', () => {
             expect(store.preview).toEqual({ total: 7.0, items: [] })
         })
 
+        it('sends voucher_ids array in payload', async () => {
+            mockPreview.mockResolvedValue({
+                data: { total: 7.0, items: [] },
+                status: 200,
+                headers: new Headers(),
+            })
+
+            await store.fetchPreview(1)
+
+            const payload = mockPreview.mock.calls[0][0] as {
+                items: { voucher_ids: number[] }[]
+            }
+            expect(payload.items[0].voucher_ids).toEqual([])
+        })
+
         it('sets previewLoading during fetch', async () => {
             mockPreview.mockResolvedValue({
                 data: { total: 7.0, items: [] },
@@ -294,135 +364,97 @@ describe('ticket store', () => {
             expect(loadingValues[loadingValues.length - 1]).toBe(false)
         })
 
-        it('does not call preview when no items', async () => {
-            store.startDraft()
-            await store.fetchPreview(1)
-            expect(mockPreview).not.toHaveBeenCalled()
-        })
-    })
-
-    describe('finalizeTicket', () => {
-        beforeEach(() => {
-            store.startDraft()
-            store.addItem(makeProduct(), 2)
-            store.setPaymentMethod('cash')
-        })
-
-        it('finalizes on 201', async () => {
-            mockStore.mockResolvedValue({
-                data: { data: { id: 1, total: '7.00' } },
-                status: 201,
-                headers: new Headers(),
-            })
-
-            const result = await store.finalizeTicket(1)
-
-            expect(result).toEqual({ success: true, items: expect.any(Array) })
-            expect(store.draft).toBeNull()
-            expect(store.preview).toBeNull()
-        })
-
-        it('returns validation errors on 422', async () => {
-            mockStore.mockResolvedValue({
-                data: {
-                    message: 'Validation failed',
-                    errors: { items: ['The items field is required.'] },
-                },
+        it('sets previewError on non-200 response', async () => {
+            mockPreview.mockResolvedValue({
+                data: { message: 'The voucher has already been used.' },
                 status: 422,
                 headers: new Headers(),
             })
 
-            const result = await store.finalizeTicket(1)
+            await store.fetchPreview(1)
 
-            expect(result.success).toBe(false)
-            if (!result.success) {
-                expect(result.error).toBe('Validation failed')
-                expect(result.errors).toEqual({
-                    items: ['The items field is required.'],
-                })
-            }
+            expect(store.previewError).toBe(
+                'The voucher has already been used.'
+            )
         })
 
-        it('returns error when draft is empty', async () => {
-            store.startDraft()
-            const result = await store.finalizeTicket(1)
+        it('sets previewError on network failure', async () => {
+            mockPreview.mockRejectedValue(new Error('Network error'))
 
-            expect(result).toEqual({
-                success: false,
-                error: 'Le ticket est vide.',
-            })
+            await store.fetchPreview(1)
+
+            expect(store.previewError).toBe('Impossible de calculer le total.')
         })
 
-        it('returns error when no payment method', async () => {
-            store.startDraft()
-            store.addItem(makeProduct(), 1)
-            const result = await store.finalizeTicket(1)
-
-            expect(result).toEqual({
-                success: false,
-                error: 'Le ticket est vide.',
-            })
-        })
-
-        it('returns error on network failure', async () => {
-            mockStore.mockRejectedValue(new Error('Network error'))
-
-            const result = await store.finalizeTicket(1)
-
-            expect(result).toEqual({
-                success: false,
-                error: 'Une erreur inattendue est survenue.',
-            })
-            expect(store.draft).not.toBeNull()
-        })
-
-        it('returns generic error on unexpected status', async () => {
-            mockStore.mockResolvedValue({
-                data: { message: 'Server error' },
-                status: 500,
+        it('clears previewError on success', async () => {
+            mockPreview.mockResolvedValue({
+                data: { total: 7.0, items: [] },
+                status: 200,
                 headers: new Headers(),
             })
+            store.previewError = 'previous error'
 
-            const result = await store.finalizeTicket(1)
+            await store.fetchPreview(1)
 
-            expect(result).toEqual({
-                success: false,
-                error: 'Une erreur inattendue est survenue.',
-            })
+            expect(store.previewError).toBeNull()
+        })
+
+        it('does not call preview when no items', async () => {
+            store.startDraft()
+            await store.fetchPreview(1)
+
+            expect(mockPreview).not.toHaveBeenCalled()
         })
     })
 
-    describe('applyVoucher', () => {
+    describe('applyVouchers', () => {
         beforeEach(() => {
             store.startDraft()
         })
 
-        it('applies percent discount voucher', () => {
+        it('applies percent discount voucher to one unit', () => {
             store.addItem(makeProduct(), 2)
             const voucher = makeVoucher({
                 discount_percent: '20',
                 discount_fixed: null,
             })
 
-            store.applyVoucher(0, voucher)
+            store.applyVouchers(0, [voucher])
 
-            expect(store.draft!.items[0].voucherId).toBe(100)
-            expect(store.draft!.items[0].voucherDiscount).toBe(1.4)
-            expect(store.draft!.items[0].lineTotal).toBe(5.6)
+            expect(store.draft!.items[0].voucherIds).toEqual([100])
+            expect(store.draft!.items[0].appliedVouchers).toEqual([voucher])
+            expect(store.draft!.items[0].lineTotal).toBe(6.3)
         })
 
-        it('applies fixed discount voucher', () => {
+        it('applies fixed discount voucher to one unit', () => {
             store.addItem(makeProduct(), 2)
             const voucher = makeVoucher({
                 discount_fixed: '1.00',
                 discount_percent: null,
             })
 
-            store.applyVoucher(0, voucher)
+            store.applyVouchers(0, [voucher])
 
-            expect(store.draft!.items[0].voucherId).toBe(100)
-            expect(store.draft!.items[0].voucherDiscount).toBe(1.0)
             expect(store.draft!.items[0].lineTotal).toBe(6.0)
+        })
+
+        it('applies multiple vouchers to multiple units', () => {
+            store.addItem(makeProduct({ unit_price: '10.00' }), 3)
+            const voucher1 = makeVoucher({
+                id: 100,
+                discount_percent: '100',
+                discount_fixed: null,
+            })
+            const voucher2 = makeVoucher({
+                id: 101,
+                discount_percent: '100',
+                discount_fixed: null,
+            })
+
+            store.applyVouchers(0, [voucher1, voucher2])
+
+            expect(store.draft!.items[0].voucherIds).toEqual([100, 101])
+            expect(store.draft!.items[0].lineTotal).toBe(10.0)
         })
 
         it('clamps discount to 0 when exceeds subtotal', () => {
@@ -432,25 +464,55 @@ describe('ticket store', () => {
                 discount_percent: null,
             })
 
-            store.applyVoucher(0, voucher)
+            store.applyVouchers(0, [voucher])
 
             expect(store.draft!.items[0].lineTotal).toBe(0)
+        })
+
+        it('trims vouchers to quantity', () => {
+            store.addItem(makeProduct({ unit_price: '10.00' }), 1)
+            const voucher1 = makeVoucher({
+                id: 100,
+                discount_percent: '100',
+                discount_fixed: null,
+            })
+            const voucher2 = makeVoucher({
+                id: 101,
+                discount_percent: '100',
+                discount_fixed: null,
+            })
+
+            store.applyVouchers(0, [voucher1, voucher2])
+
+            expect(store.draft!.items[0].voucherIds).toEqual([100])
+            expect(store.draft!.items[0].lineTotal).toBe(0)
+        })
+
+        it('clears vouchers when empty array applied', () => {
+            store.addItem(makeProduct(), 1, null, [makeVoucher()])
+
+            store.applyVouchers(0, [])
+
+            expect(store.draft!.items[0].voucherIds).toEqual([])
+            expect(store.draft!.items[0].lineTotal).toBe(3.5)
         })
 
         it('does nothing when no draft', () => {
             const freshPinia = createPinia()
             setActivePinia(freshPinia)
             const freshStore = useTicketStore()
-            const voucher = makeVoucher()
-            freshStore.applyVoucher(0, voucher)
+
+            freshStore.applyVouchers(0, [makeVoucher()])
+
             expect(freshStore.draft).toBeNull()
         })
 
         it('does nothing when index is out of range', () => {
             store.addItem(makeProduct(), 1)
-            const voucher = makeVoucher()
-            store.applyVoucher(99, voucher)
-            expect(store.draft!.items[0].voucherId).toBeNull()
+
+            store.applyVouchers(99, [makeVoucher()])
+
+            expect(store.draft!.items[0].voucherIds).toEqual([])
         })
     })
 
@@ -474,6 +536,7 @@ describe('ticket store', () => {
         it('loadDraftFromStorage returns parsed draft', () => {
             store.startDraft()
             store.addItem(makeProduct(), 1)
+
             store.saveDraftToStorage(1)
 
             const loaded = store.loadDraftFromStorage(1)
@@ -482,22 +545,51 @@ describe('ticket store', () => {
             expect(loaded!.items).toHaveLength(1)
         })
 
-        it('loadDraftFromStorage returns null for missing key', () => {
-            const loaded = store.loadDraftFromStorage(999)
+        it('loadDraftFromStorage normalizes legacy voucher fields', () => {
+            localStorage.setItem(
+                'register_draft_1',
+                JSON.stringify({
+                    items: [
+                        {
+                            productId: 1,
+                            productName: 'Cola',
+                            quantity: 2,
+                            unitPrice: 3.5,
+                            customUnitPrice: null,
+                            effectivePrice: 3.5,
+                            voucherId: 100,
+                            voucherDiscount: 0.7,
+                            lineTotal: 6.3,
+                        },
+                    ],
+                    paymentMethod: 'cash',
+                    memberId: null,
+                    memberName: null,
+                })
+            )
 
-            expect(loaded).toBeNull()
+            const loaded = store.loadDraftFromStorage(1)
+
+            expect(loaded).not.toBeNull()
+            expect(loaded!.items[0].voucherIds).toEqual([])
+            expect(loaded!.items[0].appliedVouchers).toEqual([])
+            expect(loaded!.items[0].lineTotal).toBe(7.0)
+        })
+
+        it('loadDraftFromStorage returns null when storage is empty', () => {
+            expect(store.loadDraftFromStorage(1)).toBeNull()
         })
 
         it('loadDraftFromStorage returns null for invalid JSON', () => {
             localStorage.setItem('register_draft_1', 'not-json')
 
-            const loaded = store.loadDraftFromStorage(1)
-
-            expect(loaded).toBeNull()
+            expect(store.loadDraftFromStorage(1)).toBeNull()
         })
 
         it('clearDraftStorage removes draft from localStorage', () => {
             store.startDraft()
+            store.addItem(makeProduct(), 1)
+
             store.saveDraftToStorage(1)
 
             store.clearDraftStorage(1)
@@ -507,18 +599,23 @@ describe('ticket store', () => {
 
         it('hasDraftInStorage returns true when draft exists', () => {
             store.startDraft()
+            store.addItem(makeProduct(), 1)
+
             store.saveDraftToStorage(1)
 
             expect(store.hasDraftInStorage(1)).toBe(true)
         })
 
         it('hasDraftInStorage returns false when no draft', () => {
-            localStorage.clear()
             expect(store.hasDraftInStorage(1)).toBe(false)
         })
     })
 
     describe('dayId storage integration', () => {
+        beforeEach(() => {
+            localStorage.clear()
+        })
+
         it('startDraft with dayId saves to storage', () => {
             store.startDraft(1)
 
@@ -527,7 +624,7 @@ describe('ticket store', () => {
 
         it('addItem with dayId saves to storage', () => {
             store.startDraft(1)
-            store.addItem(makeProduct(), 2, null, null, 1)
+            store.addItem(makeProduct(), 2, null, [], 1)
 
             const raw = localStorage.getItem('register_draft_1')
             expect(raw).not.toBeNull()
@@ -537,7 +634,7 @@ describe('ticket store', () => {
 
         it('removeItem with dayId saves to storage', () => {
             store.startDraft(1)
-            store.addItem(makeProduct(), 1, null, null, 1)
+            store.addItem(makeProduct(), 1, null, [], 1)
             store.removeItem(0, 1)
 
             const raw = localStorage.getItem('register_draft_1')
@@ -547,7 +644,7 @@ describe('ticket store', () => {
 
         it('updateItemQuantity with dayId saves to storage', () => {
             store.startDraft(1)
-            store.addItem(makeProduct(), 1, null, null, 1)
+            store.addItem(makeProduct(), 1, null, [], 1)
             store.updateItemQuantity(0, 5, 1)
 
             const raw = localStorage.getItem('register_draft_1')
@@ -573,29 +670,29 @@ describe('ticket store', () => {
             expect(parsed.memberId).toBe(42)
         })
 
-        it('applyVoucher with dayId saves to storage', () => {
+        it('applyVouchers with dayId saves to storage', () => {
             store.startDraft(1)
-            store.addItem(makeProduct(), 1, null, null, 1)
-            store.applyVoucher(0, makeVoucher(), 1)
+            store.addItem(makeProduct(), 1, null, [], 1)
+            store.applyVouchers(0, [makeVoucher()], 1)
 
             const raw = localStorage.getItem('register_draft_1')
             const parsed = JSON.parse(raw!)
-            expect(parsed.items[0].voucherId).toBe(100)
+            expect(parsed.items[0].voucherIds).toEqual([100])
         })
 
-        it('clearVoucherForItem with dayId saves to storage', () => {
+        it('clearVouchersForItem with dayId saves to storage', () => {
             store.startDraft(1)
-            store.addItem(makeProduct(), 1, null, makeVoucher(), 1)
-            store.clearVoucherForItem(0, 1)
+            store.addItem(makeProduct(), 1, null, [makeVoucher()], 1)
+            store.clearVouchersForItem(0, 1)
 
             const raw = localStorage.getItem('register_draft_1')
             const parsed = JSON.parse(raw!)
-            expect(parsed.items[0].voucherId).toBeNull()
+            expect(parsed.items[0].voucherIds).toEqual([])
         })
 
         it('finalizeTicket clears storage', async () => {
             store.startDraft(1)
-            store.addItem(makeProduct(), 1, null, null, 1)
+            store.addItem(makeProduct(), 1, null, [], 1)
             store.setPaymentMethod('cash', 1)
 
             mockStore.mockResolvedValue({

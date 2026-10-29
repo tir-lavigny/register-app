@@ -108,7 +108,7 @@ function handleQuantityConfirm(payload: {
         selectedProduct.value,
         payload.quantity,
         payload.customPrice,
-        null,
+        [],
         dayStore.dayId
     )
     toast.success(`${selectedProduct.value.name} ajouté`)

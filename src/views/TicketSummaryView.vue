@@ -13,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import AppLayout from '@/layouts/AppLayout.vue'
 import { extractData } from '@/lib/utils'
 import { useOperatingDayStore } from '@/stores/operating-day'
+import type { TicketDraftItem } from '@/stores/ticket'
 import { useTicketStore } from '@/stores/ticket'
 
 const router = useRouter()
@@ -28,21 +29,36 @@ const total = computed(() => ticketStore.preview?.total ?? 0)
 const memberId = computed(() => ticketStore.draft?.memberId ?? 0)
 const memberName = computed(() => ticketStore.draft?.memberName)
 
-const { data: vouchersData } = useRegisterMembersVouchers(memberId, {
-    query: { enabled: computed(() => memberId.value > 0) },
-})
+const { data: vouchersData } = useRegisterMembersVouchers(
+    () => memberId.value,
+    {
+        query: { enabled: computed(() => memberId.value > 0) },
+    }
+)
 
 const memberVouchers = computed(() => extractData<Voucher>(vouchersData.value))
 
-const itemsWithVouchers = computed(() =>
-    items.value.map((item, index) => ({
-        ...item,
-        index,
-        availableVoucher: memberVouchers.value.find(
-            (v) => v.product_id === item.productId
-        ),
-    }))
+const appliedVoucherIds = computed(() =>
+    items.value.flatMap((item) => item.voucherIds)
 )
+
+const currentItem = computed((): TicketDraftItem | null => {
+    const index = voucherTargetIndex.value
+    return index >= 0 ? (items.value[index] ?? null) : null
+})
+
+function availableVouchersFor(item: TicketDraftItem): Voucher[] {
+    return memberVouchers.value.filter(
+        (voucher) =>
+            voucher.product_id === item.productId &&
+            !appliedVoucherIds.value.includes(voucher.id)
+    )
+}
+
+function excludeIdsFor(item: TicketDraftItem | null): number[] {
+    if (!item) return []
+    return appliedVoucherIds.value.filter((id) => !item.voucherIds.includes(id))
+}
 
 onMounted(async () => {
     if (!dayStore.currentDay) {
@@ -84,26 +100,6 @@ function handleApplyVoucher(index: number) {
     showVoucherDialog.value = true
 }
 
-function handleToggleVoucher(index: number) {
-    if (!dayStore.dayId) return
-    const item = items.value[index]
-    if (!item) return
-
-    if (item.voucherId) {
-        ticketStore.clearVoucherForItem(index, dayStore.dayId)
-    } else {
-        const itemWithVoucher = itemsWithVouchers.value[index]
-        if (itemWithVoucher?.availableVoucher) {
-            ticketStore.applyVoucher(
-                index,
-                itemWithVoucher.availableVoucher,
-                dayStore.dayId
-            )
-        }
-    }
-    ticketStore.fetchPreview(dayStore.dayId)
-}
-
 function handleMemberSelect(member: { id: number; name: string } | null) {
     if (!dayStore.dayId) return
     if (member) {
@@ -113,16 +109,12 @@ function handleMemberSelect(member: { id: number; name: string } | null) {
     }
 }
 
-function handleVoucherSelect(voucher: Voucher | null) {
+function handleVoucherSelect(vouchers: Voucher[]) {
     if (!dayStore.dayId) return
     const index = voucherTargetIndex.value
     if (index < 0) return
 
-    if (voucher) {
-        ticketStore.applyVoucher(index, voucher, dayStore.dayId)
-    } else {
-        ticketStore.clearVoucherForItem(index, dayStore.dayId)
-    }
+    ticketStore.applyVouchers(index, vouchers, dayStore.dayId)
     showVoucherDialog.value = false
     voucherTargetIndex.value = -1
     ticketStore.fetchPreview(dayStore.dayId)
@@ -173,6 +165,12 @@ function goToPayment() {
                                     @remove="handleRemove"
                                     @apply-voucher="handleApplyVoucher"
                                 />
+                                <p
+                                    v-if="ticketStore.previewError"
+                                    class="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive"
+                                >
+                                    {{ ticketStore.previewError }}
+                                </p>
                             </template>
                         </CardContent>
                     </Card>
@@ -185,35 +183,35 @@ function goToPayment() {
                         </CardHeader>
                         <CardContent class="flex flex-col gap-2">
                             <div
-                                v-if="memberVouchers.length === 0"
+                                v-if="items.length === 0"
                                 class="py-4 text-center text-sm text-muted-foreground"
                             >
-                                Aucun bon disponible
+                                Aucun article
                             </div>
                             <template v-else>
                                 <div
-                                    v-for="(item, index) in itemsWithVouchers"
+                                    v-for="(item, index) in items"
                                     :key="item.productId"
                                 >
                                     <button
-                                        v-if="
-                                            item.availableVoucher &&
-                                            !item.voucherId
+                                        v-if="item.appliedVouchers.length"
+                                        class="flex w-full items-center gap-2 rounded-lg border border-green-300 bg-green-50 px-3 py-2 text-sm text-green-600 transition-colors hover:bg-green-100"
+                                        @click="handleApplyVoucher(index)"
+                                    >
+                                        <Tag class="size-4" />
+                                        {{ item.productName }},
+                                        {{ item.appliedVouchers.length }}
+                                        bon(s) appliqué(s) (modifier)
+                                    </button>
+                                    <button
+                                        v-else-if="
+                                            availableVouchersFor(item).length
                                         "
                                         class="flex w-full items-center gap-2 rounded-lg border border-dashed border-green-300 bg-green-50 px-3 py-2 text-sm text-green-600 transition-colors hover:bg-green-100"
-                                        @click="handleToggleVoucher(index)"
+                                        @click="handleApplyVoucher(index)"
                                     >
                                         <Tag class="size-4" />
                                         Appliquer pour {{ item.productName }}
-                                    </button>
-                                    <button
-                                        v-else-if="item.voucherId"
-                                        class="flex w-full items-center gap-2 rounded-lg border border-green-300 bg-green-50 px-3 py-2 text-sm text-green-600 transition-colors hover:bg-green-100"
-                                        @click="handleToggleVoucher(index)"
-                                    >
-                                        <Tag class="size-4" />
-                                        {{ item.productName }}, Bon appliqué
-                                        (retirer)
                                     </button>
                                     <span
                                         v-else
@@ -232,10 +230,17 @@ function goToPayment() {
                                 <span class="text-sm text-muted-foreground"
                                     >Total</span
                                 >
-                                <span class="text-lg font-bold"
-                                    >{{ total.toFixed(2) }} CHF</span
-                                >
+                                <span class="text-lg font-bold">
+                                    {{ total.toFixed(2) }} CHF
+                                </span>
                             </div>
+
+                            <p
+                                v-if="ticketStore.previewError"
+                                class="text-sm text-destructive"
+                            >
+                                {{ ticketStore.previewError }}
+                            </p>
 
                             <div
                                 class="flex items-center justify-between border-t pt-3"
@@ -275,10 +280,12 @@ function goToPayment() {
             <VoucherSelectDialog
                 v-model:open="showVoucherDialog"
                 :member-id="ticketStore.draft?.memberId ?? 0"
-                :product-id="
-                    voucherTargetIndex >= 0 &&
-                    ticketStore.draft?.items[voucherTargetIndex]
-                        ? ticketStore.draft.items[voucherTargetIndex].productId
+                :product-id="currentItem?.productId ?? 0"
+                :selected-ids="currentItem?.voucherIds ?? []"
+                :exclude-ids="excludeIdsFor(currentItem)"
+                :max-selectable="
+                    currentItem
+                        ? currentItem.quantity - currentItem.voucherIds.length
                         : 0
                 "
                 @select="handleVoucherSelect"
