@@ -284,9 +284,7 @@ function goToPayment() {
                 :selected-ids="currentItem?.voucherIds ?? []"
                 :exclude-ids="excludeIdsFor(currentItem)"
                 :max-selectable="
-                    currentItem
-                        ? currentItem.quantity - currentItem.voucherIds.length
-                        : 0
+                    currentItem ? currentItem.quantity : 0
                 "
                 @select="handleVoucherSelect"
             />

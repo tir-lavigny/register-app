@@ -136,6 +136,15 @@ describe('VoucherSelectDialog', () => {
         expect(document.body.textContent).toContain('1 / 2')
     })
 
+    it('counts preselected vouchers against full capacity when modifying', async () => {
+        mountDialog({ selectedIds: [101], maxSelectable: 1 })
+        await flushPromises()
+
+        expect(document.body.textContent).toContain('1 / 1')
+        expect(findOption(102)?.className).toContain('opacity-50')
+        expect(findOption(103)?.className).toContain('opacity-50')
+    })
+
     it('emits empty array when clearing', async () => {
         const wrapper = mountDialog()
         await flushPromises()
