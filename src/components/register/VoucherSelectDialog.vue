@@ -59,9 +59,12 @@ const selectedVouchers = computed(() =>
 )
 
 function formatDiscount(voucher: Voucher): string {
-    if (voucher.discount_percent)
+    if (
+        voucher.discount_percent &&
+        Number.parseFloat(voucher.discount_percent) > 0
+    )
         return `${Number.parseFloat(voucher.discount_percent)}%`
-    if (voucher.discount_fixed)
+    if (voucher.discount_fixed && Number.parseFloat(voucher.discount_fixed) > 0)
         return `${Number.parseFloat(voucher.discount_fixed).toFixed(2)} CHF`
     return ''
 }

@@ -283,9 +283,7 @@ function goToPayment() {
                 :product-id="currentItem?.productId ?? 0"
                 :selected-ids="currentItem?.voucherIds ?? []"
                 :exclude-ids="excludeIdsFor(currentItem)"
-                :max-selectable="
-                    currentItem ? currentItem.quantity : 0
-                "
+                :max-selectable="currentItem ? currentItem.quantity : 0"
                 @select="handleVoucherSelect"
             />
         </div>

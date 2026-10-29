@@ -44,7 +44,8 @@ function computeVoucherUnitDiscount(
 ): number {
     if (
         voucher.discount_percent !== null &&
-        voucher.discount_percent !== undefined
+        voucher.discount_percent !== undefined &&
+        Number.parseFloat(voucher.discount_percent) > 0
     ) {
         const percent = Number.parseFloat(voucher.discount_percent)
         return round2(
@@ -53,7 +54,8 @@ function computeVoucherUnitDiscount(
     }
     if (
         voucher.discount_fixed !== null &&
-        voucher.discount_fixed !== undefined
+        voucher.discount_fixed !== undefined &&
+        Number.parseFloat(voucher.discount_fixed) > 0
     ) {
         return round2(
             Math.min(effectivePrice, Number.parseFloat(voucher.discount_fixed))

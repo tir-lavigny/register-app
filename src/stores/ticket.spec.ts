@@ -457,6 +457,18 @@ describe('ticket store', () => {
             expect(store.draft!.items[0].lineTotal).toBe(10.0)
         })
 
+        it('applies fixed discount when percent is zero (legacy data)', () => {
+            store.addItem(makeProduct(), 2)
+            const voucher = makeVoucher({
+                discount_percent: '0',
+                discount_fixed: '1.00',
+            })
+
+            store.applyVouchers(0, [voucher])
+
+            expect(store.draft!.items[0].lineTotal).toBe(6.0)
+        })
+
         it('clamps discount to 0 when exceeds subtotal', () => {
             store.addItem(makeProduct(), 1)
             const voucher = makeVoucher({
