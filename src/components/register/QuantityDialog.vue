@@ -134,7 +134,7 @@ function handleCancel() {
 
             <div class="flex flex-col gap-4">
                 <div class="flex items-center justify-between">
-                    <span class="text-sm text-muted-foreground"
+                    <span class="text-muted-foreground text-sm"
                         >Prix unitaire</span
                     >
                     <span class="text-sm font-medium">{{
@@ -143,7 +143,7 @@ function handleCancel() {
                 </div>
 
                 <div class="flex flex-col gap-2">
-                    <label class="text-sm font-medium text-foreground"
+                    <label class="text-foreground text-sm font-medium"
                         >Quantité</label
                     >
                     <div class="flex items-center gap-2">
@@ -195,7 +195,7 @@ function handleCancel() {
                     v-if="product?.allows_custom_price"
                     class="flex flex-col gap-2"
                 >
-                    <label class="text-sm font-medium text-foreground"
+                    <label class="text-foreground text-sm font-medium"
                         >Prix personnalisé (CHF)</label
                     >
                     <Input
@@ -249,7 +249,7 @@ function handleCancel() {
                 </div>
 
                 <div class="flex items-center justify-between border-t pt-3">
-                    <span class="text-sm font-medium text-muted-foreground"
+                    <span class="text-muted-foreground text-sm font-medium"
                         >Total</span
                     >
                     <span class="text-lg font-bold"

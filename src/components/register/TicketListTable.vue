@@ -52,17 +52,17 @@ function hasVoucher(ticket: TicketResource): boolean {
             </CardHeader>
             <CardContent class="flex flex-col gap-3">
                 <div class="flex items-center justify-between">
-                    <span class="text-sm text-muted-foreground">Tickets</span>
+                    <span class="text-muted-foreground text-sm">Tickets</span>
                     <span class="font-medium">{{ ticketCount }}</span>
                 </div>
                 <div class="flex items-center justify-between">
-                    <span class="text-sm text-muted-foreground">Espèces</span>
+                    <span class="text-muted-foreground text-sm">Espèces</span>
                     <span class="font-medium"
                         >CHF {{ cashTotal.toFixed(2) }}</span
                     >
                 </div>
                 <div class="flex items-center justify-between">
-                    <span class="text-sm text-muted-foreground">Twint</span>
+                    <span class="text-muted-foreground text-sm">Twint</span>
                     <span class="font-medium"
                         >CHF {{ twintTotal.toFixed(2) }}</span
                     >
@@ -72,7 +72,7 @@ function hasVoucher(ticket: TicketResource): boolean {
 
         <div
             v-if="tickets.length === 0"
-            class="py-12 text-center text-sm text-muted-foreground"
+            class="text-muted-foreground py-12 text-center text-sm"
         >
             Aucun ticket pour cette journée
         </div>
@@ -81,19 +81,19 @@ function hasVoucher(ticket: TicketResource): boolean {
             <button
                 v-for="ticket in sortedTickets"
                 :key="ticket.id"
-                class="flex items-center gap-3 rounded-lg border px-4 py-3 text-left transition-colors hover:bg-accent"
+                class="hover:bg-accent flex items-center gap-3 rounded-lg border px-4 py-3 text-left transition-colors"
                 :class="{ 'line-through opacity-60': ticket.deleted_at }"
                 @click="emit('select', ticket)"
             >
-                <div class="flex-1 min-w-0">
+                <div class="min-w-0 flex-1">
                     <span class="block text-sm font-medium">{{
                         formatTime(ticket.sold_at)
                     }}</span>
-                    <span class="text-xs text-muted-foreground">
+                    <span class="text-muted-foreground text-xs">
                         Ticket #{{ ticket.id }}
                     </span>
                 </div>
-                <span class="text-xs text-muted-foreground">{{
+                <span class="text-muted-foreground text-xs">{{
                     formatPayment(ticket.payment_method)
                 }}</span>
                 <Tag

@@ -212,9 +212,6 @@ importers:
       '@pinia/testing':
         specifier: ^2.0.1
         version: 2.0.1(pinia@4.0.3(@vue/devtools-api@8.2.1)(typescript@6.0.3)(vue@3.5.43(typescript@6.0.3)))
-      '@trivago/prettier-plugin-sort-imports':
-        specifier: ^6.0.2
-        version: 6.0.2(@vue/compiler-sfc@3.5.43)(prettier@3.9.9)(supports-color@7.2.0)
       '@types/node':
         specifier: ^26.2.0
         version: 26.6.2
@@ -251,9 +248,12 @@ importers:
       prettier:
         specifier: ^3.9.6
         version: 3.9.9
+      prettier-plugin-organize-imports:
+        specifier: ^4.3.0
+        version: 4.3.0(prettier@3.9.9)(typescript@6.0.3)(vue-tsc@3.3.11(typescript@6.0.3))
       prettier-plugin-tailwindcss:
         specifier: ^0.8.1
-        version: 0.8.1(@trivago/prettier-plugin-sort-imports@6.0.2(@vue/compiler-sfc@3.5.43)(prettier@3.9.9)(supports-color@7.2.0))(prettier@3.9.9)
+        version: 0.8.1(@trivago/prettier-plugin-sort-imports@6.0.2(@vue/compiler-sfc@3.5.43)(prettier@3.9.9)(supports-color@7.2.0))(prettier-plugin-organize-imports@4.3.0(prettier@3.9.9)(typescript@6.0.3)(vue-tsc@3.3.11(typescript@6.0.3)))(prettier@3.9.9)
       tw-animate-css:
         specifier: ^1.4.0
         version: 1.4.0
@@ -3341,6 +3341,16 @@ packages:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
 
+  prettier-plugin-organize-imports@4.3.0:
+    resolution: {integrity: sha512-FxFz0qFhyBsGdIsb697f/EkvHzi5SZOhWAjxcx2dLt+Q532bAlhswcXGYB1yzjZ69kW8UoadFBw7TyNwlq96Iw==}
+    peerDependencies:
+      prettier: '>=2.0'
+      typescript: '>=2.9'
+      vue-tsc: ^2.1.0 || 3
+    peerDependenciesMeta:
+      vue-tsc:
+        optional: true
+
   prettier-plugin-tailwindcss@0.8.1:
     resolution: {integrity: sha512-iaFMYqDsE4ffdDkn5qup0j5f2aCEBFZrdrZnvu9QKTlWx/iGPeQ4HHu7b7fCPMxeo9nwQBiOAh2nSypdFYWJkw==}
     engines: {node: '>=20.19'}
@@ -5633,6 +5643,7 @@ snapshots:
       '@vue/compiler-sfc': 3.5.43
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   '@types/chai@5.2.3':
     dependencies:
@@ -6883,7 +6894,8 @@ snapshots:
       filelist: 1.0.6
       picocolors: 1.1.1
 
-  javascript-natural-sort@0.7.1: {}
+  javascript-natural-sort@0.7.1:
+    optional: true
 
   jiti@2.7.0: {}
 
@@ -7072,7 +7084,8 @@ snapshots:
     dependencies:
       p-locate: 6.0.0
 
-  lodash-es@4.18.1: {}
+  lodash-es@4.18.1:
+    optional: true
 
   lodash.debounce@4.0.8: {}
 
@@ -7115,6 +7128,7 @@ snapshots:
   minimatch@9.0.9:
     dependencies:
       brace-expansion: 2.1.7
+    optional: true
 
   minipass@7.1.3: {}
 
@@ -7281,10 +7295,12 @@ snapshots:
   parse-imports-exports@0.2.4:
     dependencies:
       parse-statements: 1.0.11
+    optional: true
 
   parse-ms@4.0.0: {}
 
-  parse-statements@1.0.11: {}
+  parse-statements@1.0.11:
+    optional: true
 
   parse5@8.0.1:
     dependencies:
@@ -7350,11 +7366,19 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  prettier-plugin-tailwindcss@0.8.1(@trivago/prettier-plugin-sort-imports@6.0.2(@vue/compiler-sfc@3.5.43)(prettier@3.9.9)(supports-color@7.2.0))(prettier@3.9.9):
+  prettier-plugin-organize-imports@4.3.0(prettier@3.9.9)(typescript@6.0.3)(vue-tsc@3.3.11(typescript@6.0.3)):
+    dependencies:
+      prettier: 3.9.9
+      typescript: 6.0.3
+    optionalDependencies:
+      vue-tsc: 3.3.11(typescript@6.0.3)
+
+  prettier-plugin-tailwindcss@0.8.1(@trivago/prettier-plugin-sort-imports@6.0.2(@vue/compiler-sfc@3.5.43)(prettier@3.9.9)(supports-color@7.2.0))(prettier-plugin-organize-imports@4.3.0(prettier@3.9.9)(typescript@6.0.3)(vue-tsc@3.3.11(typescript@6.0.3)))(prettier@3.9.9):
     dependencies:
       prettier: 3.9.9
     optionalDependencies:
       '@trivago/prettier-plugin-sort-imports': 6.0.2(@vue/compiler-sfc@3.5.43)(prettier@3.9.9)(supports-color@7.2.0)
+      prettier-plugin-organize-imports: 4.3.0(prettier@3.9.9)(typescript@6.0.3)(vue-tsc@3.3.11(typescript@6.0.3))
 
   prettier@3.9.9: {}
 

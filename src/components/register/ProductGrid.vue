@@ -75,7 +75,7 @@ watchEffect(() => {
             v-if="categoriesLoading || productsLoading"
             class="flex items-center justify-center py-8"
         >
-            <span class="text-sm text-muted-foreground">Chargement...</span>
+            <span class="text-muted-foreground text-sm">Chargement...</span>
         </div>
         <template v-else>
             <Tabs v-model="activeTab">

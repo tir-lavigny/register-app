@@ -114,7 +114,7 @@ function handleClear() {
                     v-if="isLoading"
                     class="flex items-center justify-center py-4"
                 >
-                    <span class="text-sm text-muted-foreground"
+                    <span class="text-muted-foreground text-sm"
                         >Chargement...</span
                     >
                 </div>
@@ -123,7 +123,7 @@ function handleClear() {
                     <div
                         v-for="voucher in vouchers"
                         :key="voucher.id"
-                        class="flex min-h-12 cursor-pointer items-center gap-3 rounded-lg px-3 py-2 transition-colors hover:bg-accent"
+                        class="hover:bg-accent flex min-h-12 cursor-pointer items-center gap-3 rounded-lg px-3 py-2 transition-colors"
                         :class="{
                             'opacity-50': isDisabled(voucher),
                             'bg-accent': isSelected(voucher),
@@ -146,19 +146,19 @@ function handleClear() {
                         <span class="flex-1 text-sm font-medium"
                             >Bon #{{ voucher.id }}</span
                         >
-                        <span class="text-xs text-muted-foreground">{{
+                        <span class="text-muted-foreground text-xs">{{
                             formatDiscount(voucher)
                         }}</span>
                     </div>
                     <div
                         v-if="vouchers.length === 0"
-                        class="py-4 text-center text-sm text-muted-foreground"
+                        class="text-muted-foreground py-4 text-center text-sm"
                     >
                         Aucun bon disponible
                     </div>
                 </div>
 
-                <p class="text-xs text-muted-foreground">
+                <p class="text-muted-foreground text-xs">
                     {{ localSelected.length }} / {{ maxSelectable }} bon(s)
                     sélectionné(s)
                 </p>

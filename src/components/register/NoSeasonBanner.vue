@@ -8,13 +8,13 @@ const seasonStore = useSeasonStore()
 
 <template>
     <div
-        class="flex min-h-screen items-center justify-center bg-background p-4"
+        class="bg-background flex min-h-screen items-center justify-center p-4"
     >
         <div
-            class="flex max-w-md flex-col items-center gap-4 rounded-lg border border-destructive/20 bg-destructive/5 p-8 text-center"
+            class="border-destructive/20 bg-destructive/5 flex max-w-md flex-col items-center gap-4 rounded-lg border p-8 text-center"
         >
-            <AlertTriangle class="size-12 text-destructive" />
-            <h1 class="text-xl font-semibold text-destructive">Erreur</h1>
+            <AlertTriangle class="text-destructive size-12" />
+            <h1 class="text-destructive text-xl font-semibold">Erreur</h1>
             <p class="text-muted-foreground">{{ seasonStore.error }}</p>
         </div>
     </div>

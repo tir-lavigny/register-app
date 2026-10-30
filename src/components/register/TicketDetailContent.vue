@@ -121,26 +121,26 @@ async function handleRefund() {
 <template>
     <div class="flex flex-col gap-4">
         <div class="flex items-center justify-between">
-            <span class="text-sm text-muted-foreground"
+            <span class="text-muted-foreground text-sm"
                 >Ticket #{{ ticket.id }}</span
             >
             <span
                 v-if="isAlreadyRefunded"
-                class="inline-flex items-center rounded-full bg-destructive/10 px-2.5 py-0.5 text-xs font-medium text-destructive"
+                class="bg-destructive/10 text-destructive inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium"
             >
                 Annulé
             </span>
         </div>
 
         <div class="flex items-center justify-between">
-            <span class="text-sm text-muted-foreground">Paiement</span>
+            <span class="text-muted-foreground text-sm">Paiement</span>
             <span class="text-sm font-medium">{{
                 formatPayment(ticket.payment_method)
             }}</span>
         </div>
 
         <div class="flex items-center justify-between">
-            <span class="text-sm text-muted-foreground">Total</span>
+            <span class="text-muted-foreground text-sm">Total</span>
             <span class="text-sm font-bold"
                 >{{ Number.parseFloat(ticket.total).toFixed(2) }} CHF</span
             >
@@ -154,11 +154,11 @@ async function handleRefund() {
                     :key="group.productId"
                     class="flex items-center justify-between"
                 >
-                    <div class="flex-1 min-w-0">
+                    <div class="min-w-0 flex-1">
                         <span class="block truncate text-sm font-medium">{{
                             group.name
                         }}</span>
-                        <span class="text-xs text-muted-foreground">
+                        <span class="text-muted-foreground text-xs">
                             {{ group.unitPrice.toFixed(2) }} CHF ×
                             {{ group.quantity }}
                             <span

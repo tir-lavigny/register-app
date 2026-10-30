@@ -81,7 +81,7 @@ const handleSubmit = async () => {
                                 required
                             />
                         </Field>
-                        <p v-if="error" class="text-sm text-destructive">
+                        <p v-if="error" class="text-destructive text-sm">
                             {{ error }}
                         </p>
                         <Field>

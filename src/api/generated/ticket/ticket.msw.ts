@@ -4,8 +4,8 @@
  * Tir Lavigny
  * OpenAPI spec version: 0.0.1
  */
-import { HttpResponse, http } from 'msw'
 import type { RequestHandlerOptions } from 'msw'
+import { HttpResponse, http } from 'msw'
 
 import type {
     RegisterTicketsPreview200,
@@ -21,10 +21,10 @@ import {
 } from './ticket.faker'
 
 export {
-    getRegisterTicketsStoreResponseMock,
     getRegisterTicketsPreviewResponseMock,
-    getRegisterTicketsShowResponseMock,
     getRegisterTicketsRefundResponseMock,
+    getRegisterTicketsShowResponseMock,
+    getRegisterTicketsStoreResponseMock,
 } from './ticket.faker'
 
 export const getRegisterTicketsStoreMockHandler = (

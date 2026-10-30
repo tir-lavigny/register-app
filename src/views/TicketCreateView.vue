@@ -133,7 +133,7 @@ function goToSummary() {
                 </AlertDialogHeader>
                 <div
                     v-if="savedDraftSummary"
-                    class="rounded-md bg-muted px-4 py-3 text-sm text-muted-foreground"
+                    class="bg-muted text-muted-foreground rounded-md px-4 py-3 text-sm"
                 >
                     {{ savedDraftSummary }}
                 </div>
@@ -177,11 +177,11 @@ function goToSummary() {
                 class="fixed bottom-6 left-1/2 z-50 min-h-14 -translate-x-1/2 px-6 shadow-lg"
                 @click="goToSummary"
             >
-                <div class="mr-2 size-5 relative">
+                <div class="relative mr-2 size-5">
                     <ShoppingCart class="size-4" />
                     <span
                         v-if="itemCount > 0"
-                        class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground"
+                        class="bg-destructive text-destructive-foreground absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-bold"
                     >
                         {{ itemCount }}
                     </span>

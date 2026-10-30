@@ -4,8 +4,8 @@
  * Tir Lavigny
  * OpenAPI spec version: 0.0.1
  */
-import { HttpResponse, http } from 'msw'
 import type { RequestHandlerOptions } from 'msw'
+import { HttpResponse, http } from 'msw'
 
 import type { Me200, TokenResource } from '../../model'
 import {
@@ -16,8 +16,8 @@ import {
 
 export {
     getLoginResponseMock,
-    getRefreshResponseMock,
     getMeResponseMock,
+    getRefreshResponseMock,
 } from './auth.faker'
 
 export const getLoginMockHandler = (

@@ -91,52 +91,52 @@ onMounted(async () => {
             <div class="grid gap-4 sm:grid-cols-3">
                 <Card
                     v-if="canCreateTicket"
-                    class="cursor-pointer transition-colors hover:bg-accent"
+                    class="hover:bg-accent cursor-pointer transition-colors"
                     @click="router.push('/register/ticket/new')"
                 >
                     <CardContent
                         class="flex flex-col items-center gap-3 p-6 text-center"
                     >
-                        <ReceiptText class="size-8 text-primary" />
+                        <ReceiptText class="text-primary size-8" />
                         <span class="text-lg font-medium">Nouveau ticket</span>
                     </CardContent>
                 </Card>
 
                 <Card
                     v-if="canViewTickets"
-                    class="cursor-pointer transition-colors hover:bg-accent"
+                    class="hover:bg-accent cursor-pointer transition-colors"
                     @click="router.push('/register/tickets')"
                 >
                     <CardContent
                         class="flex flex-col items-center gap-3 p-6 text-center"
                     >
-                        <Tickets class="size-8 text-primary" />
+                        <Tickets class="text-primary size-8" />
                         <span class="text-lg font-medium">Tickets du jour</span>
                     </CardContent>
                 </Card>
 
                 <Card
                     v-if="canViewTickets"
-                    class="cursor-pointer transition-colors hover:bg-accent"
+                    class="hover:bg-accent cursor-pointer transition-colors"
                     @click="router.push('/register/stock-losses')"
                 >
                     <CardContent
                         class="flex flex-col items-center gap-3 p-6 text-center"
                     >
-                        <PackageX class="size-8 text-primary" />
+                        <PackageX class="text-primary size-8" />
                         <span class="text-lg font-medium">Pertes de stock</span>
                     </CardContent>
                 </Card>
 
                 <Card
                     v-if="dayStore.isOpen && canCloseDay"
-                    class="cursor-pointer transition-colors hover:bg-destructive/10"
+                    class="hover:bg-destructive/10 cursor-pointer transition-colors"
                     @click="showCloseDialog = true"
                 >
                     <CardContent
                         class="flex flex-col items-center gap-3 p-6 text-center"
                     >
-                        <XCircle class="size-8 text-destructive" />
+                        <XCircle class="text-destructive size-8" />
                         <span class="text-lg font-medium"
                             >Fermer la journée</span
                         >

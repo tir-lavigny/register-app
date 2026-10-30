@@ -65,7 +65,7 @@ onMounted(async () => {
                 </h1>
             </div>
 
-            <p class="text-sm text-muted-foreground">
+            <p class="text-muted-foreground text-sm">
                 Sélectionnez un produit à déclarer en perte.
             </p>
 
@@ -87,7 +87,7 @@ onMounted(async () => {
 
                 <div class="flex flex-col gap-4">
                     <div class="flex flex-col gap-2">
-                        <label class="text-sm font-medium text-foreground"
+                        <label class="text-foreground text-sm font-medium"
                             >Quantité</label
                         >
                         <Input
@@ -138,7 +138,7 @@ onMounted(async () => {
                         <textarea
                             v-model="reason"
                             rows="3"
-                            class="rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            class="bg-background placeholder:text-muted-foreground focus-visible:ring-ring rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:outline-none"
                             placeholder="Ex: produit cassé, périmé..."
                         />
                     </div>

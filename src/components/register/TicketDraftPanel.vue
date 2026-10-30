@@ -66,7 +66,7 @@ const emit = defineEmits<{
                 v-if="items.length === 0"
                 class="flex items-center justify-center py-8"
             >
-                <span class="text-sm text-muted-foreground">Aucun article</span>
+                <span class="text-muted-foreground text-sm">Aucun article</span>
             </div>
             <div v-else class="flex flex-col gap-2">
                 <TicketDraftItemRow
@@ -82,7 +82,7 @@ const emit = defineEmits<{
 
             <div class="border-t pt-3">
                 <div class="flex items-center justify-between">
-                    <span class="text-sm font-medium text-muted-foreground"
+                    <span class="text-muted-foreground text-sm font-medium"
                         >Total</span
                     >
                     <span class="text-lg font-bold"

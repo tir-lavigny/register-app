@@ -34,10 +34,10 @@ onUnmounted(() => {
         <div
             class="flex flex-col items-center justify-center gap-4 p-8 text-center"
         >
-            <WifiOff class="size-12 text-muted-foreground" />
+            <WifiOff class="text-muted-foreground size-12" />
             <div>
                 <h1 class="text-xl font-semibold">Pas de connexion internet</h1>
-                <p class="mt-1 text-sm text-muted-foreground">
+                <p class="text-muted-foreground mt-1 text-sm">
                     Vérifiez votre connexion et réessayez.
                 </p>
             </div>
