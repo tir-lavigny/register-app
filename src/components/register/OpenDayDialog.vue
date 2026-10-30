@@ -63,10 +63,10 @@ async function handleConfirm() {
                 </DialogDescription>
             </DialogHeader>
             <template v-if="error">
-                <p class="text-sm text-destructive">{{ error }}</p>
+                <p class="text-destructive text-sm">{{ error }}</p>
                 <p
                     v-if="dayStore.previousUnclosedDay"
-                    class="text-sm text-muted-foreground"
+                    class="text-muted-foreground text-sm"
                 >
                     Journée du
                     <strong>{{

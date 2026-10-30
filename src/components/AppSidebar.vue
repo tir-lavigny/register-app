@@ -61,7 +61,7 @@ const handleCacheClear = async () => {
                     <SidebarMenuButton size="lg" as-child>
                         <RouterLink to="/">
                             <div
-                                class="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground"
+                                class="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg"
                             >
                                 <AppLogoIcon class="size-4" />
                             </div>

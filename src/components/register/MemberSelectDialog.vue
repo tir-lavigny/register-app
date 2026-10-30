@@ -70,7 +70,7 @@ function handleClear() {
                     v-if="isLoading"
                     class="flex items-center justify-center py-4"
                 >
-                    <span class="text-sm text-muted-foreground"
+                    <span class="text-muted-foreground text-sm"
                         >Chargement...</span
                     >
                 </div>
@@ -79,7 +79,7 @@ function handleClear() {
                     <div
                         v-for="member in filteredMembers"
                         :key="member.id"
-                        class="flex min-h-12 cursor-pointer items-center rounded-lg px-3 py-2 transition-colors hover:bg-accent"
+                        class="hover:bg-accent flex min-h-12 cursor-pointer items-center rounded-lg px-3 py-2 transition-colors"
                         @click="handleSelect(member)"
                     >
                         <span class="text-sm font-medium"
@@ -89,7 +89,7 @@ function handleClear() {
                     </div>
                     <div
                         v-if="filteredMembers.length === 0"
-                        class="py-4 text-center text-sm text-muted-foreground"
+                        class="text-muted-foreground py-4 text-center text-sm"
                     >
                         Aucun membre trouvé
                     </div>

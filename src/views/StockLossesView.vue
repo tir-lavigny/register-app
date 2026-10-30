@@ -28,7 +28,7 @@ const { losses, totalQuantity, isLoading, canRecordLoss } = useStockLosses()
                     v-if="canRecordLoss"
                     @click="router.push('/register/stock-losses/new')"
                 >
-                    <Plus class="size-4 mr-1" />
+                    <Plus class="mr-1 size-4" />
                     Nouvelle perte
                 </Button>
             </div>
@@ -39,13 +39,13 @@ const { losses, totalQuantity, isLoading, canRecordLoss } = useStockLosses()
                 </CardHeader>
                 <CardContent class="flex flex-col gap-3">
                     <div class="flex items-center justify-between">
-                        <span class="text-sm text-muted-foreground"
+                        <span class="text-muted-foreground text-sm"
                             >Produits perdus</span
                         >
                         <span class="font-medium">{{ losses.length }}</span>
                     </div>
                     <div class="flex items-center justify-between">
-                        <span class="text-sm text-muted-foreground"
+                        <span class="text-muted-foreground text-sm"
                             >Quantité totale</span
                         >
                         <span class="font-medium">{{ totalQuantity }}</span>
@@ -55,14 +55,14 @@ const { losses, totalQuantity, isLoading, canRecordLoss } = useStockLosses()
 
             <div
                 v-if="isLoading"
-                class="py-12 text-center text-sm text-muted-foreground"
+                class="text-muted-foreground py-12 text-center text-sm"
             >
                 Chargement…
             </div>
 
             <div
                 v-else-if="losses.length === 0"
-                class="flex flex-col items-center gap-3 py-12 text-center text-sm text-muted-foreground"
+                class="text-muted-foreground flex flex-col items-center gap-3 py-12 text-center text-sm"
             >
                 <PackageX class="size-10" />
                 <span>Aucune perte de stock pour cette journée</span>
@@ -78,11 +78,11 @@ const { losses, totalQuantity, isLoading, canRecordLoss } = useStockLosses()
                         <span class="block text-sm font-medium">{{
                             loss.product.name
                         }}</span>
-                        <span class="text-xs text-muted-foreground">
+                        <span class="text-muted-foreground text-xs">
                             {{ loss.stockLocation.name }}
                         </span>
                     </div>
-                    <span class="text-xs text-muted-foreground">{{
+                    <span class="text-muted-foreground text-xs">{{
                         formatDateTime(loss.created_at)
                     }}</span>
                     <span class="min-w-12 text-right text-sm font-medium">

@@ -56,14 +56,14 @@ const previousUnclosedDate = computed(() =>
     <div class="flex flex-col gap-4">
         <div
             v-if="dayStore.hasPreviousUnclosedDay"
-            class="flex items-start gap-3 rounded-lg border border-warning/30 bg-warning/10 p-4"
+            class="border-warning/30 bg-warning/10 flex items-start gap-3 rounded-lg border p-4"
         >
-            <AlertTriangle class="mt-0.5 size-5 shrink-0 text-warning" />
+            <AlertTriangle class="text-warning mt-0.5 size-5 shrink-0" />
             <div class="flex flex-col gap-2">
-                <p class="text-sm font-medium text-warning-foreground">
+                <p class="text-warning-foreground text-sm font-medium">
                     Journée non cloturée
                 </p>
-                <p class="text-sm text-muted-foreground">
+                <p class="text-muted-foreground text-sm">
                     Une journée du
                     <strong>{{ previousUnclosedDate }}</strong> est encore
                     ouverte. Vous devez la cloturer avant d'en ouvrir une
@@ -93,13 +93,13 @@ const previousUnclosedDate = computed(() =>
                     </span>
                     <span
                         v-else-if="dayStore.currentDay"
-                        class="inline-flex items-center rounded-full bg-destructive/10 px-2.5 py-0.5 text-xs font-medium text-destructive"
+                        class="bg-destructive/10 text-destructive inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium"
                     >
                         FERMÉ
                     </span>
                     <span
                         v-else
-                        class="text-sm font-normal text-muted-foreground"
+                        class="text-muted-foreground text-sm font-normal"
                     >
                         Aucune journée active
                     </span>
@@ -107,26 +107,26 @@ const previousUnclosedDate = computed(() =>
             </CardHeader>
             <CardContent class="flex flex-col gap-4">
                 <div v-if="dayStore.currentDay" class="flex flex-col gap-1">
-                    <p class="text-sm text-muted-foreground">
+                    <p class="text-muted-foreground text-sm">
                         {{ dayDate }}
                     </p>
                     <p
                         v-if="dayStore.isOpen"
-                        class="text-sm text-muted-foreground"
+                        class="text-muted-foreground text-sm"
                     >
                         Ouvert à
                         {{ formatTime(dayStore.currentDay.started_at) }}
                     </p>
                     <p
                         v-else-if="dayStore.currentDay.closed_at"
-                        class="text-sm text-muted-foreground"
+                        class="text-muted-foreground text-sm"
                     >
                         Fermé à
                         {{ formatTime(dayStore.currentDay.closed_at) }}
                     </p>
                     <div
                         v-if="dayStore.currentDay"
-                        class="mt-1 flex gap-4 text-sm text-muted-foreground"
+                        class="text-muted-foreground mt-1 flex gap-4 text-sm"
                     >
                         <span>{{ dayStore.activeTickets.length }} tickets</span>
                         <span>CHF {{ dayStore.cashTotal.toFixed(2) }}</span>

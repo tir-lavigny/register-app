@@ -167,7 +167,7 @@ function handleHandoffDone() {
                                 class="flex flex-col gap-1"
                             >
                                 <span
-                                    class="text-xs font-medium text-muted-foreground uppercase tracking-wide"
+                                    class="text-muted-foreground text-xs font-medium tracking-wide uppercase"
                                 >
                                     {{ item.productName }}
                                 </span>

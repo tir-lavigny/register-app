@@ -2,8 +2,10 @@ import { HttpResponse, http } from 'msw'
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it } from 'vitest'
 
-import { getRegisterTicketsPreviewMockHandler } from '@/api/generated/ticket/ticket.msw'
-import { getRegisterTicketsStoreMockHandler } from '@/api/generated/ticket/ticket.msw'
+import {
+    getRegisterTicketsPreviewMockHandler,
+    getRegisterTicketsStoreMockHandler,
+} from '@/api/generated/ticket/ticket.msw'
 import type { ProductResource } from '@/api/model'
 import { useStockLocationStore } from '@/stores/stock-location'
 import { useTicketStore } from '@/stores/ticket'

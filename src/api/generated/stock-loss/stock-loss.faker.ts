@@ -6,8 +6,8 @@
  */
 import { faker } from '@faker-js/faker'
 
-import { StockMovementType } from '../../model'
 import type { StockLossesIndex200, StockLossesStore201 } from '../../model'
+import { StockMovementType } from '../../model'
 
 export const getStockLossesIndexResponseMock = (): StockLossesIndex200 =>
     faker.helpers.arrayElement([

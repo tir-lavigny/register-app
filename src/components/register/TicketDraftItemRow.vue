@@ -32,15 +32,15 @@ function decrementQty(index: number, qty: number) {
 
 <template>
     <div
-        class="flex flex-col sm:flex-row items-center gap-3 rounded-lg border px-3 py-2"
+        class="flex flex-col items-center gap-3 rounded-lg border px-3 py-2 sm:flex-row"
     >
         <div
-            class="flex-1 sm:justify-items-normal justify-items-center min-w-0"
+            class="min-w-0 flex-1 justify-items-center sm:justify-items-normal"
         >
-            <span class="block truncate text-sm font-medium text-foreground">{{
+            <span class="text-foreground block truncate text-sm font-medium">{{
                 item.productName
             }}</span>
-            <span class="text-xs text-muted-foreground">
+            <span class="text-muted-foreground text-xs">
                 {{ item.effectivePrice.toFixed(2) }} CHF
                 <span v-if="saved > 0" class="text-green-600">
                     (-{{ saved.toFixed(2) }} CHF)
@@ -53,7 +53,7 @@ function decrementQty(index: number, qty: number) {
                 </span>
             </span>
         </div>
-        <div class="flex flex-col sm:flex-row items-center gap-2">
+        <div class="flex flex-col items-center gap-2 sm:flex-row">
             <div class="flex items-center gap-1">
                 <Button
                     variant="outline"
@@ -88,7 +88,7 @@ function decrementQty(index: number, qty: number) {
                         v-if="item.voucherIds.length"
                         class="size-4 text-green-600"
                     />
-                    <Tag v-else class="size-4 text-muted-foreground" />
+                    <Tag v-else class="text-muted-foreground size-4" />
                 </Button>
                 <Button
                     variant="ghost"

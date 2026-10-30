@@ -151,7 +151,7 @@ function goToPayment() {
                         <CardContent class="flex flex-col gap-2">
                             <div
                                 v-if="items.length === 0"
-                                class="py-8 text-center text-sm text-muted-foreground"
+                                class="text-muted-foreground py-8 text-center text-sm"
                             >
                                 Aucun article
                             </div>
@@ -167,7 +167,7 @@ function goToPayment() {
                                 />
                                 <p
                                     v-if="ticketStore.previewError"
-                                    class="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive"
+                                    class="bg-destructive/10 text-destructive rounded-md px-3 py-2 text-sm"
                                 >
                                     {{ ticketStore.previewError }}
                                 </p>
@@ -184,7 +184,7 @@ function goToPayment() {
                         <CardContent class="flex flex-col gap-2">
                             <div
                                 v-if="items.length === 0"
-                                class="py-4 text-center text-sm text-muted-foreground"
+                                class="text-muted-foreground py-4 text-center text-sm"
                             >
                                 Aucun article
                             </div>
@@ -215,7 +215,7 @@ function goToPayment() {
                                     </button>
                                     <span
                                         v-else
-                                        class="block px-3 py-2 text-sm text-muted-foreground"
+                                        class="text-muted-foreground block px-3 py-2 text-sm"
                                     >
                                         Aucun bon pour {{ item.productName }}
                                     </span>
@@ -227,7 +227,7 @@ function goToPayment() {
                     <Card>
                         <CardContent class="flex flex-col gap-3 pt-6">
                             <div class="flex items-center justify-between">
-                                <span class="text-sm text-muted-foreground"
+                                <span class="text-muted-foreground text-sm"
                                     >Total</span
                                 >
                                 <span class="text-lg font-bold">
@@ -237,7 +237,7 @@ function goToPayment() {
 
                             <p
                                 v-if="ticketStore.previewError"
-                                class="text-sm text-destructive"
+                                class="text-destructive text-sm"
                             >
                                 {{ ticketStore.previewError }}
                             </p>
@@ -245,7 +245,7 @@ function goToPayment() {
                             <div
                                 class="flex items-center justify-between border-t pt-3"
                             >
-                                <span class="text-sm text-muted-foreground">
+                                <span class="text-muted-foreground text-sm">
                                     Membre: {{ memberName ?? 'Aucun' }}
                                 </span>
                                 <Button

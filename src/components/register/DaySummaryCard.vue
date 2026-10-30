@@ -15,15 +15,15 @@ defineProps<{
         </CardHeader>
         <CardContent class="flex flex-col gap-3">
             <div class="flex items-center justify-between">
-                <span class="text-sm text-muted-foreground">Tickets</span>
+                <span class="text-muted-foreground text-sm">Tickets</span>
                 <span class="font-medium">{{ ticketCount }}</span>
             </div>
             <div class="flex items-center justify-between">
-                <span class="text-sm text-muted-foreground">Espèces</span>
+                <span class="text-muted-foreground text-sm">Espèces</span>
                 <span class="font-medium">CHF {{ cashTotal.toFixed(2) }}</span>
             </div>
             <div class="flex items-center justify-between">
-                <span class="text-sm text-muted-foreground">Twint</span>
+                <span class="text-muted-foreground text-sm">Twint</span>
                 <span class="font-medium">CHF {{ twintTotal.toFixed(2) }}</span>
             </div>
         </CardContent>

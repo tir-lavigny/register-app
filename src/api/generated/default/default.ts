@@ -4,7 +4,6 @@
  * Tir Lavigny
  * OpenAPI spec version: 0.0.1
  */
-import { useQuery } from '@tanstack/vue-query'
 import type {
     DataTag,
     QueryClient,
@@ -13,6 +12,7 @@ import type {
     UseQueryOptions,
     UseQueryReturnType,
 } from '@tanstack/vue-query'
+import { useQuery } from '@tanstack/vue-query'
 import { unref } from 'vue'
 
 import type { HealthCheckApi200, HealthCheckApi503 } from '../../model'

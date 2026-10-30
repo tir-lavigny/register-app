@@ -4,7 +4,6 @@
  * Tir Lavigny
  * OpenAPI spec version: 0.0.1
  */
-import { useMutation, useQuery } from '@tanstack/vue-query'
 import type {
     DataTag,
     MutationFunction,
@@ -16,8 +15,9 @@ import type {
     UseQueryOptions,
     UseQueryReturnType,
 } from '@tanstack/vue-query'
-import { computed, toValue, unref } from 'vue'
+import { useMutation, useQuery } from '@tanstack/vue-query'
 import type { MaybeRefOrGetter } from 'vue'
+import { computed, toValue, unref } from 'vue'
 
 import type {
     AuthenticationExceptionResponse,

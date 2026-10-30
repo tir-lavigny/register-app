@@ -92,7 +92,7 @@ async function handleConfirm() {
             <div class="flex flex-col gap-3">
                 <div
                     v-if="parsedClosingBalance !== null"
-                    class="flex items-center justify-between rounded-md bg-muted px-3 py-2"
+                    class="bg-muted flex items-center justify-between rounded-md px-3 py-2"
                 >
                     <span class="text-sm font-medium"
                         >Solde de fermeture attendu</span
@@ -101,19 +101,19 @@ async function handleConfirm() {
                         >CHF {{ parsedClosingBalance.toFixed(2) }}</span
                     >
                 </div>
-                <div class="h-px bg-border" />
+                <div class="bg-border h-px" />
                 <div class="flex items-center justify-between">
-                    <span class="text-sm text-muted-foreground">Tickets</span>
+                    <span class="text-muted-foreground text-sm">Tickets</span>
                     <span class="font-medium">{{ props.ticketCount }}</span>
                 </div>
                 <div class="flex items-center justify-between">
-                    <span class="text-sm text-muted-foreground">Espèces</span>
+                    <span class="text-muted-foreground text-sm">Espèces</span>
                     <span class="font-medium"
                         >CHF {{ props.cashTotal.toFixed(2) }}</span
                     >
                 </div>
                 <div class="flex items-center justify-between">
-                    <span class="text-sm text-muted-foreground">Twint</span>
+                    <span class="text-muted-foreground text-sm">Twint</span>
                     <span class="font-medium"
                         >CHF {{ props.twintTotal.toFixed(2) }}</span
                     >
@@ -126,7 +126,7 @@ async function handleConfirm() {
                         id="cash-remark"
                         v-model="remark"
                         rows="3"
-                        class="rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        class="bg-background placeholder:text-muted-foreground focus-visible:ring-ring rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:outline-none"
                         placeholder="Ex: différence de caisse..."
                     />
                 </div>

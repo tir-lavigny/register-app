@@ -4,8 +4,8 @@
  * Tir Lavigny
  * OpenAPI spec version: 0.0.1
  */
-import { HttpResponse, http } from 'msw'
 import type { RequestHandlerOptions } from 'msw'
+import { HttpResponse, http } from 'msw'
 
 import type { RegisterCategoriesIndex200 } from '../../model'
 import { getRegisterCategoriesIndexResponseMock } from './category.faker'
