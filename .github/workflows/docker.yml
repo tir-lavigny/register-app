@@ -47,17 +47,22 @@ jobs:
               run: |
                   VERSION="${{ inputs.version || github.ref_name }}"
                   SHORT_SHA=$(git rev-parse --short=7 HEAD)
-                  echo "version=$VERSION" >> "$GITHUB_OUTPUT"
                   if [[ "$VERSION" == *"-dev"* ]]; then
-                    echo "app_env=staging" >> "$GITHUB_OUTPUT"
-                    echo "api_url=${{ secrets.STAGING_VITE_API_BASE_URL }}" >> "$GITHUB_OUTPUT"
-                    echo "deploy_cmd=tir-lavigny-deploy-staging" >> "$GITHUB_OUTPUT"
-                    echo "sha_tag=${SHORT_SHA}-stg" >> "$GITHUB_OUTPUT"
+                    {
+                      echo "version=$VERSION"
+                      echo "app_env=staging"
+                      echo "api_url=${{ secrets.STAGING_VITE_API_BASE_URL }}"
+                      echo "deploy_cmd=tir-lavigny-deploy-staging"
+                      echo "sha_tag=${SHORT_SHA}-stg"
+                    } >> "$GITHUB_OUTPUT"
                   else
-                    echo "app_env=production" >> "$GITHUB_OUTPUT"
-                    echo "api_url=${{ secrets.VITE_API_BASE_URL }}" >> "$GITHUB_OUTPUT"
-                    echo "deploy_cmd=tir-lavigny-deploy-production" >> "$GITHUB_OUTPUT"
-                    echo "sha_tag=${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+                    {
+                      echo "version=$VERSION"
+                      echo "app_env=production"
+                      echo "api_url=${{ secrets.VITE_API_BASE_URL }}"
+                      echo "deploy_cmd=tir-lavigny-deploy-production"
+                      echo "sha_tag=${SHORT_SHA}"
+                    } >> "$GITHUB_OUTPUT"
                   fi
 
             - name: Log in to GHCR
