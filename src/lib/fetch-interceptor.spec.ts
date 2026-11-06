@@ -171,6 +171,26 @@ describe('fetch interceptor retry', () => {
         expect(secondHeaders.get('Authorization')).toBe('Bearer tok')
     })
 
+    it('sends credentials on login so the refresh cookie is stored', async () => {
+        mockFetch.mockResolvedValueOnce(new Response(null, { status: 200 }))
+
+        const fetch = await loadInterceptor()
+        await fetch('/api/auth/login', { method: 'POST' })
+
+        const init = mockFetch.mock.calls[0][1] as RequestInit
+        expect(init.credentials).toBe('include')
+    })
+
+    it('sends credentials on regular API requests', async () => {
+        mockFetch.mockResolvedValueOnce(new Response('ok', { status: 200 }))
+
+        const fetch = await loadInterceptor()
+        await fetch('/api/products')
+
+        const init = mockFetch.mock.calls[0][1] as RequestInit
+        expect(init.credentials).toBe('include')
+    })
+
     it('keeps 401 refresh flow separate from backoff', async () => {
         localStorage.setItem('auth_token', 'old')
         mockFetch
@@ -192,10 +212,14 @@ describe('fetch interceptor retry', () => {
 
         const refreshCall = mockFetch.mock.calls[1]
         expect(String(refreshCall[0])).toContain('/auth/refresh-token')
+        expect((refreshCall[1] as RequestInit).credentials).toBe('include')
 
         const finalHeaders = new Headers(
             (mockFetch.mock.calls[2][1] as RequestInit).headers
         )
         expect(finalHeaders.get('Authorization')).toBe('Bearer new')
+        expect((mockFetch.mock.calls[2][1] as RequestInit).credentials).toBe(
+            'include'
+        )
     })
 })
