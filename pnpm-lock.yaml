@@ -173,8 +173,8 @@ importers:
         specifier: ^4.3.3
         version: 4.3.3(vite@8.3.1(@types/node@26.6.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
       '@tanstack/vue-query':
-        specifier: ^5.102.8
-        version: 5.103.2(vue@3.5.43(typescript@6.0.3))
+        specifier: 5.104.0
+        version: 5.104.0(vue@3.5.43(typescript@6.0.3))
       '@vueuse/core':
         specifier: ^14.4.0
         version: 14.4.0(vue@3.5.43(typescript@6.0.3))
@@ -244,7 +244,7 @@ importers:
         version: 2.15.0(@types/node@26.6.2)(typescript@6.0.3)
       orval:
         specifier: ^8.27.0
-        version: 8.37.0(@faker-js/faker@10.6.0)(@tanstack/vue-query@5.103.2(vue@3.5.43(typescript@6.0.3)))(msw@2.15.0(@types/node@26.6.2)(typescript@6.0.3))(prettier@3.9.9)(typescript@6.0.3)(zod@4.6.5)
+        version: 8.37.0(@faker-js/faker@10.6.0)(@tanstack/vue-query@5.104.0(vue@3.5.43(typescript@6.0.3)))(msw@2.15.0(@types/node@26.6.2)(typescript@6.0.3))(prettier@3.9.9)(typescript@6.0.3)(zod@4.6.5)
       prettier:
         specifier: ^3.9.6
         version: 3.9.9
@@ -1734,18 +1734,18 @@ packages:
     peerDependencies:
       vite: ^5.2.0 || ^6 || ^7 || ^8
 
-  '@tanstack/match-sorter-utils@8.19.4':
-    resolution: {integrity: sha512-Wo1iKt2b9OT7d+YGhvEPD3DXvPv2etTusIMhMUoG7fbhmxcXCtIjJDEygy91Y2JFlwGyjqiBPRozme7UD8hoqg==}
-    engines: {node: '>=12'}
+  '@tanstack/match-sorter-utils@9.2.6':
+    resolution: {integrity: sha512-DIpUSOhPfQ7u/qfUi/Wgm0wBO56MyBYXGvnlI0NcauDRPqdBUlAZZjW2Dxm92m+k1UWVhKw8YJ4f47+75Aujyw==}
+    engines: {node: '>=20'}
 
-  '@tanstack/query-core@5.103.2':
-    resolution: {integrity: sha512-I8DkFXls5jXLqtm8+QpOhEmG07hIblhSZFzafg9wHsMSEvMzULy9hK17wU1T/ahfhMbtITJhbxutwwCoihkR7A==}
+  '@tanstack/query-core@5.104.0':
+    resolution: {integrity: sha512-JrC2r/JQlXt7khBSdUpsgxNvybzOg+aITa+ARRMlP2AFo93Y8vIqz077rp+e61mJetSZ0T6AJbwW1JHer1vrPQ==}
 
   '@tanstack/virtual-core@3.17.11':
     resolution: {integrity: sha512-+ILjvtHup6Y2hzQ6YzwMgX1Q+oQpxEGOXCEsCNaPoIP0VxMbizIBTmYTDtkerkIQS8/CbP1BRuyt8V/8BCsy1g==}
 
-  '@tanstack/vue-query@5.103.2':
-    resolution: {integrity: sha512-bFl/qIhMjJp0r5gHZu261PLzZ/fFP1tysq0RPXVfmcJo2yuwh0XbB/pbRAfytB2xKLP63ZRwfwOv22V3IP+tow==}
+  '@tanstack/vue-query@5.104.0':
+    resolution: {integrity: sha512-Nxqsl0YsXrHZQAq9rNQWvVR+elPENBg+YXkQHnuDn7/YM48vts4aaKZYBkRzaU24ckEGLxC13o3GiM3kYUKfdw==}
     peerDependencies:
       '@vue/composition-api': ^1.1.2
       vue: ^2.6.0 || ^3.3.0
@@ -5257,13 +5257,13 @@ snapshots:
     transitivePeerDependencies:
       - '@faker-js/faker'
 
-  '@orval/query@8.37.0(@faker-js/faker@10.6.0)(@tanstack/vue-query@5.103.2(vue@3.5.43(typescript@6.0.3)))':
+  '@orval/query@8.37.0(@faker-js/faker@10.6.0)(@tanstack/vue-query@5.104.0(vue@3.5.43(typescript@6.0.3)))':
     dependencies:
       '@orval/core': 8.37.0(@faker-js/faker@10.6.0)
       '@orval/fetch': 8.37.0(@faker-js/faker@10.6.0)
       remeda: 2.50.0
     optionalDependencies:
-      '@tanstack/vue-query': 5.103.2(vue@3.5.43(typescript@6.0.3))
+      '@tanstack/vue-query': 5.104.0(vue@3.5.43(typescript@6.0.3))
     transitivePeerDependencies:
       - '@faker-js/faker'
 
@@ -5600,18 +5600,18 @@ snapshots:
       tailwindcss: 4.3.3
       vite: 8.3.1(@types/node@26.6.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1)
 
-  '@tanstack/match-sorter-utils@8.19.4':
+  '@tanstack/match-sorter-utils@9.2.6':
     dependencies:
       remove-accents: 0.5.0
 
-  '@tanstack/query-core@5.103.2': {}
+  '@tanstack/query-core@5.104.0': {}
 
   '@tanstack/virtual-core@3.17.11': {}
 
-  '@tanstack/vue-query@5.103.2(vue@3.5.43(typescript@6.0.3))':
+  '@tanstack/vue-query@5.104.0(vue@3.5.43(typescript@6.0.3))':
     dependencies:
-      '@tanstack/match-sorter-utils': 8.19.4
-      '@tanstack/query-core': 5.103.2
+      '@tanstack/match-sorter-utils': 9.2.6
+      '@tanstack/query-core': 5.104.0
       '@vue/devtools-api': 6.6.4
       vue: 3.5.43(typescript@6.0.3)
       vue-demi: 0.14.10(vue@3.5.43(typescript@6.0.3))
@@ -7219,7 +7219,7 @@ snapshots:
       type-check: 0.4.0
       word-wrap: 1.2.5
 
-  orval@8.37.0(@faker-js/faker@10.6.0)(@tanstack/vue-query@5.103.2(vue@3.5.43(typescript@6.0.3)))(msw@2.15.0(@types/node@26.6.2)(typescript@6.0.3))(prettier@3.9.9)(typescript@6.0.3)(zod@4.6.5):
+  orval@8.37.0(@faker-js/faker@10.6.0)(@tanstack/vue-query@5.104.0(vue@3.5.43(typescript@6.0.3)))(msw@2.15.0(@types/node@26.6.2)(typescript@6.0.3))(prettier@3.9.9)(typescript@6.0.3)(zod@4.6.5):
     dependencies:
       '@commander-js/extra-typings': 15.0.0(commander@15.0.0)
       '@orval/angular': 8.37.0(@faker-js/faker@10.6.0)
@@ -7231,7 +7231,7 @@ snapshots:
       '@orval/mcp': 8.37.0(@faker-js/faker@10.6.0)(zod@4.6.5)
       '@orval/mock': 8.37.0(@faker-js/faker@10.6.0)(msw@2.15.0(@types/node@26.6.2)(typescript@6.0.3))
       '@orval/pinia-colada': 8.37.0(@faker-js/faker@10.6.0)
-      '@orval/query': 8.37.0(@faker-js/faker@10.6.0)(@tanstack/vue-query@5.103.2(vue@3.5.43(typescript@6.0.3)))
+      '@orval/query': 8.37.0(@faker-js/faker@10.6.0)(@tanstack/vue-query@5.104.0(vue@3.5.43(typescript@6.0.3)))
       '@orval/solid-start': 8.37.0(@faker-js/faker@10.6.0)
       '@orval/swr': 8.37.0(@faker-js/faker@10.6.0)
       '@orval/zod': 8.37.0(@faker-js/faker@10.6.0)(zod@4.6.5)
