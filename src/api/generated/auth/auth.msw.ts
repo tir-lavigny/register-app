@@ -4,10 +4,15 @@
  * Tir Lavigny
  * OpenAPI spec version: 0.0.1
  */
-import type { RequestHandlerOptions } from 'msw'
+import type {
+    HttpResponseResolver,
+    PathParams,
+    RequestHandlerOptions,
+} from 'msw'
 import { HttpResponse, http } from 'msw'
 
-import type { Me200, TokenResource } from '../../model'
+import type { LoginRequest, Me200, TokenResource } from '../../model'
+
 import {
     getLoginResponseMock,
     getMeResponseMock,
@@ -24,13 +29,17 @@ export const getLoginMockHandler = (
     overrideResponse?:
         | TokenResource
         | ((
-              info: Parameters<Parameters<typeof http.post>[1]>[0]
+              info: Parameters<
+                  HttpResponseResolver<PathParams, LoginRequest>
+              >[0]
           ) => Promise<TokenResource> | TokenResource),
     options?: RequestHandlerOptions
 ) => {
-    return http.post(
+    return http.post<PathParams, LoginRequest>(
         '*/auth/login',
-        async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
+        async (
+            info: Parameters<HttpResponseResolver<PathParams, LoginRequest>>[0]
+        ) => {
             return HttpResponse.json(
                 overrideResponse !== undefined
                     ? typeof overrideResponse === 'function'
@@ -48,13 +57,13 @@ export const getRefreshMockHandler = (
     overrideResponse?:
         | TokenResource
         | ((
-              info: Parameters<Parameters<typeof http.post>[1]>[0]
+              info: Parameters<HttpResponseResolver>[0]
           ) => Promise<TokenResource> | TokenResource),
     options?: RequestHandlerOptions
 ) => {
     return http.post(
         '*/auth/refresh-token',
-        async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
+        async (info: Parameters<HttpResponseResolver>[0]) => {
             return HttpResponse.json(
                 overrideResponse !== undefined
                     ? typeof overrideResponse === 'function'
@@ -72,13 +81,13 @@ export const getMeMockHandler = (
     overrideResponse?:
         | Me200
         | ((
-              info: Parameters<Parameters<typeof http.get>[1]>[0]
+              info: Parameters<HttpResponseResolver>[0]
           ) => Promise<Me200> | Me200),
     options?: RequestHandlerOptions
 ) => {
     return http.get(
         '*/auth/me',
-        async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+        async (info: Parameters<HttpResponseResolver>[0]) => {
             return HttpResponse.json(
                 overrideResponse !== undefined
                     ? typeof overrideResponse === 'function'
@@ -95,14 +104,12 @@ export const getMeMockHandler = (
 export const getLogoutMockHandler = (
     overrideResponse?:
         | void
-        | ((
-              info: Parameters<Parameters<typeof http.post>[1]>[0]
-          ) => Promise<void> | void),
+        | ((info: Parameters<HttpResponseResolver>[0]) => Promise<void> | void),
     options?: RequestHandlerOptions
 ) => {
     return http.post(
         '*/auth/logout',
-        async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
+        async (info: Parameters<HttpResponseResolver>[0]) => {
             if (typeof overrideResponse === 'function') {
                 await overrideResponse(info)
             }

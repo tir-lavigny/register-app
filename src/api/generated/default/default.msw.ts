@@ -4,10 +4,11 @@
  * Tir Lavigny
  * OpenAPI spec version: 0.0.1
  */
-import type { RequestHandlerOptions } from 'msw'
+import type { HttpResponseResolver, RequestHandlerOptions } from 'msw'
 import { HttpResponse, http } from 'msw'
 
 import type { HealthCheckApi200 } from '../../model'
+
 import { getHealthCheckApiResponseMock } from './default.faker'
 
 export { getHealthCheckApiResponseMock } from './default.faker'
@@ -16,13 +17,13 @@ export const getHealthCheckApiMockHandler = (
     overrideResponse?:
         | HealthCheckApi200
         | ((
-              info: Parameters<Parameters<typeof http.get>[1]>[0]
+              info: Parameters<HttpResponseResolver>[0]
           ) => Promise<HealthCheckApi200> | HealthCheckApi200),
     options?: RequestHandlerOptions
 ) => {
     return http.get(
         '*/health',
-        async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+        async (info: Parameters<HttpResponseResolver>[0]) => {
             return HttpResponse.json(
                 overrideResponse !== undefined
                     ? typeof overrideResponse === 'function'

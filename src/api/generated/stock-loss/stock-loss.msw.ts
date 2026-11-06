@@ -4,10 +4,19 @@
  * Tir Lavigny
  * OpenAPI spec version: 0.0.1
  */
-import type { RequestHandlerOptions } from 'msw'
+import type {
+    HttpResponseResolver,
+    PathParams,
+    RequestHandlerOptions,
+} from 'msw'
 import { HttpResponse, http } from 'msw'
 
-import type { StockLossesIndex200, StockLossesStore201 } from '../../model'
+import type {
+    StockLossesIndex200,
+    StockLossesStore201,
+    StoreStockLossRequest,
+} from '../../model'
+
 import {
     getStockLossesIndexResponseMock,
     getStockLossesStoreResponseMock,
@@ -22,13 +31,25 @@ export const getStockLossesIndexMockHandler = (
     overrideResponse?:
         | StockLossesIndex200
         | ((
-              info: Parameters<Parameters<typeof http.get>[1]>[0]
+              info: Parameters<
+                  HttpResponseResolver<{
+                      stockLocation: string
+                      operatingDay: string
+                  }>
+              >[0]
           ) => Promise<StockLossesIndex200> | StockLossesIndex200),
     options?: RequestHandlerOptions
 ) => {
-    return http.get(
+    return http.get<{ stockLocation: string; operatingDay: string }>(
         '*/stock/:stockLocation/:operatingDay/losses',
-        async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+        async (
+            info: Parameters<
+                HttpResponseResolver<{
+                    stockLocation: string
+                    operatingDay: string
+                }>
+            >[0]
+        ) => {
             return HttpResponse.json(
                 overrideResponse !== undefined
                     ? typeof overrideResponse === 'function'
@@ -46,13 +67,19 @@ export const getStockLossesStoreMockHandler = (
     overrideResponse?:
         | StockLossesStore201
         | ((
-              info: Parameters<Parameters<typeof http.post>[1]>[0]
+              info: Parameters<
+                  HttpResponseResolver<PathParams, StoreStockLossRequest>
+              >[0]
           ) => Promise<StockLossesStore201> | StockLossesStore201),
     options?: RequestHandlerOptions
 ) => {
-    return http.post(
+    return http.post<PathParams, StoreStockLossRequest>(
         '*/stock/losses',
-        async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
+        async (
+            info: Parameters<
+                HttpResponseResolver<PathParams, StoreStockLossRequest>
+            >[0]
+        ) => {
             return HttpResponse.json(
                 overrideResponse !== undefined
                     ? typeof overrideResponse === 'function'

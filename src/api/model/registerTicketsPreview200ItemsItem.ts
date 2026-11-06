@@ -8,7 +8,7 @@
 export type RegisterTicketsPreview200ItemsItem =
     | {
           product_id: number
-          voucher_id: string
+          voucher_id: number
           quantity: 1
           unit_price: number
           subtotal: number
