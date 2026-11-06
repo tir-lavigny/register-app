@@ -55,7 +55,7 @@ window.fetch = async function (
               : input.url
 
     if (url.includes('/auth/login') || url.includes('/auth/refresh-token')) {
-        return originalFetch(input, init)
+        return originalFetch(input, { ...init, credentials: 'include' })
     }
 
     const token = localStorage.getItem(AUTH_STORAGE_KEY)
@@ -79,7 +79,11 @@ window.fetch = async function (
         }
 
         try {
-            response = await originalFetch(input, { ...init, headers })
+            response = await originalFetch(input, {
+                ...init,
+                headers,
+                credentials: 'include',
+            })
         } catch (error) {
             const name = (error as { name?: string })?.name
             if (attempt >= maxAttempts || name === 'AbortError') {
@@ -109,7 +113,11 @@ window.fetch = async function (
             if (newToken) {
                 retryHeaders.set('Authorization', `Bearer ${newToken}`)
             }
-            return originalFetch(input, { ...init, headers: retryHeaders })
+            return originalFetch(input, {
+                ...init,
+                headers: retryHeaders,
+                credentials: 'include',
+            })
         }
 
         redirectToLogin()
