@@ -32,7 +32,7 @@ export default defineConfig({
                     {
                         urlPattern:
                             /\/api\/register\/(categories|products|seasons)(\?.*)?$/,
-                        handler: 'CacheFirst',
+                        handler: 'StaleWhileRevalidate',
                         options: {
                             cacheName: 'reference-data',
                             expiration: {
@@ -43,7 +43,7 @@ export default defineConfig({
                     },
                     {
                         urlPattern: /\/api\/stock\/locations(\?.*)?$/,
-                        handler: 'CacheFirst',
+                        handler: 'StaleWhileRevalidate',
                         options: {
                             cacheName: 'reference-data',
                             expiration: {
@@ -54,7 +54,7 @@ export default defineConfig({
                     },
                     {
                         urlPattern: /\/api\/register\/members(\?.*)?$/,
-                        handler: 'CacheFirst',
+                        handler: 'StaleWhileRevalidate',
                         options: {
                             cacheName: 'reference-data',
                             expiration: { maxEntries: 50, maxAgeSeconds: 900 },
