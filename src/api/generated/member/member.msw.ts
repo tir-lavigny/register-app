@@ -4,13 +4,14 @@
  * Tir Lavigny
  * OpenAPI spec version: 0.0.1
  */
-import type { RequestHandlerOptions } from 'msw'
+import type { HttpResponseResolver, RequestHandlerOptions } from 'msw'
 import { HttpResponse, http } from 'msw'
 
 import type {
     RegisterMembersIndex200,
     RegisterMembersVouchers200,
 } from '../../model'
+
 import {
     getRegisterMembersIndexResponseMock,
     getRegisterMembersVouchersResponseMock,
@@ -25,13 +26,13 @@ export const getRegisterMembersIndexMockHandler = (
     overrideResponse?:
         | RegisterMembersIndex200
         | ((
-              info: Parameters<Parameters<typeof http.get>[1]>[0]
+              info: Parameters<HttpResponseResolver>[0]
           ) => Promise<RegisterMembersIndex200> | RegisterMembersIndex200),
     options?: RequestHandlerOptions
 ) => {
     return http.get(
         '*/register/members',
-        async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+        async (info: Parameters<HttpResponseResolver>[0]) => {
             return HttpResponse.json(
                 overrideResponse !== undefined
                     ? typeof overrideResponse === 'function'
@@ -49,14 +50,16 @@ export const getRegisterMembersVouchersMockHandler = (
     overrideResponse?:
         | RegisterMembersVouchers200
         | ((
-              info: Parameters<Parameters<typeof http.get>[1]>[0]
+              info: Parameters<HttpResponseResolver<{ member: string }>>[0]
           ) =>
               Promise<RegisterMembersVouchers200> | RegisterMembersVouchers200),
     options?: RequestHandlerOptions
 ) => {
-    return http.get(
+    return http.get<{ member: string }>(
         '*/register/members/:member/vouchers',
-        async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+        async (
+            info: Parameters<HttpResponseResolver<{ member: string }>>[0]
+        ) => {
             return HttpResponse.json(
                 overrideResponse !== undefined
                     ? typeof overrideResponse === 'function'

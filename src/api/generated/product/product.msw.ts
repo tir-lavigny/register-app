@@ -4,13 +4,14 @@
  * Tir Lavigny
  * OpenAPI spec version: 0.0.1
  */
-import type { RequestHandlerOptions } from 'msw'
+import type { HttpResponseResolver, RequestHandlerOptions } from 'msw'
 import { HttpResponse, http } from 'msw'
 
 import type {
     RegisterProductsIndex200,
     RegisterProductsShow200,
 } from '../../model'
+
 import {
     getRegisterProductsIndexResponseMock,
     getRegisterProductsShowResponseMock,
@@ -25,13 +26,13 @@ export const getRegisterProductsIndexMockHandler = (
     overrideResponse?:
         | RegisterProductsIndex200
         | ((
-              info: Parameters<Parameters<typeof http.get>[1]>[0]
+              info: Parameters<HttpResponseResolver>[0]
           ) => Promise<RegisterProductsIndex200> | RegisterProductsIndex200),
     options?: RequestHandlerOptions
 ) => {
     return http.get(
         '*/register/products',
-        async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+        async (info: Parameters<HttpResponseResolver>[0]) => {
             return HttpResponse.json(
                 overrideResponse !== undefined
                     ? typeof overrideResponse === 'function'
@@ -49,13 +50,15 @@ export const getRegisterProductsShowMockHandler = (
     overrideResponse?:
         | RegisterProductsShow200
         | ((
-              info: Parameters<Parameters<typeof http.get>[1]>[0]
+              info: Parameters<HttpResponseResolver<{ product: string }>>[0]
           ) => Promise<RegisterProductsShow200> | RegisterProductsShow200),
     options?: RequestHandlerOptions
 ) => {
-    return http.get(
+    return http.get<{ product: string }>(
         '*/register/products/:product',
-        async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+        async (
+            info: Parameters<HttpResponseResolver<{ product: string }>>[0]
+        ) => {
             return HttpResponse.json(
                 overrideResponse !== undefined
                     ? typeof overrideResponse === 'function'
