@@ -73,21 +73,6 @@ onMounted(async () => {
         <div v-else class="flex flex-1 flex-col gap-4 p-4">
             <h1 class="text-2xl font-bold">Tableau de bord</h1>
 
-            <DayStatusCard
-                :loading="dayStore.loading"
-                @open="showOpenDialog = true"
-                @close="showCloseDialog = true"
-                @close-previous="showClosePreviousDialog = true"
-                @reopen="showReopenDialog = true"
-            />
-
-            <DaySummaryCard
-                v-if="dayStore.currentDay"
-                :ticket-count="dayStore.activeTickets.length"
-                :cash-total="dayStore.cashTotal"
-                :twint-total="dayStore.twintTotal"
-            />
-
             <div class="grid gap-4 sm:grid-cols-3">
                 <Card
                     v-if="canCreateTicket"
@@ -143,6 +128,21 @@ onMounted(async () => {
                     </CardContent>
                 </Card>
             </div>
+
+            <DayStatusCard
+                :loading="dayStore.loading"
+                @open="showOpenDialog = true"
+                @close="showCloseDialog = true"
+                @close-previous="showClosePreviousDialog = true"
+                @reopen="showReopenDialog = true"
+            />
+
+            <DaySummaryCard
+                v-if="dayStore.currentDay"
+                :ticket-count="dayStore.activeTickets.length"
+                :cash-total="dayStore.cashTotal"
+                :twint-total="dayStore.twintTotal"
+            />
 
             <OpenDayDialog v-model:open="showOpenDialog" />
             <CloseDayDialog
