@@ -6,8 +6,6 @@
  */
 
 export type RegisterTicketsRefundHeaders = {
-    /**
-     * Client-generated UUID, created once per logical operation and reused on every retry.
-     */
+    /** Client-generated UUID, created once per logical operation and reused on every retry. */
     'Idempotency-Key': string
 }
