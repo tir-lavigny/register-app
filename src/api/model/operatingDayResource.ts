@@ -15,8 +15,7 @@ export interface OperatingDayResource {
     season_id: number
     /** @nullable */
     cash_remark: string | null
-    /** @nullable */
-    closing_balance: number | null
+    closing_balance: number
     total_cash: string
     total_twint: string
     /** @nullable */

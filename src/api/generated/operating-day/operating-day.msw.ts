@@ -4,7 +4,11 @@
  * Tir Lavigny
  * OpenAPI spec version: 0.0.1
  */
-import type { RequestHandlerOptions } from 'msw'
+import type {
+    HttpResponseResolver,
+    PathParams,
+    RequestHandlerOptions,
+} from 'msw'
 import { HttpResponse, http } from 'msw'
 
 import type {
@@ -13,7 +17,10 @@ import type {
     RegisterOperatingDaysShow200,
     RegisterOperatingDaysStore201,
     RegisterOperatingDaysUpdate200,
+    StoreDayRequest,
+    UpdateDayRequest,
 } from '../../model'
+
 import {
     getRegisterOperatingDaysCurrentResponseMock,
     getRegisterOperatingDaysPreviousUnclosedResponseMock,
@@ -34,15 +41,21 @@ export const getRegisterOperatingDaysStoreMockHandler = (
     overrideResponse?:
         | RegisterOperatingDaysStore201
         | ((
-              info: Parameters<Parameters<typeof http.post>[1]>[0]
+              info: Parameters<
+                  HttpResponseResolver<PathParams, StoreDayRequest>
+              >[0]
           ) =>
               | Promise<RegisterOperatingDaysStore201>
               | RegisterOperatingDaysStore201),
     options?: RequestHandlerOptions
 ) => {
-    return http.post(
+    return http.post<PathParams, StoreDayRequest>(
         '*/register/days',
-        async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
+        async (
+            info: Parameters<
+                HttpResponseResolver<PathParams, StoreDayRequest>
+            >[0]
+        ) => {
             return HttpResponse.json(
                 overrideResponse !== undefined
                     ? typeof overrideResponse === 'function'
@@ -60,15 +73,24 @@ export const getRegisterOperatingDaysUpdateMockHandler = (
     overrideResponse?:
         | RegisterOperatingDaysUpdate200
         | ((
-              info: Parameters<Parameters<typeof http.patch>[1]>[0]
+              info: Parameters<
+                  HttpResponseResolver<
+                      { operatingDay: string },
+                      UpdateDayRequest
+                  >
+              >[0]
           ) =>
               | Promise<RegisterOperatingDaysUpdate200>
               | RegisterOperatingDaysUpdate200),
     options?: RequestHandlerOptions
 ) => {
-    return http.patch(
+    return http.patch<{ operatingDay: string }, UpdateDayRequest>(
         '*/register/days/:operatingDay',
-        async (info: Parameters<Parameters<typeof http.patch>[1]>[0]) => {
+        async (
+            info: Parameters<
+                HttpResponseResolver<{ operatingDay: string }, UpdateDayRequest>
+            >[0]
+        ) => {
             return HttpResponse.json(
                 overrideResponse !== undefined
                     ? typeof overrideResponse === 'function'
@@ -86,15 +108,19 @@ export const getRegisterOperatingDaysShowMockHandler = (
     overrideResponse?:
         | RegisterOperatingDaysShow200
         | ((
-              info: Parameters<Parameters<typeof http.get>[1]>[0]
+              info: Parameters<
+                  HttpResponseResolver<{ operatingDay: string }>
+              >[0]
           ) =>
               | Promise<RegisterOperatingDaysShow200>
               | RegisterOperatingDaysShow200),
     options?: RequestHandlerOptions
 ) => {
-    return http.get(
+    return http.get<{ operatingDay: string }>(
         '*/register/days/:operatingDay',
-        async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+        async (
+            info: Parameters<HttpResponseResolver<{ operatingDay: string }>>[0]
+        ) => {
             return HttpResponse.json(
                 overrideResponse !== undefined
                     ? typeof overrideResponse === 'function'
@@ -112,7 +138,7 @@ export const getRegisterOperatingDaysCurrentMockHandler = (
     overrideResponse?:
         | RegisterOperatingDaysCurrent200
         | ((
-              info: Parameters<Parameters<typeof http.get>[1]>[0]
+              info: Parameters<HttpResponseResolver>[0]
           ) =>
               | Promise<RegisterOperatingDaysCurrent200>
               | RegisterOperatingDaysCurrent200),
@@ -120,7 +146,7 @@ export const getRegisterOperatingDaysCurrentMockHandler = (
 ) => {
     return http.get(
         '*/register/days/current',
-        async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+        async (info: Parameters<HttpResponseResolver>[0]) => {
             return HttpResponse.json(
                 overrideResponse !== undefined
                     ? typeof overrideResponse === 'function'
@@ -138,7 +164,7 @@ export const getRegisterOperatingDaysPreviousUnclosedMockHandler = (
     overrideResponse?:
         | RegisterOperatingDaysPreviousUnclosed200
         | ((
-              info: Parameters<Parameters<typeof http.get>[1]>[0]
+              info: Parameters<HttpResponseResolver>[0]
           ) =>
               | Promise<RegisterOperatingDaysPreviousUnclosed200>
               | RegisterOperatingDaysPreviousUnclosed200),
@@ -146,7 +172,7 @@ export const getRegisterOperatingDaysPreviousUnclosedMockHandler = (
 ) => {
     return http.get(
         '*/register/days/previous-unclosed',
-        async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+        async (info: Parameters<HttpResponseResolver>[0]) => {
             return HttpResponse.json(
                 overrideResponse !== undefined
                     ? typeof overrideResponse === 'function'

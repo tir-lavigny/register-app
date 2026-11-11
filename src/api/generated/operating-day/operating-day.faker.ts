@@ -32,10 +32,7 @@ export const getRegisterOperatingDaysStoreResponseMock = (
             faker.string.alpha({ length: { min: 10, max: 20 } }),
             null,
         ]),
-        closing_balance: faker.helpers.arrayElement([
-            faker.number.float({ fractionDigits: 2 }),
-            null,
-        ]),
+        closing_balance: faker.number.float({ fractionDigits: 2 }),
         total_cash: faker.string.alpha({ length: { min: 10, max: 20 } }),
         total_twint: faker.string.alpha({ length: { min: 10, max: 20 } }),
         created_at: faker.helpers.arrayElement([
@@ -328,10 +325,7 @@ export const getRegisterOperatingDaysUpdateResponseMock = (
             faker.string.alpha({ length: { min: 10, max: 20 } }),
             null,
         ]),
-        closing_balance: faker.helpers.arrayElement([
-            faker.number.float({ fractionDigits: 2 }),
-            null,
-        ]),
+        closing_balance: faker.number.float({ fractionDigits: 2 }),
         total_cash: faker.string.alpha({ length: { min: 10, max: 20 } }),
         total_twint: faker.string.alpha({ length: { min: 10, max: 20 } }),
         created_at: faker.helpers.arrayElement([
@@ -624,10 +618,7 @@ export const getRegisterOperatingDaysShowResponseMock = (
             faker.string.alpha({ length: { min: 10, max: 20 } }),
             null,
         ]),
-        closing_balance: faker.helpers.arrayElement([
-            faker.number.float({ fractionDigits: 2 }),
-            null,
-        ]),
+        closing_balance: faker.number.float({ fractionDigits: 2 }),
         total_cash: faker.string.alpha({ length: { min: 10, max: 20 } }),
         total_twint: faker.string.alpha({ length: { min: 10, max: 20 } }),
         created_at: faker.helpers.arrayElement([
@@ -921,10 +912,7 @@ export const getRegisterOperatingDaysCurrentResponseMock = (
                 faker.string.alpha({ length: { min: 10, max: 20 } }),
                 null,
             ]),
-            closing_balance: faker.helpers.arrayElement([
-                faker.number.float({ fractionDigits: 2 }),
-                null,
-            ]),
+            closing_balance: faker.number.float({ fractionDigits: 2 }),
             total_cash: faker.string.alpha({ length: { min: 10, max: 20 } }),
             total_twint: faker.string.alpha({ length: { min: 10, max: 20 } }),
             created_at: faker.helpers.arrayElement([
@@ -1216,10 +1204,7 @@ export const getRegisterOperatingDaysPreviousUnclosedResponseMock = (
                 faker.string.alpha({ length: { min: 10, max: 20 } }),
                 null,
             ]),
-            closing_balance: faker.helpers.arrayElement([
-                faker.number.float({ fractionDigits: 2 }),
-                null,
-            ]),
+            closing_balance: faker.number.float({ fractionDigits: 2 }),
             total_cash: faker.string.alpha({ length: { min: 10, max: 20 } }),
             total_twint: faker.string.alpha({ length: { min: 10, max: 20 } }),
             created_at: faker.helpers.arrayElement([

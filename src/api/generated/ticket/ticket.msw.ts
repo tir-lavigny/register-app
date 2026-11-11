@@ -4,7 +4,11 @@
  * Tir Lavigny
  * OpenAPI spec version: 0.0.1
  */
-import type { RequestHandlerOptions } from 'msw'
+import type {
+    HttpResponseResolver,
+    PathParams,
+    RequestHandlerOptions,
+} from 'msw'
 import { HttpResponse, http } from 'msw'
 
 import type {
@@ -12,7 +16,10 @@ import type {
     RegisterTicketsRefund200,
     RegisterTicketsShow200,
     RegisterTicketsStore201,
+    StoreTicketPreviewRequest,
+    StoreTicketRequest,
 } from '../../model'
+
 import {
     getRegisterTicketsPreviewResponseMock,
     getRegisterTicketsRefundResponseMock,
@@ -31,13 +38,19 @@ export const getRegisterTicketsStoreMockHandler = (
     overrideResponse?:
         | RegisterTicketsStore201
         | ((
-              info: Parameters<Parameters<typeof http.post>[1]>[0]
+              info: Parameters<
+                  HttpResponseResolver<PathParams, StoreTicketRequest>
+              >[0]
           ) => Promise<RegisterTicketsStore201> | RegisterTicketsStore201),
     options?: RequestHandlerOptions
 ) => {
-    return http.post(
+    return http.post<PathParams, StoreTicketRequest>(
         '*/register/tickets',
-        async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
+        async (
+            info: Parameters<
+                HttpResponseResolver<PathParams, StoreTicketRequest>
+            >[0]
+        ) => {
             return HttpResponse.json(
                 overrideResponse !== undefined
                     ? typeof overrideResponse === 'function'
@@ -55,13 +68,19 @@ export const getRegisterTicketsPreviewMockHandler = (
     overrideResponse?:
         | RegisterTicketsPreview200
         | ((
-              info: Parameters<Parameters<typeof http.post>[1]>[0]
+              info: Parameters<
+                  HttpResponseResolver<PathParams, StoreTicketPreviewRequest>
+              >[0]
           ) => Promise<RegisterTicketsPreview200> | RegisterTicketsPreview200),
     options?: RequestHandlerOptions
 ) => {
-    return http.post(
+    return http.post<PathParams, StoreTicketPreviewRequest>(
         '*/register/tickets/preview',
-        async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
+        async (
+            info: Parameters<
+                HttpResponseResolver<PathParams, StoreTicketPreviewRequest>
+            >[0]
+        ) => {
             return HttpResponse.json(
                 overrideResponse !== undefined
                     ? typeof overrideResponse === 'function'
@@ -79,13 +98,15 @@ export const getRegisterTicketsShowMockHandler = (
     overrideResponse?:
         | RegisterTicketsShow200
         | ((
-              info: Parameters<Parameters<typeof http.get>[1]>[0]
+              info: Parameters<HttpResponseResolver<{ ticket: string }>>[0]
           ) => Promise<RegisterTicketsShow200> | RegisterTicketsShow200),
     options?: RequestHandlerOptions
 ) => {
-    return http.get(
+    return http.get<{ ticket: string }>(
         '*/register/tickets/:ticket',
-        async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+        async (
+            info: Parameters<HttpResponseResolver<{ ticket: string }>>[0]
+        ) => {
             return HttpResponse.json(
                 overrideResponse !== undefined
                     ? typeof overrideResponse === 'function'
@@ -103,13 +124,15 @@ export const getRegisterTicketsRefundMockHandler = (
     overrideResponse?:
         | RegisterTicketsRefund200
         | ((
-              info: Parameters<Parameters<typeof http.post>[1]>[0]
+              info: Parameters<HttpResponseResolver<{ ticket: string }>>[0]
           ) => Promise<RegisterTicketsRefund200> | RegisterTicketsRefund200),
     options?: RequestHandlerOptions
 ) => {
-    return http.post(
+    return http.post<{ ticket: string }>(
         '*/register/tickets/:ticket/refund',
-        async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
+        async (
+            info: Parameters<HttpResponseResolver<{ ticket: string }>>[0]
+        ) => {
             return HttpResponse.json(
                 overrideResponse !== undefined
                     ? typeof overrideResponse === 'function'
