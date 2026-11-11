@@ -25,7 +25,7 @@ function makeDay(
         closed_at: null,
         season_id: 1,
         cash_remark: null,
-        closing_balance: null,
+        closing_balance: 0,
         total_cash: '0.00',
         total_twint: '0.00',
         created_at: null,
