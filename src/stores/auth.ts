@@ -51,6 +51,10 @@ export const useAuthStore = defineStore('auth', () => {
                 return { success: false, error: response.data.message }
             }
 
+            if (response.status === 403) {
+                return { success: false, error: response.data.message }
+            }
+
             if (response.status === 422) {
                 return { success: false, error: response.data.message }
             }

@@ -95,6 +95,26 @@ describe('auth store', () => {
             expect(store.user).toBeNull()
         })
 
+        it('returns access error on 403', async () => {
+            mockLogin.mockResolvedValue({
+                data: {
+                    message: 'This account cannot access the register.',
+                    errors: null,
+                },
+                status: 403,
+                headers: new Headers(),
+            })
+
+            const result = await store.login('user@example.com', 'pass')
+
+            expect(result).toEqual({
+                success: false,
+                error: 'This account cannot access the register.',
+            })
+            expect(store.accessToken).toBeNull()
+            expect(store.user).toBeNull()
+        })
+
         it('returns validation errors on 422', async () => {
             mockLogin.mockResolvedValue({
                 data: {
