@@ -22,8 +22,10 @@ import { unref } from 'vue'
 import type {
     AuthenticationExceptionResponse,
     Login401,
+    Login403,
     LoginRequest,
     Me200,
+    Refresh403,
     TokenResource,
     ValidationExceptionResponse,
 } from '../../model'
@@ -38,6 +40,11 @@ export type loginResponse401 = {
     status: 401
 }
 
+export type loginResponse403 = {
+    data: Login403
+    status: 403
+}
+
 export type loginResponse422 = {
     data: ValidationExceptionResponse
     status: 422
@@ -46,7 +53,9 @@ export type loginResponse422 = {
 export type loginResponseSuccess = loginResponse200 & {
     headers: Headers
 }
-export type loginResponseError = (loginResponse401 | loginResponse422) & {
+export type loginResponseError = (
+    loginResponse401 | loginResponse403 | loginResponse422
+) & {
     headers: Headers
 }
 
@@ -100,7 +109,7 @@ export const login = async (
 export const getLoginMutationKey = () => ['login'] as const
 
 export const getLoginMutationOptions = <
-    TError = Login401 | ValidationExceptionResponse,
+    TError = Login401 | Login403 | ValidationExceptionResponse,
     TContext = unknown,
 >(options?: {
     mutation?: UseMutationOptions<
@@ -139,11 +148,12 @@ export const getLoginMutationOptions = <
 
 export type LoginMutationResult = NonNullable<Awaited<ReturnType<typeof login>>>
 export type LoginMutationBody = LoginRequest
-export type LoginMutationError = Login401 | ValidationExceptionResponse
+export type LoginMutationError =
+    Login401 | Login403 | ValidationExceptionResponse
 export type LoginMutationVariables = { data: LoginRequest }
 
 export const useLogin = <
-    TError = Login401 | ValidationExceptionResponse,
+    TError = Login401 | Login403 | ValidationExceptionResponse,
     TContext = unknown,
 >(
     options?: {
@@ -174,10 +184,15 @@ export type refreshResponse401 = {
     status: 401
 }
 
+export type refreshResponse403 = {
+    data: Refresh403
+    status: 403
+}
+
 export type refreshResponseSuccess = refreshResponse200 & {
     headers: Headers
 }
-export type refreshResponseError = refreshResponse401 & {
+export type refreshResponseError = (refreshResponse401 | refreshResponse403) & {
     headers: Headers
 }
 
@@ -204,7 +219,7 @@ export const refresh = async (
 export const getRefreshMutationKey = () => ['refresh'] as const
 
 export const getRefreshMutationOptions = <
-    TError = AuthenticationExceptionResponse,
+    TError = AuthenticationExceptionResponse | Refresh403,
     TContext = unknown,
 >(options?: {
     mutation?: UseMutationOptions<
@@ -243,10 +258,10 @@ export type RefreshMutationResult = NonNullable<
     Awaited<ReturnType<typeof refresh>>
 >
 
-export type RefreshMutationError = AuthenticationExceptionResponse
+export type RefreshMutationError = AuthenticationExceptionResponse | Refresh403
 
 export const useRefresh = <
-    TError = AuthenticationExceptionResponse,
+    TError = AuthenticationExceptionResponse | Refresh403,
     TContext = unknown,
 >(
     options?: {
