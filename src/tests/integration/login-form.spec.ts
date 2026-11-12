@@ -124,6 +124,29 @@ describe('LoginForm integration', () => {
         expect(wrapper.text()).toContain('Wrong credentials.')
     })
 
+    it('shows access error on 403', async () => {
+        server.use(
+            http.post('*/auth/login', () =>
+                HttpResponse.json(
+                    {
+                        message: 'This account cannot access the register.',
+                        errors: null,
+                    },
+                    { status: 403 }
+                )
+            )
+        )
+
+        const { wrapper } = await mountLoginForm()
+
+        await fillAndSubmit(wrapper)
+        await flushPromises()
+
+        expect(wrapper.text()).toContain(
+            'This account cannot access the register.'
+        )
+    })
+
     it('shows error message on 422', async () => {
         server.use(
             http.post('*/auth/login', () =>
