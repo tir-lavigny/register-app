@@ -75,6 +75,29 @@ describe('auth flow integration', () => {
             expect(store.user).toBeNull()
         })
 
+        it('returns access error on 403', async () => {
+            server.use(
+                http.post('*/auth/login', () =>
+                    HttpResponse.json(
+                        {
+                            message: 'This account cannot access the register.',
+                            errors: null,
+                        },
+                        { status: 403 }
+                    )
+                )
+            )
+
+            const result = await store.login('user@example.com', 'pass')
+
+            expect(result).toEqual({
+                success: false,
+                error: 'This account cannot access the register.',
+            })
+            expect(store.accessToken).toBeNull()
+            expect(store.user).toBeNull()
+        })
+
         it('returns validation error on 422', async () => {
             server.use(
                 http.post('*/auth/login', () =>
