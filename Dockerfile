@@ -1,7 +1,4 @@
-ARG NODE_VERSION=24
-
-
-FROM node:${NODE_VERSION}-alpine AS build
+FROM node:24.22-alpine AS build
 
 WORKDIR /app
 
