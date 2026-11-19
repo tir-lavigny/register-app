@@ -23,7 +23,7 @@ ENV VITE_APP_ENV=$VITE_APP_ENV \
 RUN pnpm build
 
 
-FROM nginx:1.28-alpine AS production
+FROM nginx:1.30-alpine AS production
 
 RUN apk upgrade --no-cache
 
