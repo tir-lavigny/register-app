@@ -108,7 +108,7 @@ export const getRegisterSeasonsCurrentQueryOptions = <
         Awaited<ReturnType<typeof registerSeasonsCurrent>>,
         TError,
         TData
-    >
+    > & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
 export type RegisterSeasonsCurrentQueryResult = NonNullable<
@@ -137,10 +137,16 @@ export function useRegisterSeasonsCurrent<
 } {
     const queryOptions = getRegisterSeasonsCurrentQueryOptions(options)
 
-    const query = useQuery(queryOptions, queryClient) as UseQueryReturnType<
-        TData,
-        TError
-    > & { queryKey: DataTag<QueryKey, TData, TError> }
+    const query = useQuery(
+        queryOptions as UseQueryOptions<
+            Awaited<ReturnType<typeof registerSeasonsCurrent>>,
+            TError,
+            TData
+        >,
+        queryClient
+    ) as UseQueryReturnType<TData, TError> & {
+        queryKey: DataTag<QueryKey, TData, TError>
+    }
 
     query.queryKey = unref(queryOptions).queryKey as DataTag<
         QueryKey,

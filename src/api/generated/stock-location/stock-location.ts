@@ -96,7 +96,7 @@ export const getStockLocationsIndexQueryOptions = <
         Awaited<ReturnType<typeof stockLocationsIndex>>,
         TError,
         TData
-    >
+    > & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
 export type StockLocationsIndexQueryResult = NonNullable<
@@ -124,10 +124,16 @@ export function useStockLocationsIndex<
 } {
     const queryOptions = getStockLocationsIndexQueryOptions(options)
 
-    const query = useQuery(queryOptions, queryClient) as UseQueryReturnType<
-        TData,
-        TError
-    > & { queryKey: DataTag<QueryKey, TData, TError> }
+    const query = useQuery(
+        queryOptions as UseQueryOptions<
+            Awaited<ReturnType<typeof stockLocationsIndex>>,
+            TError,
+            TData
+        >,
+        queryClient
+    ) as UseQueryReturnType<TData, TError> & {
+        queryKey: DataTag<QueryKey, TData, TError>
+    }
 
     query.queryKey = unref(queryOptions).queryKey as DataTag<
         QueryKey,
