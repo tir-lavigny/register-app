@@ -99,7 +99,7 @@ export const getRegisterProductsIndexQueryOptions = <
         Awaited<ReturnType<typeof registerProductsIndex>>,
         TError,
         TData
-    >
+    > & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
 export type RegisterProductsIndexQueryResult = NonNullable<
@@ -127,10 +127,16 @@ export function useRegisterProductsIndex<
 } {
     const queryOptions = getRegisterProductsIndexQueryOptions(options)
 
-    const query = useQuery(queryOptions, queryClient) as UseQueryReturnType<
-        TData,
-        TError
-    > & { queryKey: DataTag<QueryKey, TData, TError> }
+    const query = useQuery(
+        queryOptions as UseQueryOptions<
+            Awaited<ReturnType<typeof registerProductsIndex>>,
+            TError,
+            TData
+        >,
+        queryClient
+    ) as UseQueryReturnType<TData, TError> & {
+        queryKey: DataTag<QueryKey, TData, TError>
+    }
 
     query.queryKey = unref(queryOptions).queryKey as DataTag<
         QueryKey,
@@ -241,7 +247,7 @@ export const getRegisterProductsShowQueryOptions = <
         Awaited<ReturnType<typeof registerProductsShow>>,
         TError,
         TData
-    >
+    > & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
 export type RegisterProductsShowQueryResult = NonNullable<
@@ -271,10 +277,16 @@ export function useRegisterProductsShow<
 } {
     const queryOptions = getRegisterProductsShowQueryOptions(product, options)
 
-    const query = useQuery(queryOptions, queryClient) as UseQueryReturnType<
-        TData,
-        TError
-    > & { queryKey: DataTag<QueryKey, TData, TError> }
+    const query = useQuery(
+        queryOptions as UseQueryOptions<
+            Awaited<ReturnType<typeof registerProductsShow>>,
+            TError,
+            TData
+        >,
+        queryClient
+    ) as UseQueryReturnType<TData, TError> & {
+        queryKey: DataTag<QueryKey, TData, TError>
+    }
 
     query.queryKey = unref(queryOptions).queryKey as DataTag<
         QueryKey,

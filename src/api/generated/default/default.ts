@@ -89,7 +89,7 @@ export const getHealthCheckApiQueryOptions = <
         Awaited<ReturnType<typeof healthCheckApi>>,
         TError,
         TData
-    >
+    > & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
 export type HealthCheckApiQueryResult = NonNullable<
@@ -117,10 +117,16 @@ export function useHealthCheckApi<
 } {
     const queryOptions = getHealthCheckApiQueryOptions(options)
 
-    const query = useQuery(queryOptions, queryClient) as UseQueryReturnType<
-        TData,
-        TError
-    > & { queryKey: DataTag<QueryKey, TData, TError> }
+    const query = useQuery(
+        queryOptions as UseQueryOptions<
+            Awaited<ReturnType<typeof healthCheckApi>>,
+            TError,
+            TData
+        >,
+        queryClient
+    ) as UseQueryReturnType<TData, TError> & {
+        queryKey: DataTag<QueryKey, TData, TError>
+    }
 
     query.queryKey = unref(queryOptions).queryKey as DataTag<
         QueryKey,
