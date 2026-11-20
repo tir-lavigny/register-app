@@ -509,7 +509,7 @@ export const getRegisterOperatingDaysShowQueryOptions = <
         Awaited<ReturnType<typeof registerOperatingDaysShow>>,
         TError,
         TData
-    >
+    > & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
 export type RegisterOperatingDaysShowQueryResult = NonNullable<
@@ -542,10 +542,16 @@ export function useRegisterOperatingDaysShow<
         options
     )
 
-    const query = useQuery(queryOptions, queryClient) as UseQueryReturnType<
-        TData,
-        TError
-    > & { queryKey: DataTag<QueryKey, TData, TError> }
+    const query = useQuery(
+        queryOptions as UseQueryOptions<
+            Awaited<ReturnType<typeof registerOperatingDaysShow>>,
+            TError,
+            TData
+        >,
+        queryClient
+    ) as UseQueryReturnType<TData, TError> & {
+        queryKey: DataTag<QueryKey, TData, TError>
+    }
 
     query.queryKey = unref(queryOptions).queryKey as DataTag<
         QueryKey,
@@ -645,7 +651,7 @@ export const getRegisterOperatingDaysCurrentQueryOptions = <
         Awaited<ReturnType<typeof registerOperatingDaysCurrent>>,
         TError,
         TData
-    >
+    > & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
 export type RegisterOperatingDaysCurrentQueryResult = NonNullable<
@@ -674,10 +680,16 @@ export function useRegisterOperatingDaysCurrent<
 } {
     const queryOptions = getRegisterOperatingDaysCurrentQueryOptions(options)
 
-    const query = useQuery(queryOptions, queryClient) as UseQueryReturnType<
-        TData,
-        TError
-    > & { queryKey: DataTag<QueryKey, TData, TError> }
+    const query = useQuery(
+        queryOptions as UseQueryOptions<
+            Awaited<ReturnType<typeof registerOperatingDaysCurrent>>,
+            TError,
+            TData
+        >,
+        queryClient
+    ) as UseQueryReturnType<TData, TError> & {
+        queryKey: DataTag<QueryKey, TData, TError>
+    }
 
     query.queryKey = unref(queryOptions).queryKey as DataTag<
         QueryKey,
@@ -779,7 +791,7 @@ export const getRegisterOperatingDaysPreviousUnclosedQueryOptions = <
         Awaited<ReturnType<typeof registerOperatingDaysPreviousUnclosed>>,
         TError,
         TData
-    >
+    > & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
 export type RegisterOperatingDaysPreviousUnclosedQueryResult = NonNullable<
@@ -813,10 +825,16 @@ export function useRegisterOperatingDaysPreviousUnclosed<
     const queryOptions =
         getRegisterOperatingDaysPreviousUnclosedQueryOptions(options)
 
-    const query = useQuery(queryOptions, queryClient) as UseQueryReturnType<
-        TData,
-        TError
-    > & { queryKey: DataTag<QueryKey, TData, TError> }
+    const query = useQuery(
+        queryOptions as UseQueryOptions<
+            Awaited<ReturnType<typeof registerOperatingDaysPreviousUnclosed>>,
+            TError,
+            TData
+        >,
+        queryClient
+    ) as UseQueryReturnType<TData, TError> & {
+        queryKey: DataTag<QueryKey, TData, TError>
+    }
 
     query.queryKey = unref(queryOptions).queryKey as DataTag<
         QueryKey,

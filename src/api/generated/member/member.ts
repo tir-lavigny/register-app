@@ -99,7 +99,7 @@ export const getRegisterMembersIndexQueryOptions = <
         Awaited<ReturnType<typeof registerMembersIndex>>,
         TError,
         TData
-    >
+    > & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
 export type RegisterMembersIndexQueryResult = NonNullable<
@@ -127,10 +127,16 @@ export function useRegisterMembersIndex<
 } {
     const queryOptions = getRegisterMembersIndexQueryOptions(options)
 
-    const query = useQuery(queryOptions, queryClient) as UseQueryReturnType<
-        TData,
-        TError
-    > & { queryKey: DataTag<QueryKey, TData, TError> }
+    const query = useQuery(
+        queryOptions as UseQueryOptions<
+            Awaited<ReturnType<typeof registerMembersIndex>>,
+            TError,
+            TData
+        >,
+        queryClient
+    ) as UseQueryReturnType<TData, TError> & {
+        queryKey: DataTag<QueryKey, TData, TError>
+    }
 
     query.queryKey = unref(queryOptions).queryKey as DataTag<
         QueryKey,
@@ -243,7 +249,7 @@ export const getRegisterMembersVouchersQueryOptions = <
         Awaited<ReturnType<typeof registerMembersVouchers>>,
         TError,
         TData
-    >
+    > & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
 export type RegisterMembersVouchersQueryResult = NonNullable<
@@ -273,10 +279,16 @@ export function useRegisterMembersVouchers<
 } {
     const queryOptions = getRegisterMembersVouchersQueryOptions(member, options)
 
-    const query = useQuery(queryOptions, queryClient) as UseQueryReturnType<
-        TData,
-        TError
-    > & { queryKey: DataTag<QueryKey, TData, TError> }
+    const query = useQuery(
+        queryOptions as UseQueryOptions<
+            Awaited<ReturnType<typeof registerMembersVouchers>>,
+            TError,
+            TData
+        >,
+        queryClient
+    ) as UseQueryReturnType<TData, TError> & {
+        queryKey: DataTag<QueryKey, TData, TError>
+    }
 
     query.queryKey = unref(queryOptions).queryKey as DataTag<
         QueryKey,

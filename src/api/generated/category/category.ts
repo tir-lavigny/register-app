@@ -101,7 +101,7 @@ export const getRegisterCategoriesIndexQueryOptions = <
         Awaited<ReturnType<typeof registerCategoriesIndex>>,
         TError,
         TData
-    >
+    > & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
 export type RegisterCategoriesIndexQueryResult = NonNullable<
@@ -129,10 +129,16 @@ export function useRegisterCategoriesIndex<
 } {
     const queryOptions = getRegisterCategoriesIndexQueryOptions(options)
 
-    const query = useQuery(queryOptions, queryClient) as UseQueryReturnType<
-        TData,
-        TError
-    > & { queryKey: DataTag<QueryKey, TData, TError> }
+    const query = useQuery(
+        queryOptions as UseQueryOptions<
+            Awaited<ReturnType<typeof registerCategoriesIndex>>,
+            TError,
+            TData
+        >,
+        queryClient
+    ) as UseQueryReturnType<TData, TError> & {
+        queryKey: DataTag<QueryKey, TData, TError>
+    }
 
     query.queryKey = unref(queryOptions).queryKey as DataTag<
         QueryKey,
