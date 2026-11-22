@@ -12,7 +12,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { extractData } from '@/lib/utils'
+import { extractData, normalizeText } from '@/lib/utils'
 
 defineProps<{
     open: boolean
@@ -29,12 +29,10 @@ const members = computed(() => extractData<MemberResource>(membersData.value))
 const searchQuery = ref('')
 
 const filteredMembers = computed(() => {
-    const q = searchQuery.value.toLowerCase()
+    const q = normalizeText(searchQuery.value)
     if (!q) return members.value
-    return members.value.filter(
-        (m) =>
-            m.first_name.toLowerCase().includes(q) ||
-            m.last_name.toLowerCase().includes(q)
+    return members.value.filter((m) =>
+        normalizeText(`${m.first_name} ${m.last_name}`).includes(q)
     )
 })
 
