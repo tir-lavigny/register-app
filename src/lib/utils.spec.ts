@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { cn, extractData } from './utils'
+import { cn, extractData, normalizeText } from './utils'
 
 describe('cn', () => {
     it('merges single class', () => {
@@ -42,5 +42,11 @@ describe('extractData', () => {
     it('returns empty array when no inner data key', () => {
         const resp = { data: {} }
         expect(extractData(resp)).toEqual([])
+    })
+})
+
+describe('normalizeText', () => {
+    it('strips accents and lowercases', () => {
+        expect(normalizeText('Éléonore')).toBe('eleonore')
     })
 })

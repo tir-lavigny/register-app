@@ -12,6 +12,13 @@ export function extractData<T>(resp: unknown): T[] {
     return (Array.isArray(inner?.data) ? inner.data : []) as T[]
 }
 
+export function normalizeText(value: string): string {
+    return value
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+}
+
 const dateFormatter = new Intl.DateTimeFormat('fr-CH', {
     day: '2-digit',
     month: '2-digit',
