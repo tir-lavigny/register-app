@@ -7,7 +7,6 @@
 
 export interface Ticket {
     id: number
-    total: string
     payment_method: string
     operating_day_id: number
     /** @nullable */
@@ -20,4 +19,5 @@ export interface Ticket {
     member_id: number | null
     sold_at: string
     stock_location_id: number
+    total: string
 }
