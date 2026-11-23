@@ -5,19 +5,11 @@
  * OpenAPI spec version: 0.0.1
  */
 
-export type RegisterTicketsPreview200ItemsItem =
-    | {
-          product_id: number
-          voucher_id: number
-          quantity: 1
-          unit_price: number
-          subtotal: number
-      }
-    | {
-          product_id: number
-          /** @nullable */
-          voucher_id: null
-          quantity: number
-          unit_price: number
-          subtotal: number
-      }
+export type RegisterTicketsPreview200ItemsItem = {
+    product_id: number
+    /** @nullable */
+    voucher_id: number | null
+    quantity: number
+    unit_price: number
+    subtotal: number
+}

@@ -64,9 +64,6 @@ export const getStockLossesIndexResponseMock = (): StockLossesIndex200 =>
                             }),
                             null,
                         ]),
-                        unit_price: faker.string.alpha({
-                            length: { min: 10, max: 20 },
-                        }),
                         allows_custom_price: faker.datatype.boolean(),
                         category_id: faker.number.int(),
                         deleted_at: faker.helpers.arrayElement([
@@ -82,6 +79,9 @@ export const getStockLossesIndexResponseMock = (): StockLossesIndex200 =>
                             null,
                         ]),
                         is_stockable: faker.datatype.boolean(),
+                        unit_price: faker.string.alpha({
+                            length: { min: 10, max: 20 },
+                        }),
                     },
                 },
             })),
@@ -139,9 +139,6 @@ export const getStockLossesStoreResponseMock = (
                     faker.string.alpha({ length: { min: 10, max: 20 } }),
                     null,
                 ]),
-                unit_price: faker.string.alpha({
-                    length: { min: 10, max: 20 },
-                }),
                 allows_custom_price: faker.datatype.boolean(),
                 category_id: faker.number.int(),
                 deleted_at: faker.helpers.arrayElement([
@@ -157,6 +154,9 @@ export const getStockLossesStoreResponseMock = (
                     null,
                 ]),
                 is_stockable: faker.datatype.boolean(),
+                unit_price: faker.string.alpha({
+                    length: { min: 10, max: 20 },
+                }),
             },
             undefined,
         ]),

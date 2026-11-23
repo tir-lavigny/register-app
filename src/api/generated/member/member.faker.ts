@@ -37,10 +37,6 @@ export const getRegisterMembersVouchersResponseMock = (
             faker.string.alpha({ length: { min: 10, max: 20 } }),
             null,
         ]),
-        discount_fixed: faker.helpers.arrayElement([
-            faker.string.alpha({ length: { min: 10, max: 20 } }),
-            null,
-        ]),
         product_id: faker.number.int(),
         season_id: faker.number.int(),
         member_id: faker.number.int(),
@@ -54,6 +50,10 @@ export const getRegisterMembersVouchersResponseMock = (
         ]),
         updated_at: faker.helpers.arrayElement([
             faker.date.past().toISOString().slice(0, 19) + 'Z',
+            null,
+        ]),
+        discount_fixed: faker.helpers.arrayElement([
+            faker.string.alpha({ length: { min: 10, max: 20 } }),
             null,
         ]),
     })),

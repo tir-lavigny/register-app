@@ -18,7 +18,6 @@ export const getRegisterTicketsStoreResponseMock = (
 ): RegisterTicketsStore201 => ({
     data: {
         id: faker.number.int(),
-        total: faker.string.alpha({ length: { min: 10, max: 20 } }),
         payment_method: faker.string.alpha({ length: { min: 10, max: 20 } }),
         operating_day_id: faker.number.int(),
         deleted_at: faker.helpers.arrayElement([
@@ -36,6 +35,7 @@ export const getRegisterTicketsStoreResponseMock = (
         member_id: faker.helpers.arrayElement([faker.number.int(), null]),
         sold_at: faker.date.past().toISOString().slice(0, 19) + 'Z',
         stock_location_id: faker.number.int(),
+        total: faker.string.alpha({ length: { min: 10, max: 20 } }),
     },
     ...overrideResponse,
 })
@@ -47,24 +47,13 @@ export const getRegisterTicketsPreviewResponseMock = (
     items: Array.from(
         { length: faker.number.int({ min: 1, max: 10 }) },
         (_, i) => i + 1
-    ).map(() =>
-        faker.helpers.arrayElement([
-            {
-                product_id: faker.number.int(),
-                voucher_id: faker.number.int(),
-                quantity: 1,
-                unit_price: faker.number.float({ fractionDigits: 2 }),
-                subtotal: faker.number.float({ fractionDigits: 2 }),
-            },
-            {
-                product_id: faker.number.int(),
-                voucher_id: null,
-                quantity: faker.number.int(),
-                unit_price: faker.number.float({ fractionDigits: 2 }),
-                subtotal: faker.number.float({ fractionDigits: 2 }),
-            },
-        ])
-    ),
+    ).map(() => ({
+        product_id: faker.number.int(),
+        voucher_id: faker.helpers.arrayElement([faker.number.int(), null]),
+        quantity: faker.number.int(),
+        unit_price: faker.number.float({ fractionDigits: 2 }),
+        subtotal: faker.number.float({ fractionDigits: 2 }),
+    })),
     ...overrideResponse,
 })
 
@@ -73,7 +62,6 @@ export const getRegisterTicketsShowResponseMock = (
 ): RegisterTicketsShow200 => ({
     data: {
         id: faker.number.int(),
-        total: faker.string.alpha({ length: { min: 10, max: 20 } }),
         payment_method: faker.string.alpha({ length: { min: 10, max: 20 } }),
         operating_day_id: faker.number.int(),
         deleted_at: faker.helpers.arrayElement([
@@ -91,6 +79,7 @@ export const getRegisterTicketsShowResponseMock = (
         member_id: faker.helpers.arrayElement([faker.number.int(), null]),
         sold_at: faker.date.past().toISOString().slice(0, 19) + 'Z',
         stock_location_id: faker.number.int(),
+        total: faker.string.alpha({ length: { min: 10, max: 20 } }),
     },
     ...overrideResponse,
 })
