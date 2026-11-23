@@ -10,7 +10,6 @@ export interface Product {
     name: string
     /** @nullable */
     picture: string | null
-    unit_price: string
     allows_custom_price: boolean
     category_id: number
     /** @nullable */
@@ -20,4 +19,5 @@ export interface Product {
     /** @nullable */
     updated_at: string | null
     is_stockable: boolean
+    unit_price: string
 }

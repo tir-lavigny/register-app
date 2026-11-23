@@ -9,8 +9,6 @@ export interface Voucher {
     id: number
     /** @nullable */
     discount_percent: string | null
-    /** @nullable */
-    discount_fixed: string | null
     product_id: number
     season_id: number
     member_id: number
@@ -20,4 +18,6 @@ export interface Voucher {
     created_at: string | null
     /** @nullable */
     updated_at: string | null
+    /** @nullable */
+    discount_fixed: string | null
 }
