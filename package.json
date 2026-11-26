@@ -13,6 +13,7 @@
     "scripts": {
         "dev": "vite",
         "build": "vue-tsc -b && vite build",
+        "check:dist": "node scripts/check-dist.mjs",
         "preview": "vite preview",
         "lint": "eslint src",
         "lint:fix": "eslint src --fix",

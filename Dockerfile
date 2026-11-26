@@ -17,7 +17,8 @@ ENV VITE_APP_ENV=$VITE_APP_ENV \
     VITE_API_BASE_URL=$VITE_API_BASE_URL \
     VITE_BUILD_TAG=$VITE_BUILD_TAG
 
-RUN pnpm build
+RUN pnpm build \
+    && pnpm run check:dist
 
 
 FROM nginx:1.30-alpine AS production
