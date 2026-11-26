@@ -21,9 +21,6 @@ process.env.VITE_BUILD_TAG ??= (() => {
 // https://vite.dev/config/
 export default defineConfig({
     build: {
-        // Source maps expose the original source (sourcesContent) and the Vite
-        // manifest exposes the internal module graph. Neither may end up in the
-        // public nginx root.
         sourcemap: false,
         manifest: false,
     },

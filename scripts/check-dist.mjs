@@ -2,13 +2,6 @@ import { readdir } from 'node:fs/promises'
 import { join, relative, sep } from 'node:path'
 import { pathToFileURL } from 'node:url'
 
-/**
- * Collect files under `distDir` that must never be published: JavaScript
- * source maps and Vite's internal build manifests.
- *
- * @param {string} distDir
- * @returns {Promise<string[]>}
- */
 export async function findForbiddenArtifacts(distDir) {
     const forbidden = []
 
