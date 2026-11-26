@@ -20,6 +20,10 @@ process.env.VITE_BUILD_TAG ??= (() => {
 
 // https://vite.dev/config/
 export default defineConfig({
+    build: {
+        sourcemap: false,
+        manifest: false,
+    },
     plugins: [
         vue(),
         tailwindcss(),

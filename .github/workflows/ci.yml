@@ -40,3 +40,6 @@ jobs:
 
             - name: Build
               run: pnpm run build
+
+            - name: Verify no source maps or build manifest
+              run: pnpm run check:dist
